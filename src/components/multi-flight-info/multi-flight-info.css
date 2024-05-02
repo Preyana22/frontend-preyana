@@ -1,0 +1,216 @@
+.Flight-info-details {
+  display: flex;
+  display: -webkit-box; 
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
+.layover-info {
+  text-align: center;
+  background-color: bisque;
+  font-weight: bold;
+  margin: 0;
+}
+
+.detail-label p {
+  font-size: 14px;
+}
+
+.itinerary-card__hidden-toggle:checked~.itinerary-card__travel-items {
+  max-height: 1500px;
+  margin-top: 0
+}
+
+.itinerary-card__travel-item {
+  display: grid;
+  grid-template-columns: 48px 20px auto;
+  column-gap: 16px;
+  padding: 16px 24px;
+  font-size: 14px;
+  line-height: 20px
+}
+
+.itinerary-card__travel-item--segment-info div:nth-child(2),.itinerary-card__travel-item--arrival span:nth-child(2),.itinerary-card__travel-item--departure span:nth-child(2),.itinerary-card__travel-item--layover span:nth-child(2) {
+  position: relative;
+  display: flex;
+  justify-content: center
+}
+.itinerary-card__travel-item>span.material-symbols-outlined {
+  font-size: 20px
+}
+
+.itinerary-card__travel-items {
+  
+  transition: max-height var(--default-transition),margin-top var(--default-transition);
+  border-top: 1px solid var(--grey-200);
+  margin-top: -17px;
+  margin-left: 92px;
+}
+
+.itinerary-card__travel-item--origin {
+  padding: 24px 24px 16px
+}
+
+.itinerary-card__travel-item {
+  display: grid;
+  grid-template-columns: 48px 20px auto;
+  column-gap: 16px;
+  padding: 16px 24px;
+  font-size: 14px;
+  line-height: 20px
+}
+
+.itinerary-card__travel-item>*:first-child,.itinerary-card__travel-item>span.material-symbols-outlined {
+  color: var(--grey-600)
+}
+
+.itinerary-card__travel-item p {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap
+}
+.itinerary-card p,.itinerary-card span,.itinerary-card img,.itinerary-card ul,.itinerary-card h3 {
+  animation: fadein 1s;
+  -moz-animation: fadein 1s;
+  -webkit-animation: fadein 1s;
+  -o-animation: fadein 1s
+}
+
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+.itinerary-card {
+  display: block;
+  border: solid 1px var(--grey-200);
+  border-radius: var(--border-radius-medium);
+  cursor: pointer;
+  appearance: button;
+  transition: box-shadow var(--default-transition);
+  -moz-appearance: button;
+  -webkit-appearance: push-button;
+  overflow: hidden;
+  min-height: 144px
+}
+
+.results-list {
+  list-style: none;
+  margin: 0;
+  padding: 0
+}
+
+.itinerary-card__travel-item--segment-info {
+  color: var(--grey-600);
+  padding-block:0;font-size: 12px;
+  line-height: 18px
+}
+
+
+.itinerary-card__travel-item>*:first-child,.itinerary-card__travel-item>span.material-symbols-outlined {
+  color: var(--grey-600)
+}
+
+.itinerary-card__travel-item--segment-info div:nth-child(2),.itinerary-card__travel-item--arrival span:nth-child(2),.itinerary-card__travel-item--departure span:nth-child(2),.itinerary-card__travel-item--layover span:nth-child(2) {
+  position: relative;
+  display: flex;
+  justify-content: center
+}
+
+.itinerary-card__travel-item--segment-info span {
+  color: var(--grey-300);
+  margin-inline:8px}
+
+.itinerary-card__travel-item--segment-info img {
+    margin-right: 4px
+}
+
+.itinerary-card__travel-item--destination {
+  padding: 16px 24px 24px
+}
+.itinerary-card__travel-item>*:first-child,.itinerary-card__travel-item>span.material-symbols-outlined {
+  color: var(--grey-600)
+}
+.itinerary-card__travel-item>span.material-symbols-outlined {
+  font-size: 20px
+}
+
+.itinerary-card__travel-item--layover,.itinerary-card__travel-item--departure,.itinerary-card__travel-item--arrival {
+  color: var(--grey-600);
+  background-color: var(--grey-100)
+}
+
+.itinerary-card__travel-item--segment-info div:nth-child(2),.itinerary-card__travel-item--arrival span:nth-child(2),.itinerary-card__travel-item--departure span:nth-child(2),.itinerary-card__travel-item--layover span:nth-child(2) {
+  position: relative;
+  display: flex;
+  justify-content: center
+}
+
+
+.itinerary-card__travel-item--arrival span:nth-child(2):before {
+  margin-top: -36px
+}
+
+.itinerary-card__travel-item--arrival span:nth-child(2):before,.itinerary-card__travel-item--departure span:nth-child(2):after,.itinerary-card__travel-item--layover span:nth-child(2):before,.itinerary-card__travel-item--layover span:nth-child(2):after {
+  display: block;
+  content: "";
+  margin-top: -24px;
+  position: absolute;
+  height: 32px;
+  border-left: dashed 1px var(--grey-300)
+}
+
+.itinerary-card__travel-item--layover,.itinerary-card__travel-item--departure,.itinerary-card__travel-item--arrival {
+  color: var(--grey-600);
+  background-color: var(--grey-100)
+}
+
+.itinerary-card__travel-item--segment-info div:nth-child(2),.itinerary-card__travel-item--arrival span:nth-child(2),.itinerary-card__travel-item--departure span:nth-child(2),.itinerary-card__travel-item--layover span:nth-child(2) {
+  position: relative;
+  display: flex;
+  justify-content: center
+}
+
+.itinerary-card__hidden-toggle:checked~.itinerary-card__travel-items {
+  max-height: 1500px;
+  margin-top: 0
+}
+.itinerary-card p,.itinerary-card span,.itinerary-card img,.itinerary-card ul,.itinerary-card h3 {
+  /* animation:fadein 1s; */
+  -moz-animation: fadein 1s;
+  /* -webkit-animation:fadein 1s; */
+  -o-animation: fadein 1s
+}
+
+.divider--small-margin {
+  margin-top: 8px
+}
+
+.divider--dashed {
+  border-style: dashed
+}
+
+.airline-logo {
+  width: 20px;
+  height: 20px
+}
+
+.airline-logo--small {
+  width: 16px;
+  height: 16px;
+}
