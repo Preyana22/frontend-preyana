@@ -41,39 +41,16 @@ console.log("jwtKey"+props.flights[0]);
   const duffelAncillariesElement = document.querySelector(
     "duffel-ancillaries"
   );
-  //flights[0].passengers[0].id
+
   duffelAncillariesElement.render({
-    //offer_id: "off_0000AdycwcNfXS9AediFBL",
-    //"id": "pas_0000AdXrf0Y879iGpT7vj1"
+
 
     
     offer_id: location.state.contactDetails[0].offer_id,
     client_key: props.flights[0],
     services: ["bags", "seats"],
     passengers:passengers,
-    /*passengers: [
-      /* {
-          "phone_number": location.state.contactDetails.phone,
-                    "email": location.state.contactDetails.email,
-                    "born_on": location.state.contactDetails.dateOfBirth,
-                    "title": location.state.contactDetails.title,
-                    "gender": location.state.contactDetails.gender == 'Female'? 'f': 'm',
-                    "family_name": location.state.contactDetails.familyname,
-                    "given_name": location.state.contactDetails.givenName,
-                    "id": location.state.contactDetails.passenger_id
-        },*/
-    /*  {
-        phone_number: "+" + location.state.contactDetails.phone,
-        email: location.state.contactDetails.email,
-        given_name: location.state.contactDetails.givenName,
-        family_name: location.state.contactDetails.familyname,
-        gender: location.state.contactDetails.gender == 'Female' ? 'F' : 'M',
-        title: location.state.contactDetails.title,
-        born_on: location.state.contactDetails.dateOfBirth,
-        id: location.state.contactDetails.passenger_id
-      }
-     
-    ],*/
+  
     
   });
   var test;
@@ -94,24 +71,14 @@ console.log("jwtKey"+props.flights[0]);
     };
     test = body;
   });
-    /* fetch('http://localhost:3000/airlines/book',requestOptions)
-          .then(response => response.json())
-          .then(({ data }) => console.log("Order created", data))
-          .catch((error) => console.error("Order creation failed", error));
-    });
-    // 5. Send the order creation payload to your server to create an order with the Duffel API.
-    /*fetch("http://localhost:3000/airlines/book", { method: "POST", body })
-      .then((response) => response.json())
-      .then(({ data }) => console.log("Order created", data))
-      .catch((error) => console.error("Order creation failed", error));
-    });*/
+  
 
    
     const duffelpaymentsElement = document.querySelector("duffel-payments");
 
     // 3. Render the component with the required data, you can safely call this function as many times as you want.
     duffelpaymentsElement.render({
-      paymentIntentClientToken:'eyJjbGllbnRfc2VjcmV0IjoicGlfM1A3U3ZhQWcySmhFeTh2WTFxaXAzR2lrX3NlY3JldF9aa3NqM2FyWnYxRXRZb2lBc0hwN0NhR0VTIiwicHVibGlzaGFibGVfa2V5IjoicGtfdGVzdF9EQUJLY0E2Vzh6OTc0cTdPSWY0YmJ2MVQwMEpwRmMyOUpWIn0=',
+      paymentIntentClientToken:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTM1MDI0NDYsImxpdmVfbW9kZSI6ZmFsc2UsIm9yZ2FuaXNhdGlvbl9pZCI6Im9yZ18wMDAwQTlwV0k4djhrTXI3TWxiekpnIn0.QqT7_P1LyvNvNtxbe8v-nFuEzsLpEhTor8i-_0Y6l0E',
       debug: true,
       live_mode : true
     });
