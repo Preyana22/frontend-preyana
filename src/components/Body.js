@@ -11,35 +11,7 @@ import { useNavigate } from "react-router-dom";
 import './body.css';
 
 import axios from 'axios';
-//import * as moment from 'moment'
-/*const Search = (props) => {
-    const [flight, setFlight] = useState('');
-     console.log(props);
-     // function to handle the form submission and call action creator with flight data
-     const onSubmit = e =>{
-        e.preventDefault();
-        props.findFlights(flight);
-        };
-        return (
-            <div className="container">
-                <h1>Search for Flights</h1>
-                <Form onSubmit={onSubmit}>
-                    <Form.Group controlId='flight'>
-                        <Typeahead 
-                        labelKey="name"
-                        id="basic-typeahead-label"
-                        placeholder="Enter a city or airport..."
-                        options={props.airports}
-                        onChange={(selected)=>{setFlight(selected)}}
-                        
-                        />
 
-                    </Form.Group>
-                </Form>
-
-            </div>
-        )
-}*/
 
 const isDate = (date) => {
     return (new Date(date) !== "Invalid Date") && !isNaN(new Date(date));
@@ -164,14 +136,9 @@ for(var i =1; i<=options.children; i++){
 console.log(Adults);
 console.log("origin.state.text"+origin.state.text);
 const origin_city=origin.state.text;
-/*let split_string= origin_city.split("(");
-let split_second_string= split_string[1].split("-");
-let city_name=split_second_string[0];*/
+
 const destination_city=destination.state.text;
-/*let split_string_dest= destination_city.split("(");
-let split_second_string_dest= split_string_dest[1].split("-");
-let city_name_dest=split_second_string_dest[0];*/
-//console.log(city_name_dest)
+
 
         if(isReturn === false){
  criteria = {
@@ -196,22 +163,13 @@ let city_name_dest=split_second_string_dest[0];*/
         }
     }
   console.log(criteria);
-     /* if (event.target.flightType[1].checked ) {
-        criteria.returnDate = event.target.dateOfReturn.value;
-        if (!isDate(event.target.dateOfReturn.value)) {
-          invalidFields.returnDate = true;
-        }
-      }*/
+    
   
-   /*   if (!airports.includes(criteria.origin)) {
-        invalidFields.origin = true;
-      }*/
+   
       if (!cabin_details.includes(cabinclass.state.text)) {
         invalidFields.cabinclass = true;
       }
-     /* if (!airports.includes(criteria.destination) || criteria.origin === criteria.destination) {
-        invalidFields.destination = true;
-      }*/
+     
       if(!isDate(criteria.departureDate)) {
         invalidFields.departureDate = true;
       }
