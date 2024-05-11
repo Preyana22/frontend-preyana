@@ -78,7 +78,7 @@ console.log("jwtKey"+props.flights[0]);
 
     // 3. Render the component with the required data, you can safely call this function as many times as you want.
     duffelpaymentsElement.render({
-      paymentIntentClientToken:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTM1MDI0NDYsImxpdmVfbW9kZSI6ZmFsc2UsIm9yZ2FuaXNhdGlvbl9pZCI6Im9yZ18wMDAwQTlwV0k4djhrTXI3TWxiekpnIn0.QqT7_P1LyvNvNtxbe8v-nFuEzsLpEhTor8i-_0Y6l0E',
+      paymentIntentClientToken:'eyJjbGllbnRfc2VjcmV0IjoicGlfMUl5YTBiQW5rMVRkeXJvRE1iWkJPN0ZSX3NlY3JldF9TbGFrYnJjYnFHZGZha2VrcjdCNE5jZWVyIiwicHVibGlzaGFibGVfa2V5IjoicGtfbGl2ZV81MUl0Q3YwQW5rMUdkeXJvRFlFU3M3RnBTUEdrNG9kbDhneDF3Y1RBNVEzaUcyWEFWVEhxdFlKSVhWMUxoSU5GQUtFMjA1dFdmRGVIcXhwUVdnYkIzTkVFbzAwMmdVY1hzR0YifQ==',
       debug: true,
       live_mode : true
     });
