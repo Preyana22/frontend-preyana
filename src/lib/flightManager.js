@@ -1,4 +1,4 @@
-
+import flightData from './../data.json';
 import { transformFlightDates } from './utils';
 
 //Using a graph algorithm to recursively explore all the connected nodes and find all connected flight paths
