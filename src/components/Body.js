@@ -42,7 +42,7 @@ const [options, setOptions] = useState({
       try {
        
         const { data } = await axios.get(
-          `http://localhost:3000/airlines/airports`
+          `http://54.242.232.154:3000/airlines/airports`
         );
         console.log(data);
         setAirports(data);

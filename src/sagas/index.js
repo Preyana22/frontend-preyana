@@ -6,7 +6,7 @@ function* fetchFlights() {
   try {
     
   //https://my-json-server.typicode.com/mneema/mock-db/flights 
-    const json = yield fetch('http://localhost:3000/airlines')
+    const json = yield fetch('http://54.242.232.154:3000/airlines')
       .then(response => response.json());
       return json;
    // yield put({ type: "GET_FLIGHTS_SUCCESS", json: transformFlightDates(json) });
@@ -29,7 +29,7 @@ console.log(requestOptions+"requestOptions");
     
     const { flights, criteria: { returnDate, origin, destination, departureDate, numOfPassengers, cabinclass } } = payload.payload;
     const listOfFlights = {};
-    const json1 = yield fetch('http://localhost:3000/airlines/test',requestOptions)
+    const json1 = yield fetch('http://54.242.232.154:3000/airlines/test',requestOptions)
       .then(response => response.json());
       console.log(JSON.stringify(json1));
      

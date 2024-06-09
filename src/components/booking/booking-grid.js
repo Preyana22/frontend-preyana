@@ -97,7 +97,7 @@ console.log("jwtKey"+props.flights[0]);
       setIsFetching(true)
 
       const { data, errors } = await (
-        await fetch('http://localhost:3000/airlines/book', {
+        await fetch('http://54.242.232.154:3000/airlines/book', {
           method: 'post',
           headers: { 'Content-Type': 'application/json' },
           body: test

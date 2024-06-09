@@ -53,7 +53,7 @@ const payload={
 }
 const configuration = {
     method: "post",
-    url: "http://localhost:3000/authentication/register",
+    url: "http://54.242.232.154:3000/authentication/register",
     data: {
         "email":formData.email,
         "userName":formData.username,
