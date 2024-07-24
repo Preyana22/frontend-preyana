@@ -53,7 +53,7 @@ const payload={
 }
 const configuration = {
     method: "post",
-    url: "http://54.242.232.154:3000/authentication/register",
+    url: "http://192.168.1.49:3000/authentication/register",
     data: {
         "email":formData.email,
         "userName":formData.username,
@@ -68,7 +68,7 @@ await axios(configuration)
   .catch((error) => {
     error = new Error();
   });
-//const response = await axios.post('http://localhost:3000/authentication/register', payload);
+//const response = await axios.post('http://192.168.1.49:3000/authentication/register', payload);
 
 //this.setState(response.data);
 /*f(response.status==201)

@@ -9,7 +9,7 @@ import { findFlights, fetchFlights } from '../actions';
 import Button from 'react-bootstrap/Button';
 import { useNavigate } from "react-router-dom";
 import './body.css';
-
+import flight1 from "../assets/images/flight1.jpg"
 import axios from 'axios';
 
 
@@ -42,7 +42,7 @@ const [options, setOptions] = useState({
       try {
        
         const { data } = await axios.get(
-          `http://54.242.232.154:3000/airlines/airports`
+          `http://192.168.1.49:3000/airlines/airports`
         );
         console.log(data);
         setAirports(data);
@@ -1251,7 +1251,7 @@ const destination_city=destination.state.text;
                                     <div class="grid-block main-block f-grid-block">
                                         <a href="flight-detail-left-sidebar.html">
                                             <div class="main-img f-img">
-                                                <img src="images/flight-1.jpg" class="img-fluid" alt="flight-img" />
+                                                <img src={flight1} class="img-fluid" alt="flight-img" />
                                             </div>
                                         </a>
                                         <ul class="list-unstyled list-inline offer-price-1">
@@ -2587,7 +2587,7 @@ const destination_city=destination.state.text;
                             <div className="main-block flight-block">
                                 <a href="#">
                                     <div className="flight-img">
-                                        <img src="../assets/images/flight-1.jpg" className="img-fluid" alt="flight-img" />
+                                        <img src={flight1} className="img-fluid" alt="flight-img" />
                                     </div>{/* end flight-img */}
 
                                     <div className="flight-info">

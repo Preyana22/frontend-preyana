@@ -24,6 +24,7 @@ const Contacts = (props) => {
   const time =location.state.flight.slices[0].segments[0].duration;
   const cabin = location.state.flight.slices[0].segments[0].passengers[0].cabin_class_marketing_name;
   const [phone, setPhone] = useState('');
+  const [isFetching, setIsFetching] = useState(false)
   const navigate = useNavigate();
   let titles, genderdetails;
   let contactDetails = [];
@@ -46,7 +47,7 @@ const Contacts = (props) => {
   const flightsCount = (flights.length);
   let arr = [];
   arr = location.state.flight.passengers;
-  const handleSubmit = (event) => {
+  const handleSubmit = async(event) => {
     console.log(props);
     event.preventDefault();
     const { flights } = props;
@@ -68,11 +69,51 @@ const Contacts = (props) => {
         gender: genderdetails.state.text,
         dateOfBirth: event.target.dateOfBirth[index].value,
         type: item.type,
-
       })
     })
 
-    navigate('/booking', { state: { contactDetails } })
+
+      console.log("fsddddddddddddddd");
+      setIsFetching(true)
+
+
+      console.log("location");
+      console.log(location);
+
+     const amount =location.state.flight.base_amount;
+     const currency = location.state.flight.base_currency;
+     const type = 'balance';
+
+     const payments ={type:type,amount:amount,currency:currency};
+
+      var test = {
+          "type": "hold",
+          "selected_offers": [contactDetails[0].offer_id],
+          "passengers":contactDetails,
+          "payments":payments
+              }
+
+              console.log("test");
+              console.log(test);
+
+      const { data, errors } = await (
+        await fetch('http://192.168.1.49:3000/airlines/book', {
+          method: 'post',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(test)
+        })
+      ).json()
+
+      if (data) {
+        navigate('/booking', { state: { contactDetails,data } })
+      } else {
+        // TODO: handle the errors properly
+        console.info(errors)
+      }
+      setIsFetching(false)
+    
+
+    
 
   }
 
@@ -205,7 +246,7 @@ const Contacts = (props) => {
                 </div>
               })
             }
-            <button class="btn btn-contactorange">Submit</button>
+            <button class="btn btn-contactorange">Book</button>
           </Form>
         </div>
         <div class="col-12 col-md-12 col-lg-5 col-xl-4 side-bar left-side-bar">
