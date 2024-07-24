@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
+import headerlogoimage from "../assets/images/logo.svg";
 
 //import logo from '../assets/images/logo.jpg'; // Assuming logo.png is in the images folder
 /* eslint-disable */
 const Header = () => {
-    <style>
+  <style>
     {`
       #top-bar {
         background-color: #0e265a !important;
@@ -12,30 +13,10 @@ const Header = () => {
         bottom: 200px;
       }
     `}
-  </style>
-   return (
+  </style>;
+  return (
     <div className="wrapper">
-     
-            
-            
-        <div id="myOverlay" className="overlay">
-            <span className="closebtn" /*onClick="closeSearch()" */ title="Close Overlay">×</span>
-            <div className="overlay-content">
-                
-                    <form>
-                        <div className="form-group">
-                            <div className="input-group">
-                                <input className="float-left" type="text" placeholder="Search.." name="search"/>
-                                <button className="float-left" type="submit"><i className="fa fa-search"></i></button>
-                            </div>
-                        </div>
-                    </form>
-                
-            </div>
-        </div>
-        
-        
-        <div id="top-bar" className="tb-text-white">
+      {/* <div id="top-bar" className="tb-text-white">
             <div className="container">
                 <div className="row">
                     <div className="col-12 col-md-6">
@@ -82,53 +63,92 @@ const Header = () => {
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <nav className="navbar navbar-expand-xl sticky-top navbar-custom main-navbar p-1" id="mynavbar-1">
-            <div className="container">
-        
-                <a href="/home" className="navbar-brand py-1 m-0">
-                    <img  style={{ width: "300px" }}/>
+        </div> */}
+
+      <nav
+        className="navbar navbar-expand-xl sticky-top navbar-custom main-navbar p-1"
+        id="mynavbar-1"
+      >
+        <div className="container">
+          <a href="#" className="navbar-brand py-1 m-0">
+            <img src={headerlogoimage} alt="header logo" />
+          </a>
+          <div className="header-search d-xl-none my-auto ml-auto py-1">
+            <a href="#" className="search-button" /*onClick="openSearch()"*/>
+              <span>
+                <i className="fa fa-search"></i>
+              </span>
+            </a>
+          </div>
+          <button
+            className="navbar-toggler ml-2"
+            type="button"
+            data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+            id="sidebarCollapse"
+          >
+            <i className="fa fa-navicon py-1"></i>
+          </button>
+
+          {/* <div className="collapse navbar-collapse" id="myNavbar1">
+            <ul className="navbar-nav ml-auto navbar-search-link">
+              <li className="nav-item  active">
+                <a
+                  href="/home"
+                  className="nav-link"
+                  id="navbarDropdown"
+                  role="button"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  Home
+                  <span>
+                    <i className="fa fa-angle-down "></i>
+                  </span>
                 </a>
-                <div className="header-search d-xl-none my-auto ml-auto py-1">
-                    <a href="#" className="search-button" /*onClick="openSearch()"*/><span><i className="fa fa-search"></i></span></a>
-                </div>
-                <button className="navbar-toggler ml-2" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="sidebarCollapse">
-                    <i className="fa fa-navicon py-1"></i>
-                </button>
-        
-                <div className="collapse navbar-collapse" id="myNavbar1">
-                    <ul className="navbar-nav ml-auto navbar-search-link">
-                        <li className="nav-item  active">
-                            <a href="/home" className="nav-link" id="navbarDropdown" role="button"  aria-haspopup="true" aria-expanded="false">Home<span><i className="fa fa-angle-down "></i></span></a>
-                           
-                        </li>
-                      
-                        <li className="nav-item dropdown">
-                            <a href="#" className="nav-link" data-toggle="dropdown">Hotel<span><i className="fa fa-angle-down"></i></span></a>
-                            <ul className="dropdown-menu">
-                               
-                                <li><a className="dropdown-item" href="/hotels">Grid View Left Sidebar</a></li>
-                               
-                            </ul>
-                        </li>
-                        {/* <li className="nav-item ">
+              </li>
+
+              <li className="nav-item dropdown">
+                <a href="#" className="nav-link" data-toggle="dropdown">
+                  Hotel
+                  <span>
+                    <i className="fa fa-angle-down"></i>
+                  </span>
+                </a>
+                <ul className="dropdown-menu">
+                  <li>
+                    <a className="dropdown-item" href="/hotels">
+                      Grid View Left Sidebar
+                    </a>
+                  </li>
+                </ul>
+              </li>
+          <li className="nav-item ">
                             <a href="#" className="nav-link">About</a>
                             
                         </li>
                         <li className="nav-item ">
                             <a href="#" className="nav-link">Contact</a>
                             
-                        </li> */}
-                        <li className="dropdown-item search-btn">
-                            <a href="#" className="search-button" /*onClick="openSearch()"*/><span><i className="fa fa-search"></i></span></a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    
-      </div>
+                        </li> 
+              <li className="dropdown-item search-btn">
+                <a
+                  href="#"
+                  className="search-button" /*onClick="openSearch()"
+                >
+                  <span>
+                    <i className="fa fa-search"></i>
+                  </span>
+                </a>
+              </li>
+            </ul>
+          </div> */}
+        </div>
+      </nav>
+    </div>
   );
 };
 
