@@ -55,8 +55,9 @@ function App(props) {
           path="/"
           element={
             <Fragment>
-              <Header />
+              <InnerHeader />
               <Login />
+              <Footer />
             </Fragment>
           }
         />
@@ -79,7 +80,16 @@ function App(props) {
             ></FlightsGrid>
           }
         />
-        <Route path="/registration" element={<Registration />} />
+        <Route
+          path="/registration"
+          element={
+            <Fragment>
+              <InnerHeader />
+              <Registration />
+              <Footer />
+            </Fragment>
+          }
+        />
         <Route
           path="/booking"
           element={<MyComponent flights={props.flights}></MyComponent>}

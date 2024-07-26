@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Header from "../Layout/Header"; // Import the Header component
 import Footer from "../Layout/Footer";
 import axios from "axios";
-//import sideimage from './images/registration.jpg';
+import sideimage from "../assets/images/registration2.jpg";
 
 const Registration = (props) => {
   const [formData, setFormData] = useState({
@@ -83,24 +83,6 @@ const Registration = (props) => {
   };
   return (
     <>
-      <Header />
-
-      <section className="page-cover" id="cover-registration">
-        <div className="container">
-          <div className="row">
-            <div className="col-md-12">
-              <h1 className="page-title">Registration 1</h1>
-              <ul className="breadcrumb">
-                <li className="breadcrumb-item">
-                  <a href="/home">Home</a>
-                </li>
-                <li className="breadcrumb-item">Registration 1</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section className="innerpage-wrapper">
         <div id="registration" className="innerpage-section-padding">
           <div className="container">
@@ -109,11 +91,6 @@ const Registration = (props) => {
                 <div className="flex-content">
                   <div className="custom-form custom-form-fields">
                     <h3>Registration</h3>
-                    <p>
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                      sed do eiusmod tempor incididunt ut labore et dolore magna
-                      aliqua.
-                    </p>
                     <form onSubmit={handleSubmit}>
                       <div className="form-group">
                         <input
@@ -209,104 +186,18 @@ const Registration = (props) => {
                   </div>
 
                   <div className="flex-content-img custom-form-img">
-                    {/*<img src={sideimage} className="img-fluid" alt="registration-img" />*/}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="best-features" className="banner-padding black-features">
-        <div className="container">
-          <div className="row">
-            <div className="col-md-6 col-lg-3">
-              <div className="b-feature-block">
-                <span>
-                  <i className="fa fa-dollar"></i>
-                </span>
-                <h3>Best Price Guarantee</h3>
-                <p>
-                  Lorem ipsum dolor sit amet, ad duo fugit aeque fabulas, in
-                  lucilius prodesset pri. Veniam delectus ei vis.
-                </p>
-              </div>
-            </div>
-
-            <div className="col-md-6 col-lg-3">
-              <div className="b-feature-block">
-                <span>
-                  <i className="fa fa-lock"></i>
-                </span>
-                <h3>Safe and Secure</h3>
-                <p>
-                  Lorem ipsum dolor sit amet, ad duo fugit aeque fabulas, in
-                  lucilius prodesset pri. Veniam delectus ei vis.
-                </p>
-              </div>
-            </div>
-
-            <div className="col-md-6 col-lg-3">
-              <div className="b-feature-block">
-                <span>
-                  <i className="fa fa-thumbs-up"></i>
-                </span>
-                <h3>Best Travel Agents</h3>
-                <p>
-                  Lorem ipsum dolor sit amet, ad duo fugit aeque fabulas, in
-                  lucilius prodesset pri. Veniam delectus ei vis.
-                </p>
-              </div>
-            </div>
-
-            <div className="col-md-6 col-lg-3">
-              <div className="b-feature-block">
-                <span>
-                  <i className="fa fa-bars"></i>
-                </span>
-                <h3>Travel Guidelines</h3>
-                <p>
-                  Lorem ipsum dolor sit amet, ad duo fugit aeque fabulas, in
-                  lucilius prodesset pri. Veniam delectus ei vis.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section
-        id="newsletter-1"
-        className="section-padding back-size newsletter"
-      >
-        <div className="container">
-          <div className="row">
-            <div className="col-12 col-md-12 col-lg-12 col-xl-12 text-center">
-              <h2>Subscribe Our Newsletter</h2>
-              <p>Subscibe to receive our interesting updates</p>
-              <form>
-                <div className="form-group">
-                  <div className="input-group">
-                    <input
-                      type="email"
-                      className="form-control input-lg"
-                      placeholder="Enter your email address"
-                      required
+                    <img
+                      src={sideimage}
+                      className="img-fluid"
+                      alt="registration-img"
                     />
-                    <span className="input-group-btn">
-                      <button className="btn btn-lg">
-                        <i className="fa fa-envelope"></i>
-                      </button>
-                    </span>
                   </div>
                 </div>
-              </form>
+              </div>
             </div>
           </div>
         </div>
       </section>
-      <Footer />
     </>
   );
 };

@@ -8,6 +8,10 @@ import PhoneInput from "react-phone-input-2";
 import 'react-phone-input-2/lib/style.css';
 import './contact-grid.css';
 import { useLocation } from 'react-router-dom';
+import flightimage from "../../assets/images/flightimage.svg";
+
+
+
 
 const Contacts = (props) => {
   const location = useLocation();
@@ -255,7 +259,7 @@ const Contacts = (props) => {
             <div class="col-12 col-md-6 col-lg-12">
               <div class="side-bar-block detail-block style1 text-center">
                 <div class="detail-img text-center">
-                  <a href="#"><img src="images/flight-1.jpg" class="img-fluid" /></a>
+                  <a href="#"><img src={flightimage} class="img-fluid" /></a>
                 </div>
 
                 <div class="detail-title">
