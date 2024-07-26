@@ -155,7 +155,7 @@ h6 {
 
 .btn{
 	font-size:14px;
-	text-transform:uppercase;
+	text-transform:capitalize;
 	font-weight:bold;
 }
 
@@ -167,6 +167,7 @@ h6 {
 .banner-padding{
 	padding-top:86px;
 	padding-bottom:86px;
+	border-bottom: 1px solid #cde6f3;
 }
 
 .innerpage-section-padding{
@@ -1219,7 +1220,7 @@ nav.navbar .container.padding {
    ----------------------------------------------------- */
 
 .search-tabs{
-	position:absolute;
+	position:relative;
 	bottom:75px;
 	left:0px;
 	width:100%;
@@ -1237,7 +1238,7 @@ nav.navbar .container.padding {
 }
 
 .search-tabs .nav-tabs li{
-	text-transform:uppercase;
+	text-transform:capitalize;
 	font-size:14px;
 	font-weight:bold;
 }
@@ -1256,13 +1257,13 @@ nav.navbar .container.padding {
 }
 
 .search-tabs .tab-content .tab-pane{
-	padding:35px 30px 20px;
+	/* padding:35px 30px 20px; */
 }
 
 .search-tabs .tab-content .tab-pane input,
 .search-tabs .tab-content .tab-pane select{
-	text-transform:uppercase;
-	font-size:13px;
+	/* text-transform:uppercase;
+	font-size:13px; */
 }
 
 .search-tabs .tab-content .tab-pane .form-group,
@@ -1271,7 +1272,7 @@ nav.navbar .container.padding {
 }
 
 .search-tabs .tab-content .tab-pane .form-group.left-icon input{
-	padding-left:38px;
+	/* padding-left:38px; */
 }
 
 .search-tabs .tab-content .tab-pane .form-group.left-icon .fa{
@@ -1289,7 +1290,7 @@ nav.navbar .container.padding {
 }
 
 .search-tabs .tab-content .tab-pane .btn{
-	padding:8px 45px;
+	padding:8px 30px;
 }
 
 /************* SEARCH-TABS-3 *************/
@@ -1417,7 +1418,7 @@ nav.navbar .container.padding {
 .offer-price-1{
 	font-size:14px;
 	margin:0px;
-	text-transform:uppercase;
+	text-transform: capitalize;
 	font-weight:bold;
 	padding:14px 18px 11px;
 }
@@ -2682,7 +2683,7 @@ nav.navbar .container.padding {
    ----------------------------------------------------- */
 
 #footer.ftr-heading-mgn-1 .footer-heading{
-	margin-bottom:35px;
+	margin-bottom:10px;
 }
 
 #footer.ftr-heading-mgn-2 .footer-heading{
@@ -2694,8 +2695,9 @@ nav.navbar .container.padding {
 }
 
 .footer-widget .footer-heading{
-	font-size:26px;
+	font-size:15px;
 	font-weight:bold;
+	color: #000 !important;
 }
 
 .footer-widget ul li,
@@ -2704,12 +2706,18 @@ nav.navbar .container.padding {
 	font-size:15px;
 }
 
+.footer-widget a{
+ color: #000;
+ text-transform: capitalize;
+ text-decoration: underline;
+}
+
 .footer-widget ul li:last-child{
 	margin-bottom:0px;
 }
 
 .footer-widget.ftr-contact li{
-	margin-bottom:21px;
+	margin-bottom:10px;
 }
 
 .footer-widget.ftr-contact li:nth-child(2){
@@ -2799,31 +2807,34 @@ nav.navbar .container.padding {
 }
 
 #footer-bottom{
-	padding-top:30px;
-	padding-bottom:30px;
+	padding-top:20px;
+	padding-bottom:20px;
 }
 
 #footer-bottom p,
 #footer-bottom ul{
 	margin-bottom:0px;
-	font-size:15px;
+	font-size: 13px;
 }
 
 #footer-bottom li:first-child{
-	position:relative;
-	padding-right:10px;
+	/* position:relative;
+	padding-right:10px; */
 }
 
 #footer-bottom li:first-child:after{
-	content:"";
+	/* content:"";
 	position:absolute;
 	right:0;
 	top:5px;
 	height:15px;
 	width:1px;
-	display:block;
+	display:block; */
 }
 
+#footer-bottom li {
+	padding: 0 15px;
+}
 /* -----------------------------------------------------
 		Page Cover
    ----------------------------------------------------- */
@@ -3409,7 +3420,7 @@ nav.navbar .container.padding {
 
 .block-minor{
 	font-size:14px;
-	text-transform:uppercase;
+	text-transform:capitalize;
 	margin-bottom:7px;
 }
 
@@ -3967,11 +3978,13 @@ nav.navbar .container.padding {
 
 
 /************ PAGE-SEARCH-FORM ***********/
-
-.page-search-form{
-	margin-bottom:80px;
-	padding:30px 40px 45px;
+.page-search-form {
+	border: 1px solid #ddd !important;
+	padding: 15px 10px;
+	border-radius: 5px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
 
 .page-search-form h2{
 	margin-bottom:25px;
@@ -3993,8 +4006,10 @@ nav.navbar .container.padding {
 }
 
 .pg-search-form .btn{
-	margin-top:15px;
+	/* margin-top:15px; */
 	padding:8px 34px;
+	background-color: #0047b1;
+	color: #fff;
 }
 
 /************ LG-BOOKING-FORM ***********/
@@ -6262,4 +6277,34 @@ nav.navbar .container.padding {
 #flight_frm_booking textarea.error{
 	  background:#ff4d4d;
 	  border-color:red;
+}
+
+#banner-sec{
+	z-index: 500;
+}
+#banner-sec .banner-image{
+	margin-top: -2rem;
+}
+
+.page-search-form .input-icon {
+	position: absolute;
+	bottom: 1.6rem;
+	left: 0.7rem;
+	top: 0.5rem;
+}
+.pg-search-form input[type="date"] {
+	text-indent: 1rem;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+	background: transparent;
+	bottom: 0;
+	color: transparent;
+	cursor: pointer;
+	height: auto;
+	left: 0;
+	position: absolute;
+	right: 0;
+	top: 0;
+	width: auto;
 }

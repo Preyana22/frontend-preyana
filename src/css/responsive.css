@@ -2454,7 +2454,7 @@ Author:			Star Travel
 @media(min-width:768px){
 	
 	#terms{
-		text-align:right;
+		/* text-align:right; */
 	}
 }
 

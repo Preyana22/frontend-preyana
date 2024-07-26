@@ -97,19 +97,19 @@ p{
 }
 
 .btn{
-	border-radius:0px;
+	border-radius:25px;
 	border:0px;
 }
 
 .btn-orange,
 .btn-orange:focus{
-	background:#faa61a;
-	color:white;
+background: #ffd842;
+	color: #000;
 }
 
 .btn-orange:hover{
-	background:#010101;
-	color:white;
+background: #ffd842;
+	color: #000;
 }
 
 .lg-booking-form .payment-tabs #tab-paypal .paypal-text .btn{
@@ -314,7 +314,7 @@ input:focus
    ----------------------------------------------------- */
 
 nav.navbar{
-	box-shadow:0px 2px 5px rgba(0,0,0,0.2);
+	/* box-shadow:0px 2px 5px rgba(0,0,0,0.2); */
 }
 
 nav.navbar#mynavbar-1 .navbar-collapse ul li a 
@@ -1238,21 +1238,34 @@ nav.navbar#mynavbar-3 .navbar-brand .fa
 
 
 .search-tabs .nav-tabs li a{
-	background:#000;
-	border-radius:0px;
-	color:white;
+	background:#ffffff;
+	border-radius: 50px;
+	color:#000;
+		border: 1px solid #cbcbcb;
+		margin-bottom: 10px;
+		margin-right: 10px;
 }
 
+.search-tabs .nav-tabs li .nav-link.active:focus,
+.search-tabs .nav-tabs li .nav-link.active:hover {
+	border-color: #2264bf !important;
+}
+
+.search-tabs .nav-tabs li .nav-link:focus,
+.search-tabs .nav-tabs li .nav-link:hover {
+	border-color: #cbcbcb !important;
+}
 .search-tabs .nav-tabs li:hover a{
 	border-color:transparent;
 }
 
 .search-tabs .nav-tabs .nav-link.active {
-	background:white;
-	border-radius:0px;
-	color:#808285;
-	border:2px solid white;
-	border-bottom:0px;	
+	background: #e0edfc;
+		color: #2264bf;
+		border: 1px solid #2264bf;
+		border-radius: 50px;
+		margin-bottom: 10px;
+		margin-right: 10px;
 }
 
 .search-tabs .nav-tabs li.active a{
@@ -1264,7 +1277,7 @@ nav.navbar#mynavbar-3 .navbar-brand .fa
 }
 
 .search-tabs .nav-tabs li .fa{
-	color:#faa61a;
+	color:#2264bf;
 }
 
 .search-tabs .tab-content .tab-pane{
@@ -1424,7 +1437,7 @@ nav.navbar#mynavbar-3 .navbar-brand .fa
 /************** OFFER-PRICE-1 *************/
 
 .offer-price-1 li.price{
-	color:white;
+	color: #0047b1;
 }
 
 .offer-price-1 li.price .divider,
@@ -2350,7 +2363,7 @@ nav.navbar#mynavbar-3 .navbar-brand .fa
 #footer-bottom p,
 #footer-bottom a,
 #footer-bottom .line{
-	color:#979797;
+	color:#000;
 }
 
 #footer-bottom li:first-child:after{
@@ -2983,7 +2996,7 @@ nav.navbar#mynavbar-3 .navbar-brand .fa
 }
 
 .block-info{
-	background:#f8f8f8;
+	background: transparent;
 	border:1px solid #e6e7e8;
 }
 
@@ -3003,11 +3016,11 @@ nav.navbar#mynavbar-3 .navbar-brand .fa
 
 .f-grid-block .f-img{
 	border:1px solid #e6e7e8;
-	background:white;
+	background:#cde6f4;
 }
 
 .f-grid-block .offer-price-1{
-	background:#000;
+background: transparent;
 }
 
 .f-grid-info .f-grid-time{
@@ -3015,7 +3028,7 @@ nav.navbar#mynavbar-3 .navbar-brand .fa
 }
 
 .f-grid-info .f-grid-time .fa{
-	color:#faa61a;
+	color:#0047b1;
 }
 
 .f-grid-desc .f-grid-code{
@@ -3033,7 +3046,7 @@ nav.navbar#mynavbar-3 .navbar-brand .fa
 }
 
 .f-grid-timing li .fa{
-	color:#faa61a;
+	color:#0047b1;
 }
 
 .f-grid-timing li:first-child{
@@ -3271,7 +3284,7 @@ nav.navbar#mynavbar-3 .navbar-brand .fa
 /************ PAGE-SEARCH-FORM ***********/
 
 .page-search-form{
-	background:#f2f2f2;
+	/* background:#f2f2f2; */
 	border-top:4px solid #faa61a;
 	border-bottom:1px solid #faa61a;
 }
@@ -3282,7 +3295,7 @@ nav.navbar#mynavbar-3 .navbar-brand .fa
 }
 
 .page-search-form .nav-tabs{
-	border-bottom-color:#e6e6e6;
+	border: unset !important;
 }
 
 .page-search-form .nav-tabs li{
@@ -3307,8 +3320,9 @@ nav.navbar#mynavbar-3 .navbar-brand .fa
 
 .pg-search-form input,
 .pg-search-form select{
-	border-radius:0px;
+	border-radius:5px;
 	box-shadow:none;
+	text-indent: 2rem;
 }
 
 /************ LG-BOOKING-FORM ***********/
