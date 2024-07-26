@@ -36,7 +36,7 @@ const Login = (props) => {
         console.log("Form data:", formData);
         const configuration = {
           method: "post",
-          url: "http://192.168.1.49:3000/authentication/log-in",
+          url: "http://192.168.1.170:3000/authentication/log-in",
           data: {
             email: formData.username,
             password: formData.password,
@@ -47,6 +47,9 @@ const Login = (props) => {
         const result = await axios(configuration);
         console.log("result");
         console.log(result);
+        localStorage.setItem("email", result.data.email);
+        localStorage.setItem("userName", result.data.userName);
+        localStorage.setItem("userId", result.data.id);
         setLogin(true);
         navigate("/search");
       } catch (error) {
@@ -135,7 +138,7 @@ const Login = (props) => {
                       <p className="link-line">
                         New Here ? <a href="/registration">Signup</a>
                       </p>
-                      <a className="simple-link" href="#">
+                      <a className="simple-link" href="/forgot">
                         Forgot Password ?
                       </a>
                     </div>

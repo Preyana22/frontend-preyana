@@ -67,15 +67,15 @@ const MyComponent = (props) => {
     };
     test = body;
   });
-  
-    const duffelpaymentsElement = document.querySelector("duffel-payments");
 
-    // 3. Render the component with the required data, you can safely call this function as many times as you want.
-    duffelpaymentsElement.render({
-      paymentIntentClientToken:location.state.data.client_token,
-      debug: false,
-      live_mode : true
-    });
+  const duffelpaymentsElement = document.querySelector("duffel-payments");
+
+  // 3. Render the component with the required data, you can safely call this function as many times as you want.
+  duffelpaymentsElement.render({
+    paymentIntentClientToken: location.state.data.client_token,
+    debug: false,
+    live_mode: true,
+  });
 
   // 4. Listen to 'onSuccessfulPayment' event on the component:
   duffelpaymentsElement.addEventListener("onSuccessfulPayment", () =>
@@ -87,53 +87,46 @@ const MyComponent = (props) => {
     console.log("onPayloadReady\n", event.detail)
   );
 
-    const bookOffer = async () => {
-      console.log("fsddddddddddddddd");
-      setIsFetching(true)
+  const bookOffer = async () => {
+    console.log("fsddddddddddddddd");
+    setIsFetching(true);
 
+    console.log("location");
+    console.log(location);
 
-      console.log("location");
-      console.log(location);
+    const amount = props.flights[1][0].base_amount;
+    const currency = props.flights[1][0].base_currency;
+    const type = "balance";
 
-     const amount = props.flights[1][0].base_amount;
-     const currency = props.flights[1][0].base_currency;
-     const type = 'balance';
+    const payments = { type: type, amount: amount, currency: currency };
 
-     const payments ={type:type,amount:amount,currency:currency};
+    // test = {
+    //     "type": "hold",
+    //     "selected_offers": [location.state.contactDetails[0].offer_id],
+    //     "passengers":passengers,
+    //     "payments":payments
+    //         }
 
-      // test = {
-      //     "type": "hold",
-      //     "selected_offers": [location.state.contactDetails[0].offer_id],
-      //     "passengers":passengers,
-      //     "payments":payments
-      //         }
+    //         console.log("test");
+    //         console.log(test);
 
-      //         console.log("test");
-      //         console.log(test);
+    // const { data, errors } = await (
+    //   await fetch('http://192.168.1.170:3000/airlines/book', {
+    //     method: 'post',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify(test)
+    //   })
+    // ).json()
 
-      // const { data, errors } = await (
-      //   await fetch('http://192.168.1.49:3000/airlines/book', {
-      //     method: 'post',
-      //     headers: { 'Content-Type': 'application/json' },
-      //     body: JSON.stringify(test)
-      //   })
-      // ).json()
-
-      // if (data) {
-      //   console.log(data)
-      // } else {
-      //   // TODO: handle the errors properly
-      //   console.info(errors)
-      // }
-      setIsFetching(false)
-    }
-      return ( 
-      null
-    )
-
-  }
-
-
-
+    // if (data) {
+    //   console.log(data)
+    // } else {
+    //   // TODO: handle the errors properly
+    //   console.info(errors)
+    // }
+    setIsFetching(false);
+  };
+  return null;
+};
 
 export default MyComponent;

@@ -41,6 +41,7 @@ import Login from "./components/Login";
 import Registration from "./components/Registration";
 import InnerHeader from "./Layout/Header";
 import Footer from "./Layout/Footer";
+import ForgotPassword from "./components/forgot-password";
 function App(props) {
   useEffect(() => {
     props.getFlights();
@@ -55,7 +56,7 @@ function App(props) {
           path="/"
           element={
             <Fragment>
-              <InnerHeader />
+              <Header />
               <Login />
               <Footer />
             </Fragment>
@@ -74,17 +75,21 @@ function App(props) {
         <Route
           path="/results"
           element={
-            <FlightsGrid
-              flights={props.flights}
-              criteria={{ origin, destination, date: departureDate }}
-            ></FlightsGrid>
+            <Fragment>
+              <InnerHeader />
+              <FlightsGrid
+                flights={props.flights}
+                criteria={{ origin, destination, date: departureDate }}
+              ></FlightsGrid>
+              <Footer />
+            </Fragment>
           }
         />
         <Route
           path="/registration"
           element={
             <Fragment>
-              <InnerHeader />
+              <Header />
               <Registration />
               <Footer />
             </Fragment>
@@ -92,11 +97,32 @@ function App(props) {
         />
         <Route
           path="/booking"
-          element={<MyComponent flights={props.flights}></MyComponent>}
+          element={
+            <Fragment>
+              <InnerHeader />
+              <MyComponent flights={props.flights}></MyComponent> <Footer />
+            </Fragment>
+          }
         />
         <Route
           path="/contacts"
-          element={<Contacts flights={props.flights}></Contacts>}
+          element={
+            <Fragment>
+              <InnerHeader />
+              <Contacts flights={props.flights}></Contacts>
+              <Footer />
+            </Fragment>
+          }
+        />
+        <Route
+          path="/forgot"
+          element={
+            <Fragment>
+              <Header />
+              <ForgotPassword />
+              <Footer />
+            </Fragment>
+          }
         />
       </Routes>
     </BrowserRouter>
