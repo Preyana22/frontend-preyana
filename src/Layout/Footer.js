@@ -16,19 +16,19 @@ const Footer = () => {
                 <h3 className="footer-heading">Company</h3>
                 <ul className="list-unstyled">
                   <li>
-                    <a href="#">About</a>
+                    <a href="/about">About</a>
                   </li>
                   <li>
-                    <a href="#">Careers</a>
+                    <a href="/careers">Careers</a>
                   </li>
                   <li>
-                    <a href="#">Mobile</a>
+                    <a href="/mobile">Mobile</a>
                   </li>
                   <li>
-                    <a href="#">Blog</a>
+                    <a href="/blog">Blog</a>
                   </li>
                   <li>
-                    <a href="#">How we works</a>
+                    <a href="/howweworks">How we works</a>
                   </li>
                 </ul>
               </div>
@@ -37,39 +37,39 @@ const Footer = () => {
                 <h3 className="footer-heading">Contact Us</h3>
                 <ul className="list-unstyled">
                   <li>
-                    <a href="#">Help/FAQ</a>
+                    <a href="/helpfaq">Help/FAQ</a>
                   </li>
                   <li>
-                    <a href="#">Press</a>
+                    <a href="press">Press</a>
                   </li>
                   <li>
-                    <a href="#">Affilates</a>
+                    <a href="/affilates">Affilates</a>
                   </li>
                   <li>
-                    <a href="#">Hotel owners</a>
+                    <a href="/hotelowners">Hotel owners</a>
                   </li>
                   <li>
-                    <a href="#">Partners</a>
+                    <a href="/partners">Partners</a>
                   </li>
                   <li>
-                    <a href="#">Advertise with us</a>
+                    <a href="/advertise">Advertise with us</a>
                   </li>
                 </ul>
               </div>
-              <div className="col-12 col-md-6 col-lg-3 col-xl-3 footer-widget ftr-links ftr-pad-left">
+              <div className="col-12 col-md-6 col-lg-3 col-xl-3 footer-widget ftr-links">
                 <h3 className="footer-heading">More</h3>
                 <ul className="list-unstyled">
                   <li>
-                    <a href="#">Airline Fees</a>
+                    <a href="/airlinefees">Airline Fees</a>
                   </li>
                   <li>
-                    <a href="#">Airlines</a>
+                    <a href="/airlines">Airlines</a>
                   </li>
                   <li>
-                    <a href="#">Low fare tips</a>
+                    <a href="/lowfare">Low fare tips</a>
                   </li>
                   <li>
-                    <a href="#">Badges & certificates</a>
+                    <a href="/badges">Badges & certificates</a>
                   </li>
                 </ul>
               </div>
@@ -93,13 +93,13 @@ const Footer = () => {
               <div className="col-12 col-md-10 col-lg-10 col-xl-10" id="terms">
                 <ul className="list-unstyled list-inline">
                   <li className="list-inline-item">
-                    <a href="#">Privacy</a>
+                    <a href="/privacy">Privacy</a>
                   </li>
                   <li className="list-inline-item">
-                    <a href="#">Terms & Condition</a>
+                    <a href="/terms">Terms & Condition</a>
                   </li>
                   <li className="list-inline-item">
-                    <a href="#">Ad Choices</a>
+                    <a href="/adchoices">Ad Choices</a>
                   </li>
                   <li className="list-inline-item">
                     <a href="#" className="font-weight-bold">

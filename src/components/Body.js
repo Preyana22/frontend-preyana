@@ -270,11 +270,11 @@ export const Body = (props) => {
 
   return (
     <>
-      <section class="innerpage-wrapper">
-        <div id="search-result-page" class="">
-          <div class="container">
-            <div class="row pb-5">
-              <div class="col-12 col-md-4 col-lg-4 col-xl-4 my-auto">
+      <section className="innerpage-wrapper">
+        <div id="search-result-page" className="">
+          <div className="container">
+            <div className="row pb-5">
+              <div className="col-12 col-md-4 col-lg-4 col-xl-4 my-auto">
                 <h2 className="font-weight-bold">
                   Plan hassle-free travels to your dream destinations
                 </h2>
@@ -283,10 +283,13 @@ export const Body = (props) => {
                   genuine connections and authentic experiences.
                 </p>
               </div>
-              <div class="col-12 col-md-8 col-lg-8 col-xl-8" id="banner-sec">
+              <div
+                className="col-12 col-md-8 col-lg-8 col-xl-8"
+                id="banner-sec"
+              >
                 <img
                   src={sideimage}
-                  class="img-fluid banner-image"
+                  className="img-fluid banner-image"
                   alt="banner-img"
                 />
               </div>
@@ -328,11 +331,11 @@ export const Body = (props) => {
                       </ul>
                       <div className="tab-content">
                         <div id="flights" className="tab-pane in active">
-                          <div class="page-search-form">
+                          <div className="page-search-form">
                             <Form onSubmit={handleSubmit1}>
-                              <div class="row mt-3">
-                                <div class="col-12 col-md-6 col-lg-2 col-xl-2">
-                                  <div class="form-group">
+                              <div className="row mt-3">
+                                <div className="col-12 col-md-6 col-lg-2 col-xl-2">
+                                  <div className="form-group">
                                     <div className="headerSearchTripItem">
                                       <span
                                         onClick={() =>
@@ -383,22 +386,23 @@ export const Body = (props) => {
                                     </div>
                                   </div>
                                 </div>
-                                <div class="col-12 col-md-6 col-lg-2 col-xl-2">
+                                <div className="col-12 col-md-6 col-lg-2 col-xl-2">
                                   <Form.Group controlId="cabinclass">
                                     <Typeahead
                                       labelKey="cabinclass"
                                       options={cabin_details}
-                                      placeholder="Cabin Class"
+                                      id="cabinclass"
+                                      placeholder="Cabin className"
                                       ref={(ref) => (cabinclass = ref)}
                                     />
 
                                     {status.cabinclass && (
-                                      <ErrorLabel message="Please select cabin class"></ErrorLabel>
+                                      <ErrorLabel message="Please select cabin className"></ErrorLabel>
                                     )}
                                   </Form.Group>
                                 </div>
-                                <div class="col-12 col-md-6 col-lg-3 col-xl-3">
-                                  <div class="form-group">
+                                <div className="col-12 col-md-6 col-lg-3 col-xl-3">
+                                  <div className="form-group">
                                     <div className="headerSearchItem">
                                       <span
                                         onClick={() =>
@@ -502,16 +506,16 @@ export const Body = (props) => {
                                 </div>
                               </div>
 
-                              <div class="tab-content">
+                              <div className="tab-content">
                                 {isReturn === true && (
                                   <div
                                     id="tab-round-trip"
-                                    class="tab-pane in active"
+                                    className="tab-pane in active"
                                   >
-                                    <form class="pg-search-form">
-                                      <div class="row">
-                                        <div class="col-12 col-md-6 col-lg-3 col-xl-3">
-                                          <div class="form-group left-icon">
+                                    <div className="pg-search-form">
+                                      <div className="row">
+                                        <div className="col-12 col-md-6 col-lg-3 col-xl-3">
+                                          <div className="form-group left-icon">
                                             <Form.Group controlId="origin">
                                               <Typeahead
                                                 labelKey="origin"
@@ -530,14 +534,14 @@ export const Body = (props) => {
                                             </Form.Group>
                                           </div>
                                         </div>
-                                        <div class="">
+                                        <div className="">
                                           <img
                                             src={inoutimage}
                                             alt="from-to-image"
                                           />
                                         </div>
-                                        <div class="col-12 col-md-6 col-lg-3 col-xl-3">
-                                          <div class="form-group left-icon">
+                                        <div className="col-12 col-md-6 col-lg-3 col-xl-3">
+                                          <div className="form-group left-icon">
                                             <Form.Group controlId="destination">
                                               <Typeahead
                                                 labelKey="destination"
@@ -559,14 +563,14 @@ export const Body = (props) => {
                                           </div>
                                         </div>
 
-                                        <div class="col-12 col-md-12 col-lg-4 col-xl-4">
-                                          <div class="row">
-                                            <div class="col-6 col-md-6">
-                                              <div class="form-group">
+                                        <div className="col-12 col-md-12 col-lg-4 col-xl-4">
+                                          <div className="row">
+                                            <div className="col-6 col-md-6">
+                                              <div className="form-group">
                                                 <Form.Group controlId="formGriddateOfDep">
                                                   <Form.Control
                                                     type="date"
-                                                    class="form-control dpd1"
+                                                    className="form-control dpd1"
                                                     name="dateOfDep"
                                                     placeholder="Departure Date"
                                                     required
@@ -583,12 +587,12 @@ export const Body = (props) => {
                                               </div>
                                             </div>
 
-                                            <div class="col-6 col-md-6">
-                                              <div class="form-group">
+                                            <div className="col-6 col-md-6">
+                                              <div className="form-group">
                                                 <Form.Group controlId="formGriddateOfReturn">
                                                   <Form.Control
                                                     type="date"
-                                                    class="form-control dpd1"
+                                                    className="form-control dpd1"
                                                     name="returnDate"
                                                     required
                                                     placeholder="Return Date"
@@ -607,28 +611,29 @@ export const Body = (props) => {
                                             </div>
                                           </div>
                                         </div>
-                                        <div class="col-12 col-md-12 col-lg-1 col-xl-1">
-                                          <button class="btn btn-orange">
+                                        <div className="col-12 col-md-12 col-lg-1 col-xl-1">
+                                          <button className="btn btn-orange">
                                             Search
                                           </button>
                                         </div>
                                       </div>
-                                    </form>
+                                    </div>
                                   </div>
                                 )}
                                 {isReturn === false && (
                                   <div
                                     id="tab-one-way"
-                                    class="tab-pane in active"
+                                    className="tab-pane in active"
                                   >
-                                    <form class="pg-search-form">
-                                      <div class="row">
-                                        <div class="col-12 col-md-6 col-lg-3 col-xl-3">
-                                          <div class="form-group left-icon">
+                                    <div className="pg-search-form">
+                                      <div className="row">
+                                        <div className="col-12 col-md-6 col-lg-3 col-xl-3">
+                                          <div className="form-group left-icon">
                                             <Form.Group controlId="origin">
                                               <Typeahead
                                                 labelKey="origin"
                                                 options={airports}
+                                                id="origin"
                                                 placeholder="From"
                                                 ref={(ref) => (origin = ref)}
                                               />
@@ -643,17 +648,18 @@ export const Body = (props) => {
                                             </Form.Group>
                                           </div>
                                         </div>
-                                        <div class="">
+                                        <div className="">
                                           <img
                                             src={inoutimage}
                                             alt="from-to-image"
                                           />
                                         </div>
-                                        <div class="col-12 col-md-6 col-lg-3 col-xl-3">
-                                          <div class="form-group">
+                                        <div className="col-12 col-md-6 col-lg-3 col-xl-3">
+                                          <div className="form-group">
                                             <Form.Group controlId="destination">
                                               <Typeahead
                                                 labelKey="destination"
+                                                id="destination"
                                                 options={airports}
                                                 placeholder="To"
                                                 ref={(ref) =>
@@ -673,12 +679,12 @@ export const Body = (props) => {
                                           </div>
                                         </div>
 
-                                        <div class="col-12 col-md-6 col-lg-3 col-xl-3">
-                                          <div class="form-group">
+                                        <div className="col-12 col-md-6 col-lg-3 col-xl-3">
+                                          <div className="form-group">
                                             <Form.Group controlId="formGriddateOfDep">
                                               <Form.Control
                                                 type="date"
-                                                class="form-control dpd1"
+                                                className="form-control dpd1"
                                                 name="dateOfDep"
                                                 placeholder="Departure Date"
                                                 required
@@ -694,13 +700,13 @@ export const Body = (props) => {
                                             </Form.Group>
                                           </div>
                                         </div>
-                                        <div class="col-12 col-md-12 col-lg-1 col-xl-1">
-                                          <button class="btn btn-orange">
+                                        <div className="col-12 col-md-12 col-lg-1 col-xl-1">
+                                          <button className="btn btn-orange">
                                             Search
                                           </button>
                                         </div>
                                       </div>
-                                    </form>
+                                    </div>
                                   </div>
                                 )}
                               </div>
@@ -713,45 +719,46 @@ export const Body = (props) => {
                 </div>
               </div>
             </section>
-            <div class="row">
-              <div class="col-12 col-md-12 col-lg-12 col-xl-12 content-side">
-                <div class="row pb-4">
-                  <div class="col-12 col-md-12 col-lg-12 col-xl-12">
+            <div className="row">
+              <div className="col-12 col-md-12 col-lg-12 col-xl-12 content-side">
+                <div className="row pb-4">
+                  <div className="col-12 col-md-12 col-lg-12 col-xl-12">
                     <h2 className="font-weight-bold">
                       Flights Deals to Top Destination
                     </h2>
                   </div>
                 </div>
-                <div class="row">
-                  <div class="col-12 col-md-6 col-lg-3 col-xl-3">
-                    <div class="grid-block main-block f-grid-block">
+                <div className="row">
+                  <div className="col-12 col-md-6 col-lg-3 col-xl-3">
+                    <div className="grid-block main-block f-grid-block">
                       <a href="flight-detail-left-sidebar.html">
-                        <div class="main-img f-img">
+                        <div className="main-img f-img">
                           <img
                             src={flightimage}
-                            class="img-fluid"
+                            className="img-fluid"
                             alt="flight-img"
                           />
                         </div>
                       </a>
-                      <div class="block-info f-grid-info">
-                        <div class="f-grid-desc">
-                          <span class="f-grid-time">
-                            <i class="fa fa-clock-o"></i>6 hours - 30 minutes
+                      <div className="block-info f-grid-info">
+                        <div className="f-grid-desc">
+                          <span className="f-grid-time">
+                            <i className="fa fa-clock-o"></i>6 hours - 30
+                            minutes
                           </span>
-                          <h3 class="block-title">
+                          <h3 className="block-title">
                             <a href="flight-detail-left-sidebar.html">
                               Sydney to Paris
                             </a>
                           </h3>
-                          <p class="block-minor">
+                          <p className="block-minor">
                             <span>Fr 5379,</span> Oneway Flight
                           </p>
 
-                          <ul class="list-unstyled list-inline offer-price-1">
-                            <li class="price">
-                              $568.00<span class="divider">|</span>
-                              <span class="pkg">2 Stay</span>
+                          <ul className="list-unstyled list-inline offer-price-1">
+                            <li className="price">
+                              $568.00<span className="divider">|</span>
+                              <span className="pkg">2 Stay</span>
                             </li>
                           </ul>
 
@@ -762,27 +769,29 @@ export const Body = (props) => {
                           </p>
                         </div>
 
-                        <div class="f-grid-timing">
-                          <ul class="list-unstyled">
+                        <div className="f-grid-timing">
+                          <ul className="list-unstyled">
                             <li>
                               <span>
-                                <i class="fa fa-plane"></i>
+                                <i className="fa fa-plane"></i>
                               </span>
-                              <span class="date">Aug, 02-2017 </span>(8:40 PM)
+                              <span className="date">Aug, 02-2017 </span>(8:40
+                              PM)
                             </li>
                             <li>
                               <span>
-                                <i class="fa fa-plane"></i>
+                                <i className="fa fa-plane"></i>
                               </span>
-                              <span class="date">Aug, 03-2017 </span>(8:40 PM)
+                              <span className="date">Aug, 03-2017 </span>(8:40
+                              PM)
                             </li>
                           </ul>
                         </div>
 
-                        <div class="grid-btn">
+                        <div className="grid-btn">
                           <a
                             href="flight-detail-left-sidebar.html"
-                            class="btn btn-orange btn-block btn-lg"
+                            className="btn btn-orange btn-block btn-lg"
                           >
                             View Details
                           </a>
@@ -791,35 +800,36 @@ export const Body = (props) => {
                     </div>
                   </div>
 
-                  <div class="col-12 col-md-6 col-lg-3 col-xl-3">
-                    <div class="grid-block main-block f-grid-block">
+                  <div className="col-12 col-md-6 col-lg-3 col-xl-3">
+                    <div className="grid-block main-block f-grid-block">
                       <a href="flight-detail-left-sidebar.html">
-                        <div class="main-img f-img">
+                        <div className="main-img f-img">
                           <img
                             src={flightimage}
-                            class="img-fluid"
+                            className="img-fluid"
                             alt="flight-img"
                           />
                         </div>
                       </a>
 
-                      <div class="block-info f-grid-info">
-                        <div class="f-grid-desc">
-                          <span class="f-grid-time">
-                            <i class="fa fa-clock-o"></i>6 hours - 30 minutes
+                      <div className="block-info f-grid-info">
+                        <div className="f-grid-desc">
+                          <span className="f-grid-time">
+                            <i className="fa fa-clock-o"></i>6 hours - 30
+                            minutes
                           </span>
-                          <h3 class="block-title">
+                          <h3 className="block-title">
                             <a href="flight-detail-left-sidebar.html">
                               Sydney to Paris
                             </a>
                           </h3>
-                          <p class="block-minor">
+                          <p className="block-minor">
                             <span>Fr 5379,</span> Oneway Flight
                           </p>
-                          <ul class="list-unstyled list-inline offer-price-1">
-                            <li class="price">
-                              $568.00<span class="divider">|</span>
-                              <span class="pkg">2 Stay</span>
+                          <ul className="list-unstyled list-inline offer-price-1">
+                            <li className="price">
+                              $568.00<span className="divider">|</span>
+                              <span className="pkg">2 Stay</span>
                             </li>
                           </ul>
 
@@ -830,27 +840,29 @@ export const Body = (props) => {
                           </p>
                         </div>
 
-                        <div class="f-grid-timing">
-                          <ul class="list-unstyled">
+                        <div className="f-grid-timing">
+                          <ul className="list-unstyled">
                             <li>
                               <span>
-                                <i class="fa fa-plane"></i>
+                                <i className="fa fa-plane"></i>
                               </span>
-                              <span class="date">Aug, 02-2017 </span>(8:40 PM)
+                              <span className="date">Aug, 02-2017 </span>(8:40
+                              PM)
                             </li>
                             <li>
                               <span>
-                                <i class="fa fa-plane"></i>
+                                <i className="fa fa-plane"></i>
                               </span>
-                              <span class="date">Aug, 03-2017 </span>(8:40 PM)
+                              <span className="date">Aug, 03-2017 </span>(8:40
+                              PM)
                             </li>
                           </ul>
                         </div>
 
-                        <div class="grid-btn">
+                        <div className="grid-btn">
                           <a
                             href="flight-detail-left-sidebar.html"
-                            class="btn btn-orange btn-block btn-lg"
+                            className="btn btn-orange btn-block btn-lg"
                           >
                             View Details
                           </a>
@@ -859,35 +871,36 @@ export const Body = (props) => {
                     </div>
                   </div>
 
-                  <div class="col-12 col-md-6 col-lg-3 col-xl-3">
-                    <div class="grid-block main-block f-grid-block">
+                  <div className="col-12 col-md-6 col-lg-3 col-xl-3">
+                    <div className="grid-block main-block f-grid-block">
                       <a href="flight-detail-left-sidebar.html">
-                        <div class="main-img f-img">
+                        <div className="main-img f-img">
                           <img
                             src={flightimage}
-                            class="img-fluid"
+                            className="img-fluid"
                             alt="flight-img"
                           />
                         </div>
                       </a>
 
-                      <div class="block-info f-grid-info">
-                        <div class="f-grid-desc">
-                          <span class="f-grid-time">
-                            <i class="fa fa-clock-o"></i>6 hours - 30 minutes
+                      <div className="block-info f-grid-info">
+                        <div className="f-grid-desc">
+                          <span className="f-grid-time">
+                            <i className="fa fa-clock-o"></i>6 hours - 30
+                            minutes
                           </span>
-                          <h3 class="block-title">
+                          <h3 className="block-title">
                             <a href="flight-detail-left-sidebar.html">
                               Sydney to Paris
                             </a>
                           </h3>
-                          <p class="block-minor">
+                          <p className="block-minor">
                             <span>Fr 5379,</span> Oneway Flight
                           </p>
-                          <ul class="list-unstyled list-inline offer-price-1">
-                            <li class="price">
-                              $568.00<span class="divider">|</span>
-                              <span class="pkg">2 Stay</span>
+                          <ul className="list-unstyled list-inline offer-price-1">
+                            <li className="price">
+                              $568.00<span className="divider">|</span>
+                              <span className="pkg">2 Stay</span>
                             </li>
                           </ul>
                           <p>
@@ -897,27 +910,29 @@ export const Body = (props) => {
                           </p>
                         </div>
 
-                        <div class="f-grid-timing">
-                          <ul class="list-unstyled">
+                        <div className="f-grid-timing">
+                          <ul className="list-unstyled">
                             <li>
                               <span>
-                                <i class="fa fa-plane"></i>
+                                <i className="fa fa-plane"></i>
                               </span>
-                              <span class="date">Aug, 02-2017 </span>(8:40 PM)
+                              <span className="date">Aug, 02-2017 </span>(8:40
+                              PM)
                             </li>
                             <li>
                               <span>
-                                <i class="fa fa-plane"></i>
+                                <i className="fa fa-plane"></i>
                               </span>
-                              <span class="date">Aug, 03-2017 </span>(8:40 PM)
+                              <span className="date">Aug, 03-2017 </span>(8:40
+                              PM)
                             </li>
                           </ul>
                         </div>
 
-                        <div class="grid-btn">
+                        <div className="grid-btn">
                           <a
                             href="flight-detail-left-sidebar.html"
-                            class="btn btn-orange btn-block btn-lg"
+                            className="btn btn-orange btn-block btn-lg"
                           >
                             View Details
                           </a>
@@ -926,35 +941,36 @@ export const Body = (props) => {
                     </div>
                   </div>
 
-                  <div class="col-12 col-md-6 col-lg-3 col-xl-3">
-                    <div class="grid-block main-block f-grid-block">
+                  <div className="col-12 col-md-6 col-lg-3 col-xl-3">
+                    <div className="grid-block main-block f-grid-block">
                       <a href="flight-detail-left-sidebar.html">
-                        <div class="main-img f-img">
+                        <div className="main-img f-img">
                           <img
                             src={flightimage}
-                            class="img-fluid"
+                            className="img-fluid"
                             alt="flight-img"
                           />
                         </div>
                       </a>
 
-                      <div class="block-info f-grid-info">
-                        <div class="f-grid-desc">
-                          <span class="f-grid-time">
-                            <i class="fa fa-clock-o"></i>6 hours - 30 minutes
+                      <div className="block-info f-grid-info">
+                        <div className="f-grid-desc">
+                          <span className="f-grid-time">
+                            <i className="fa fa-clock-o"></i>6 hours - 30
+                            minutes
                           </span>
-                          <h3 class="block-title">
+                          <h3 className="block-title">
                             <a href="flight-detail-left-sidebar.html">
                               Sydney to Paris
                             </a>
                           </h3>
-                          <p class="block-minor">
+                          <p className="block-minor">
                             <span>Fr 5379,</span> Oneway Flight
                           </p>
-                          <ul class="list-unstyled list-inline offer-price-1">
-                            <li class="price">
-                              $568.00<span class="divider">|</span>
-                              <span class="pkg">2 Stay</span>
+                          <ul className="list-unstyled list-inline offer-price-1">
+                            <li className="price">
+                              $568.00<span className="divider">|</span>
+                              <span className="pkg">2 Stay</span>
                             </li>
                           </ul>
 
@@ -965,27 +981,29 @@ export const Body = (props) => {
                           </p>
                         </div>
 
-                        <div class="f-grid-timing">
-                          <ul class="list-unstyled">
+                        <div className="f-grid-timing">
+                          <ul className="list-unstyled">
                             <li>
                               <span>
-                                <i class="fa fa-plane"></i>
+                                <i className="fa fa-plane"></i>
                               </span>
-                              <span class="date">Aug, 02-2017 </span>(8:40 PM)
+                              <span className="date">Aug, 02-2017 </span>(8:40
+                              PM)
                             </li>
                             <li>
                               <span>
-                                <i class="fa fa-plane"></i>
+                                <i className="fa fa-plane"></i>
                               </span>
-                              <span class="date">Aug, 03-2017 </span>(8:40 PM)
+                              <span className="date">Aug, 03-2017 </span>(8:40
+                              PM)
                             </li>
                           </ul>
                         </div>
 
-                        <div class="grid-btn">
+                        <div className="grid-btn">
                           <a
                             href="flight-detail-left-sidebar.html"
-                            class="btn btn-orange btn-block btn-lg"
+                            className="btn btn-orange btn-block btn-lg"
                           >
                             View Details
                           </a>
