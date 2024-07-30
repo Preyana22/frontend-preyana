@@ -51,7 +51,7 @@ const Registration = (props) => {
       };
       const configuration = {
         method: "post",
-        url: "http://192.168.1.49:3000/authentication/register",
+        url: "http://192.168.1.170:3000/authentication/register",
         data: {
           email: formData.email,
           userName: formData.username,
