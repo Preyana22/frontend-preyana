@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Header from "../Layout/Header";
 import Footer from "../Layout/Footer"; // Import the Footer component
 import sideimage from "../assets/images/login.jpg";
-import { useNavigate } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import axios from "axios";
 const Login = (props) => {
   const [formData, setFormData] = useState({
@@ -36,7 +36,7 @@ const Login = (props) => {
         console.log("Form data:", formData);
         const configuration = {
           method: "post",
-          url: "http://192.168.1.170:3000/authentication/log-in",
+          url: "http://3.128.255.176:3000/authentication/log-in",
           data: {
             email: formData.username,
             password: formData.password,
@@ -136,11 +136,10 @@ const Login = (props) => {
                     </form>
                     <div className="other-links">
                       <p className="link-line">
-                        New Here ? <a href="/registration">Signup</a>
+                        New Here ? <Link to="/registration"> Signup</Link>
                       </p>
-                      <a className="simple-link" href="/forgot">
-                        Forgot Password ?
-                      </a>
+                      <Link className="simple-link" to="/forgot"> Forgot Password ?</Link>
+                    
                     </div>
                   </div>
 

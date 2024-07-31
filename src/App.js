@@ -41,27 +41,6 @@ import Login from "./components/Login";
 import Registration from "./components/Registration";
 import InnerHeader from "./Layout/Header";
 import Footer from "./Layout/Footer";
-import ForgotPassword from "./components/forgot-password";
-import ChangePassword from "./components/change-password";
-import ResetPassword from "./components/reset-password";
-import About from "./components/about";
-import Careers from "./components/careers";
-import Mobile from "./components/mobile";
-import Blog from "./components/blog";
-import HowWeWorks from "./components/howweworks";
-import HelpFaq from "./components/helporfaq";
-import Press from "./components/press";
-import Affilates from "./components/affilates";
-import HotelOwners from "./components/hotel-owners";
-import Partners from "./components/partners";
-import AdvertiseWithUs from "./components/advertise-with-us";
-import AirlineFees from "./components/airline-fees";
-import Airlines from "./components/airlines";
-import LowFareTips from "./components/low-fare-tips";
-import BadgesAndCertificates from "./components/badges-and-certificates";
-import Privacy from "./components/privacy";
-import TermsAndCondition from "./components/terms-and-condition";
-import AdChoices from "./components/ad-choices";
 function App(props) {
   useEffect(() => {
     props.getFlights();
@@ -70,14 +49,15 @@ function App(props) {
   const { origin, destination, departureDate, returnDate } =
     props.filters || {};
   return (
-    <BrowserRouter className="App" basename="/preyana"> 
+    <BrowserRouter className="App" basename="/"> 
+
 
       <Routes>
         <Route
           path="/"
           element={
             <Fragment>
-              <Header />
+              <InnerHeader />
               <Login />
               <Footer />
             </Fragment>
@@ -96,21 +76,17 @@ function App(props) {
         <Route
           path="/results"
           element={
-            <Fragment>
-              <InnerHeader />
-              <FlightsGrid
-                flights={props.flights}
-                criteria={{ origin, destination, date: departureDate }}
-              ></FlightsGrid>
-              <Footer />
-            </Fragment>
+            <FlightsGrid
+              flights={props.flights}
+              criteria={{ origin, destination, date: departureDate }}
+            ></FlightsGrid>
           }
         />
         <Route
           path="/registration"
           element={
             <Fragment>
-              <Header />
+              <InnerHeader />
               <Registration />
               <Footer />
             </Fragment>
@@ -118,232 +94,11 @@ function App(props) {
         />
         <Route
           path="/booking"
-          element={
-            <Fragment>
-              <InnerHeader />
-              <MyComponent flights={props.flights}></MyComponent> <Footer />
-            </Fragment>
-          }
+          element={<MyComponent flights={props.flights}></MyComponent>}
         />
         <Route
           path="/contacts"
-          element={
-            <Fragment>
-              <InnerHeader />
-              <Contacts flights={props.flights}></Contacts>
-              <Footer />
-            </Fragment>
-          }
-        />
-        <Route
-          path="/forgot"
-          element={
-            <Fragment>
-              <Header />
-              <ForgotPassword />
-              <Footer />
-            </Fragment>
-          }
-        />
-        <Route
-          path="/change"
-          element={
-            <Fragment>
-              <InnerHeader />
-              <ChangePassword />
-              <Footer />
-            </Fragment>
-          }
-        />
-        <Route
-          path="/reset"
-          element={
-            <Fragment>
-              <Header />
-              <ResetPassword />
-              <Footer />
-            </Fragment>
-          }
-        />
-        <Route
-          path="/about"
-          element={
-            <Fragment>
-              <Header />
-              <About />
-              <Footer />
-            </Fragment>
-          }
-        />
-        <Route
-          path="/careers"
-          element={
-            <Fragment>
-              <Header />
-              <Careers />
-              <Footer />
-            </Fragment>
-          }
-        />
-        <Route
-          path="/mobile"
-          element={
-            <Fragment>
-              <Header />
-              <Mobile />
-              <Footer />
-            </Fragment>
-          }
-        />
-        <Route
-          path="/blog"
-          element={
-            <Fragment>
-              <Header />
-              <Blog />
-              <Footer />
-            </Fragment>
-          }
-        />
-        <Route
-          path="/howweworks"
-          element={
-            <Fragment>
-              <Header />
-              <HowWeWorks />
-              <Footer />
-            </Fragment>
-          }
-        />
-        <Route
-          path="/helpfaq"
-          element={
-            <Fragment>
-              <Header />
-              <HelpFaq />
-              <Footer />
-            </Fragment>
-          }
-        />
-        <Route
-          path="/press"
-          element={
-            <Fragment>
-              <Header />
-              <Press />
-              <Footer />
-            </Fragment>
-          }
-        />
-        <Route
-          path="/affilates"
-          element={
-            <Fragment>
-              <Header />
-              <Affilates />
-              <Footer />
-            </Fragment>
-          }
-        />
-        <Route
-          path="/hotelowners"
-          element={
-            <Fragment>
-              <Header />
-              <HotelOwners />
-              <Footer />
-            </Fragment>
-          }
-        />
-        <Route
-          path="/partners"
-          element={
-            <Fragment>
-              <Header />
-              <Partners />
-              <Footer />
-            </Fragment>
-          }
-        />
-        <Route
-          path="/advertise"
-          element={
-            <Fragment>
-              <Header />
-              <AdvertiseWithUs />
-              <Footer />
-            </Fragment>
-          }
-        />
-        <Route
-          path="/airlinefees"
-          element={
-            <Fragment>
-              <Header />
-              <AirlineFees />
-              <Footer />
-            </Fragment>
-          }
-        />
-        <Route
-          path="/airlines"
-          element={
-            <Fragment>
-              <Header />
-              <Airlines />
-              <Footer />
-            </Fragment>
-          }
-        />
-        <Route
-          path="/lowfare"
-          element={
-            <Fragment>
-              <Header />
-              <LowFareTips />
-              <Footer />
-            </Fragment>
-          }
-        />
-        <Route
-          path="/badges"
-          element={
-            <Fragment>
-              <Header />
-              <BadgesAndCertificates />
-              <Footer />
-            </Fragment>
-          }
-        />
-        <Route
-          path="/privacy"
-          element={
-            <Fragment>
-              <Header />
-              <Privacy />
-              <Footer />
-            </Fragment>
-          }
-        />
-        <Route
-          path="/terms"
-          element={
-            <Fragment>
-              <Header />
-              <TermsAndCondition />
-              <Footer />
-            </Fragment>
-          }
-        />
-        <Route
-          path="/adchoices"
-          element={
-            <Fragment>
-              <Header />
-              <AdChoices />
-              <Footer />
-            </Fragment>
-          }
+          element={<Contacts flights={props.flights}></Contacts>}
         />
       </Routes>
     </BrowserRouter>
