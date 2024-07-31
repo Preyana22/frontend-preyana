@@ -49,7 +49,7 @@ export const Body = (props) => {
     const getAirports = async () => {
       try {
         const { data } = await axios.get(
-          `http://192.168.1.170:3000/airlines/airports`
+          `http://3.128.255.176:3000/airlines/airports`
         );
         console.log(data);
         setAirports(data);

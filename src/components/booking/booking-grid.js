@@ -111,7 +111,7 @@ const MyComponent = (props) => {
     //         console.log(test);
 
     // const { data, errors } = await (
-    //   await fetch('http://192.168.1.170:3000/airlines/book', {
+    //   await fetch('http://3.128.255.176:3000/airlines/book', {
     //     method: 'post',
     //     headers: { 'Content-Type': 'application/json' },
     //     body: JSON.stringify(test)
