@@ -70,7 +70,8 @@ function App(props) {
   const { origin, destination, departureDate, returnDate } =
     props.filters || {};
   return (
-    <BrowserRouter>
+    <BrowserRouter className="App" basename="/preyana"> 
+
       <Routes>
         <Route
           path="/"
