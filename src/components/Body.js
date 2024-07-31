@@ -392,7 +392,7 @@ export const Body = (props) => {
                                       labelKey="cabinclass"
                                       options={cabin_details}
                                       id="cabinclass"
-                                      placeholder="Cabin className"
+                                      placeholder="Cabin Class"
                                       ref={(ref) => (cabinclass = ref)}
                                     />
 
