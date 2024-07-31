@@ -8,9 +8,9 @@ import { connect } from "react-redux";
 import { findFlights, fetchFlights } from "../actions";
 import Button from "react-bootstrap/Button";
 import { useNavigate } from "react-router-dom";
-import './body.css';
-import flight1 from "../assets/images/flight1.jpg"
-import axios from 'axios';
+import "./body.css";
+import flight1 from "../assets/images/flight1.jpg";
+import axios from "axios";
 
 import flightimage from "../assets/images/flightimage.svg";
 import sideimage from "../assets/images/banner.svg";
@@ -269,736 +269,744 @@ export const Body = (props) => {
   const cabin_details = ["Economy", "Premium Economy", "Business", "First"];
 
   return (
-    <div>
-      <body id="main-homepage">
-        <section class="innerpage-wrapper">
-          <div id="search-result-page" class="">
-            <div class="container">
-              <div class="row pb-5">
-                <div class="col-12 col-md-4 col-lg-4 col-xl-4 my-auto">
-                  <h2 className="font-weight-bold">
-                    Plan hassle-free travels to your dream destinations
-                  </h2>
-                  <p>
-                    Preyana strives to ensure that your journey begins with
-                    genuine connections and authentic experiences.
-                  </p>
-                </div>
-                <div class="col-12 col-md-8 col-lg-8 col-xl-8" id="banner-sec">
-                  <img
-                    src={sideimage}
-                    class="img-fluid banner-image"
-                    alt="banner-img"
-                  />
-                </div>
+    <>
+      <section className="innerpage-wrapper">
+        <div id="search-result-page" className="">
+          <div className="container">
+            <div className="row pb-5">
+              <div className="col-12 col-md-4 col-lg-4 col-xl-4 my-auto">
+                <h2 className="font-weight-bold">
+                  Plan hassle-free travels to your dream destinations
+                </h2>
+                <p>
+                  Preyana strives to ensure that your journey begins with
+                  genuine connections and authentic experiences.
+                </p>
               </div>
-              <section className="flexslider-container mt-5">
-                <div className="search-tabs" id="search-tabs-1">
-                  <div className="container">
-                    <div className="row">
-                      <div className="col-md-12">
-                        <ul className="nav nav-tabs justify-content-left">
-                          <li className="nav-item">
-                            <a
-                              className="nav-link active"
-                              href="#flights"
-                              data-bs-toggle="tab"
-                            >
-                              <span>
-                                <i className="fa fa-plane"></i>
-                              </span>
-                              <span className="d-md-inline-flex d-none st-text">
-                                Flights
-                              </span>
-                            </a>
-                          </li>
-                          <li className="nav-item">
-                            <a
-                              className="nav-link"
-                              href="#hotels"
-                              data-bs-toggle="tab"
-                            >
-                              <span>
-                                <i className="fa fa-building"></i>
-                              </span>
-                              <span className="d-md-inline-flex d-none st-text">
-                                Hotels
-                              </span>
-                            </a>
-                          </li>
-                        </ul>
-                        <div className="tab-content">
-                          <div id="flights" className="tab-pane in active">
-                            <div class="page-search-form">
-                              <Form onSubmit={handleSubmit1}>
-                                <div class="row mt-3">
-                                  <div class="col-12 col-md-6 col-lg-2 col-xl-2">
-                                    <div class="form-group">
-                                      <div className="headerSearchTripItem">
-                                        <span
-                                          onClick={() =>
-                                            setTripOptions(!tripOptions)
-                                          }
-                                          className={`headerSearchTripText ${
-                                            tripOptions
-                                              ? "arrow-up"
-                                              : "arrow-down"
-                                          }`}
-                                        >
-                                          {isReturn == true
-                                            ? "Round Trip"
-                                            : "One Way"}
-                                        </span>
-                                        {tripOptions && (
-                                          <div className="tripoptions">
-                                            <div className="tripoptionItem">
-                                              <div className="tripoptionCounter">
-                                                <Form.Group className="mb-0">
-                                                  <Form.Check
-                                                    inline
-                                                    checked={isReturn}
-                                                    type="radio"
-                                                    label="Round Trip"
-                                                    name="flightType"
-                                                    id="formHorizontalRadios2"
-                                                    onChange={(e) =>
-                                                      setFlightType(true)
-                                                    }
+              <div
+                className="col-12 col-md-8 col-lg-8 col-xl-8"
+                id="banner-sec"
+              >
+                <img
+                  src={sideimage}
+                  className="img-fluid banner-image"
+                  alt="banner-img"
+                />
+              </div>
+            </div>
+            <section className="flexslider-container mt-5">
+              <div className="search-tabs" id="search-tabs-1">
+                <div className="container">
+                  <div className="row">
+                    <div className="col-md-12">
+                      <ul className="nav nav-tabs justify-content-left">
+                        <li className="nav-item">
+                          <a
+                            className="nav-link active"
+                            href="#flights"
+                            data-bs-toggle="tab"
+                          >
+                            <span>
+                              <i className="fa fa-plane"></i>
+                            </span>
+                            <span className="d-md-inline-flex d-none st-text">
+                              Flights
+                            </span>
+                          </a>
+                        </li>
+                        <li className="nav-item">
+                          <a
+                            className="nav-link"
+                            href="#hotels"
+                            data-bs-toggle="tab"
+                          >
+                            <span>
+                              <i className="fa fa-building"></i>
+                            </span>
+                            <span className="d-md-inline-flex d-none st-text">
+                              Hotels
+                            </span>
+                          </a>
+                        </li>
+                      </ul>
+                      <div className="tab-content">
+                        <div id="flights" className="tab-pane in active">
+                          <div className="page-search-form">
+                            <Form onSubmit={handleSubmit1}>
+                              <div className="row mt-3">
+                                <div className="col-12 col-md-6 col-lg-2 col-xl-2">
+                                  <div className="form-group">
+                                    <div className="headerSearchTripItem">
+                                      <span
+                                        onClick={() =>
+                                          setTripOptions(!tripOptions)
+                                        }
+                                        className={`headerSearchTripText ${
+                                          tripOptions
+                                            ? "arrow-up"
+                                            : "arrow-down"
+                                        }`}
+                                      >
+                                        {isReturn == true
+                                          ? "Round Trip"
+                                          : "One Way"}
+                                      </span>
+                                      {tripOptions && (
+                                        <div className="tripoptions">
+                                          <div className="tripoptionItem">
+                                            <div className="tripoptionCounter">
+                                              <Form.Group className="mb-0">
+                                                <Form.Check
+                                                  inline
+                                                  checked={isReturn}
+                                                  type="radio"
+                                                  label="Round Trip"
+                                                  name="flightType"
+                                                  id="formHorizontalRadios2"
+                                                  onChange={(e) =>
+                                                    setFlightType(true)
+                                                  }
+                                                />
+                                                <Form.Check
+                                                  inline
+                                                  checked={!isReturn}
+                                                  type="radio"
+                                                  label="One way"
+                                                  name="flightType"
+                                                  id="formHorizontalRadios1"
+                                                  onChange={(e) =>
+                                                    setFlightType(false)
+                                                  }
+                                                />
+                                              </Form.Group>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="col-12 col-md-6 col-lg-2 col-xl-2">
+                                  <Form.Group controlId="cabinclass">
+                                    <Typeahead
+                                      labelKey="cabinclass"
+                                      options={cabin_details}
+                                      id="cabinclass"
+                                      placeholder="Cabin Class"
+                                      ref={(ref) => (cabinclass = ref)}
+                                    />
+
+                                    {status.cabinclass && (
+                                      <ErrorLabel message="Please select cabin className"></ErrorLabel>
+                                    )}
+                                  </Form.Group>
+                                </div>
+                                <div className="col-12 col-md-6 col-lg-3 col-xl-3">
+                                  <div className="form-group">
+                                    <div className="headerSearchItem">
+                                      <span
+                                        onClick={() =>
+                                          setOpenOptions(!openOptions)
+                                        }
+                                        className={`headerSearchText ${
+                                          openOptions
+                                            ? "optionarrow-up"
+                                            : "optionarrow-down"
+                                        }`}
+                                      >
+                                        {`${options.adult} adult · ${options.children} children · ${options.infant} infant`}
+                                      </span>
+                                      {openOptions && (
+                                        <div className="options">
+                                          <div className="optionItem">
+                                            <span className="optionText">
+                                              Adult
+                                            </span>
+                                            <div className="optionCounter">
+                                              <button
+                                                disabled={options.adult <= 1}
+                                                className="optionCounterButton"
+                                                onClick={() =>
+                                                  handleOption("adult", "d")
+                                                }
+                                              >
+                                                -
+                                              </button>
+                                              <span className="optionCounterNumber">
+                                                {options.adult}
+                                              </span>
+                                              <button
+                                                className="optionCounterButton"
+                                                onClick={() =>
+                                                  handleOption("adult", "i")
+                                                }
+                                              >
+                                                +
+                                              </button>
+                                            </div>
+                                          </div>
+                                          <div className="optionItem">
+                                            <span className="optionText">
+                                              Children
+                                            </span>
+                                            <div className="optionCounter">
+                                              <button
+                                                disabled={options.children <= 0}
+                                                className="optionCounterButton"
+                                                onClick={() =>
+                                                  handleOption("children", "d")
+                                                }
+                                              >
+                                                -
+                                              </button>
+                                              <span className="optionCounterNumber">
+                                                {options.children}
+                                              </span>
+                                              <button
+                                                className="optionCounterButton"
+                                                onClick={() =>
+                                                  handleOption("children", "i")
+                                                }
+                                              >
+                                                +
+                                              </button>
+                                            </div>
+                                          </div>
+                                          <div className="optionItem">
+                                            <span className="optionText">
+                                              Infant
+                                            </span>
+                                            <div className="optionCounter">
+                                              <button
+                                                disabled={options.infant <= 1}
+                                                className="optionCounterButton"
+                                                onClick={() =>
+                                                  handleOption("infant", "d")
+                                                }
+                                              >
+                                                -
+                                              </button>
+                                              <span className="optionCounterNumber">
+                                                {options.infant}
+                                              </span>
+                                              <button
+                                                className="optionCounterButton"
+                                                onClick={() =>
+                                                  handleOption("infant", "i")
+                                                }
+                                              >
+                                                +
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="tab-content">
+                                {isReturn === true && (
+                                  <div
+                                    id="tab-round-trip"
+                                    className="tab-pane in active"
+                                  >
+                                    <div className="pg-search-form">
+                                      <div className="row">
+                                        <div className="col-12 col-md-6 col-lg-3 col-xl-3">
+                                          <div className="form-group left-icon">
+                                            <Form.Group controlId="origin">
+                                              <Typeahead
+                                                labelKey="origin"
+                                                options={airports}
+                                                placeholder="From"
+                                                ref={(ref) => (origin = ref)}
+                                              />
+                                              {status.origin && (
+                                                <ErrorLabel message="Please enter a valid airport"></ErrorLabel>
+                                              )}
+                                              <img
+                                                src={locationimage}
+                                                alt="from-to-image"
+                                                className="input-icon"
+                                              />
+                                            </Form.Group>
+                                          </div>
+                                        </div>
+                                        <div className="">
+                                          <img
+                                            src={inoutimage}
+                                            alt="from-to-image"
+                                          />
+                                        </div>
+                                        <div className="col-12 col-md-6 col-lg-3 col-xl-3">
+                                          <div className="form-group left-icon">
+                                            <Form.Group controlId="destination">
+                                              <Typeahead
+                                                labelKey="destination"
+                                                options={airports}
+                                                placeholder="To"
+                                                ref={(ref) =>
+                                                  (destination = ref)
+                                                }
+                                              />
+                                              {status.destination && (
+                                                <ErrorLabel message="Please enter a valid airport"></ErrorLabel>
+                                              )}
+                                              <img
+                                                src={locationimage}
+                                                alt="from-to-image"
+                                                className="input-icon"
+                                              />
+                                            </Form.Group>
+                                          </div>
+                                        </div>
+
+                                        <div className="col-12 col-md-12 col-lg-4 col-xl-4">
+                                          <div className="row">
+                                            <div className="col-6 col-md-6">
+                                              <div className="form-group">
+                                                <Form.Group controlId="formGriddateOfDep">
+                                                  <Form.Control
+                                                    type="date"
+                                                    className="form-control dpd1"
+                                                    name="dateOfDep"
+                                                    placeholder="Departure Date"
+                                                    required
                                                   />
-                                                  <Form.Check
-                                                    inline
-                                                    checked={!isReturn}
-                                                    type="radio"
-                                                    label="One way"
-                                                    name="flightType"
-                                                    id="formHorizontalRadios1"
-                                                    onChange={(e) =>
-                                                      setFlightType(false)
-                                                    }
+                                                  {status.dateOfDep && (
+                                                    <ErrorLabel message="Please enter a valid return date"></ErrorLabel>
+                                                  )}
+                                                  <img
+                                                    src={calendarimage}
+                                                    alt="from-to-image"
+                                                    className="input-icon"
+                                                  />
+                                                </Form.Group>
+                                              </div>
+                                            </div>
+
+                                            <div className="col-6 col-md-6">
+                                              <div className="form-group">
+                                                <Form.Group controlId="formGriddateOfReturn">
+                                                  <Form.Control
+                                                    type="date"
+                                                    className="form-control dpd1"
+                                                    name="returnDate"
+                                                    required
+                                                    placeholder="Return Date"
+                                                  />
+                                                  {status.returnDate && (
+                                                    <ErrorLabel message="Please enter a valid return date"></ErrorLabel>
+                                                  )}
+
+                                                  <img
+                                                    src={calendarimage}
+                                                    alt="from-to-image"
+                                                    className="input-icon"
                                                   />
                                                 </Form.Group>
                                               </div>
                                             </div>
                                           </div>
-                                        )}
+                                        </div>
+                                        <div className="col-12 col-md-12 col-lg-1 col-xl-1">
+                                          <button className="btn btn-orange">
+                                            Search
+                                          </button>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
-                                  <div class="col-12 col-md-6 col-lg-2 col-xl-2">
-                                    <Form.Group controlId="cabinclass">
-                                      <Typeahead
-                                        labelKey="cabinclass"
-                                        options={cabin_details}
-                                        placeholder="Cabin Class"
-                                        ref={(ref) => (cabinclass = ref)}
-                                      />
-
-                                      {status.cabinclass && (
-                                        <ErrorLabel message="Please select cabin class"></ErrorLabel>
-                                      )}
-                                    </Form.Group>
-                                  </div>
-                                  <div class="col-12 col-md-6 col-lg-3 col-xl-3">
-                                    <div class="form-group">
-                                      <div className="headerSearchItem">
-                                        <span
-                                          onClick={() =>
-                                            setOpenOptions(!openOptions)
-                                          }
-                                          className={`headerSearchText ${
-                                            openOptions
-                                              ? "optionarrow-up"
-                                              : "optionarrow-down"
-                                          }`}
-                                        >
-                                          {`${options.adult} adult · ${options.children} children · ${options.infant} infant`}
-                                        </span>
-                                        {openOptions && (
-                                          <div className="options">
-                                            <div className="optionItem">
-                                              <span className="optionText">
-                                                Adult
-                                              </span>
-                                              <div className="optionCounter">
-                                                <button
-                                                  disabled={options.adult <= 1}
-                                                  className="optionCounterButton"
-                                                  onClick={() =>
-                                                    handleOption("adult", "d")
-                                                  }
-                                                >
-                                                  -
-                                                </button>
-                                                <span className="optionCounterNumber">
-                                                  {options.adult}
-                                                </span>
-                                                <button
-                                                  className="optionCounterButton"
-                                                  onClick={() =>
-                                                    handleOption("adult", "i")
-                                                  }
-                                                >
-                                                  +
-                                                </button>
-                                              </div>
-                                            </div>
-                                            <div className="optionItem">
-                                              <span className="optionText">
-                                                Children
-                                              </span>
-                                              <div className="optionCounter">
-                                                <button
-                                                  disabled={
-                                                    options.children <= 0
-                                                  }
-                                                  className="optionCounterButton"
-                                                  onClick={() =>
-                                                    handleOption(
-                                                      "children",
-                                                      "d"
-                                                    )
-                                                  }
-                                                >
-                                                  -
-                                                </button>
-                                                <span className="optionCounterNumber">
-                                                  {options.children}
-                                                </span>
-                                                <button
-                                                  className="optionCounterButton"
-                                                  onClick={() =>
-                                                    handleOption(
-                                                      "children",
-                                                      "i"
-                                                    )
-                                                  }
-                                                >
-                                                  +
-                                                </button>
-                                              </div>
-                                            </div>
-                                            <div className="optionItem">
-                                              <span className="optionText">
-                                                Infant
-                                              </span>
-                                              <div className="optionCounter">
-                                                <button
-                                                  disabled={options.infant <= 1}
-                                                  className="optionCounterButton"
-                                                  onClick={() =>
-                                                    handleOption("infant", "d")
-                                                  }
-                                                >
-                                                  -
-                                                </button>
-                                                <span className="optionCounterNumber">
-                                                  {options.infant}
-                                                </span>
-                                                <button
-                                                  className="optionCounterButton"
-                                                  onClick={() =>
-                                                    handleOption("infant", "i")
-                                                  }
-                                                >
-                                                  +
-                                                </button>
-                                              </div>
-                                            </div>
+                                )}
+                                {isReturn === false && (
+                                  <div
+                                    id="tab-one-way"
+                                    className="tab-pane in active"
+                                  >
+                                    <div className="pg-search-form">
+                                      <div className="row">
+                                        <div className="col-12 col-md-6 col-lg-3 col-xl-3">
+                                          <div className="form-group left-icon">
+                                            <Form.Group controlId="origin">
+                                              <Typeahead
+                                                labelKey="origin"
+                                                options={airports}
+                                                id="origin"
+                                                placeholder="From"
+                                                ref={(ref) => (origin = ref)}
+                                              />
+                                              {status.origin && (
+                                                <ErrorLabel message="Please enter a valid airport"></ErrorLabel>
+                                              )}
+                                              <img
+                                                src={locationimage}
+                                                alt="from-to-image"
+                                                className="input-icon"
+                                              />
+                                            </Form.Group>
                                           </div>
-                                        )}
+                                        </div>
+                                        <div className="">
+                                          <img
+                                            src={inoutimage}
+                                            alt="from-to-image"
+                                          />
+                                        </div>
+                                        <div className="col-12 col-md-6 col-lg-3 col-xl-3">
+                                          <div className="form-group">
+                                            <Form.Group controlId="destination">
+                                              <Typeahead
+                                                labelKey="destination"
+                                                id="destination"
+                                                options={airports}
+                                                placeholder="To"
+                                                ref={(ref) =>
+                                                  (destination = ref)
+                                                }
+                                              />
+                                              {status.destination && (
+                                                <ErrorLabel message="Please enter a valid airport"></ErrorLabel>
+                                              )}
+
+                                              <img
+                                                src={locationimage}
+                                                alt="from-to-image"
+                                                className="input-icon"
+                                              />
+                                            </Form.Group>
+                                          </div>
+                                        </div>
+
+                                        <div className="col-12 col-md-6 col-lg-3 col-xl-3">
+                                          <div className="form-group">
+                                            <Form.Group controlId="formGriddateOfDep">
+                                              <Form.Control
+                                                type="date"
+                                                className="form-control dpd1"
+                                                name="dateOfDep"
+                                                placeholder="Departure Date"
+                                                required
+                                              />
+                                              {status.dateOfDep && (
+                                                <ErrorLabel message="Please enter a valid return date"></ErrorLabel>
+                                              )}
+                                              <img
+                                                src={calendarimage}
+                                                alt="from-to-image"
+                                                className="input-icon"
+                                              />
+                                            </Form.Group>
+                                          </div>
+                                        </div>
+                                        <div className="col-12 col-md-12 col-lg-1 col-xl-1">
+                                          <button className="btn btn-orange">
+                                            Search
+                                          </button>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
-                                </div>
-
-                                <div class="tab-content">
-                                  {isReturn === true && (
-                                    <div
-                                      id="tab-round-trip"
-                                      class="tab-pane in active"
-                                    >
-                                      <form class="pg-search-form">
-                                        <div class="row">
-                                          <div class="col-12 col-md-6 col-lg-3 col-xl-3">
-                                            <div class="form-group left-icon">
-                                              <Form.Group controlId="origin">
-                                                <Typeahead
-                                                  labelKey="origin"
-                                                  options={airports}
-                                                  placeholder="From"
-                                                  ref={(ref) => (origin = ref)}
-                                                />
-                                                {status.origin && (
-                                                  <ErrorLabel message="Please enter a valid airport"></ErrorLabel>
-                                                )}
-                                                <img
-                                                  src={locationimage}
-                                                  alt="from-to-image"
-                                                  className="input-icon"
-                                                />
-                                              </Form.Group>
-                                            </div>
-                                          </div>
-                                          <div class="">
-                                            <img
-                                              src={inoutimage}
-                                              alt="from-to-image"
-                                            />
-                                          </div>
-                                          <div class="col-12 col-md-6 col-lg-3 col-xl-3">
-                                            <div class="form-group left-icon">
-                                              <Form.Group controlId="destination">
-                                                <Typeahead
-                                                  labelKey="destination"
-                                                  options={airports}
-                                                  placeholder="To"
-                                                  ref={(ref) =>
-                                                    (destination = ref)
-                                                  }
-                                                />
-                                                {status.destination && (
-                                                  <ErrorLabel message="Please enter a valid airport"></ErrorLabel>
-                                                )}
-                                                <img
-                                                  src={locationimage}
-                                                  alt="from-to-image"
-                                                  className="input-icon"
-                                                />
-                                              </Form.Group>
-                                            </div>
-                                          </div>
-
-                                          <div class="col-12 col-md-12 col-lg-4 col-xl-4">
-                                            <div class="row">
-                                              <div class="col-6 col-md-6">
-                                                <div class="form-group">
-                                                  <Form.Group controlId="formGriddateOfDep">
-                                                    <Form.Control
-                                                      type="date"
-                                                      class="form-control dpd1"
-                                                      name="dateOfDep"
-                                                      placeholder="Departure Date"
-                                                      required
-                                                    />
-                                                    {status.dateOfDep && (
-                                                      <ErrorLabel message="Please enter a valid return date"></ErrorLabel>
-                                                    )}
-                                                    <img
-                                                      src={calendarimage}
-                                                      alt="from-to-image"
-                                                      className="input-icon"
-                                                    />
-                                                  </Form.Group>
-                                                </div>
-                                              </div>
-
-                                              <div class="col-6 col-md-6">
-                                                <div class="form-group">
-                                                  <Form.Group controlId="formGriddateOfReturn">
-                                                    <Form.Control
-                                                      type="date"
-                                                      class="form-control dpd1"
-                                                      name="returnDate"
-                                                      required
-                                                      placeholder="Return Date"
-                                                    />
-                                                    {status.returnDate && (
-                                                      <ErrorLabel message="Please enter a valid return date"></ErrorLabel>
-                                                    )}
-
-                                                    <img
-                                                      src={calendarimage}
-                                                      alt="from-to-image"
-                                                      className="input-icon"
-                                                    />
-                                                  </Form.Group>
-                                                </div>
-                                              </div>
-                                            </div>
-                                          </div>
-                                          <div class="col-12 col-md-12 col-lg-1 col-xl-1">
-                                            <button class="btn btn-orange">
-                                              Search
-                                            </button>
-                                          </div>
-                                        </div>
-                                      </form>
-                                    </div>
-                                  )}
-                                  {isReturn === false && (
-                                    <div
-                                      id="tab-one-way"
-                                      class="tab-pane in active"
-                                    >
-                                      <form class="pg-search-form">
-                                        <div class="row">
-                                          <div class="col-12 col-md-6 col-lg-3 col-xl-3">
-                                            <div class="form-group left-icon">
-                                              <Form.Group controlId="origin">
-                                                <Typeahead
-                                                  labelKey="origin"
-                                                  options={airports}
-                                                  placeholder="From"
-                                                  ref={(ref) => (origin = ref)}
-                                                />
-                                                {status.origin && (
-                                                  <ErrorLabel message="Please enter a valid airport"></ErrorLabel>
-                                                )}
-                                                <img
-                                                  src={locationimage}
-                                                  alt="from-to-image"
-                                                  className="input-icon"
-                                                />
-                                              </Form.Group>
-                                            </div>
-                                          </div>
-                                          <div class="">
-                                            <img
-                                              src={inoutimage}
-                                              alt="from-to-image"
-                                            />
-                                          </div>
-                                          <div class="col-12 col-md-6 col-lg-3 col-xl-3">
-                                            <div class="form-group">
-                                              <Form.Group controlId="destination">
-                                                <Typeahead
-                                                  labelKey="destination"
-                                                  options={airports}
-                                                  placeholder="To"
-                                                  ref={(ref) =>
-                                                    (destination = ref)
-                                                  }
-                                                />
-                                                {status.destination && (
-                                                  <ErrorLabel message="Please enter a valid airport"></ErrorLabel>
-                                                )}
-
-                                                <img
-                                                  src={locationimage}
-                                                  alt="from-to-image"
-                                                  className="input-icon"
-                                                />
-                                              </Form.Group>
-                                            </div>
-                                          </div>
-
-                                          <div class="col-12 col-md-6 col-lg-3 col-xl-3">
-                                            <div class="form-group">
-                                              <Form.Group controlId="formGriddateOfDep">
-                                                <Form.Control
-                                                  type="date"
-                                                  class="form-control dpd1"
-                                                  name="dateOfDep"
-                                                  placeholder="Departure Date"
-                                                  required
-                                                />
-                                                {status.dateOfDep && (
-                                                  <ErrorLabel message="Please enter a valid return date"></ErrorLabel>
-                                                )}
-                                                <img
-                                                  src={calendarimage}
-                                                  alt="from-to-image"
-                                                  className="input-icon"
-                                                />
-                                              </Form.Group>
-                                            </div>
-                                          </div>
-                                          <div class="col-12 col-md-12 col-lg-1 col-xl-1">
-                                            <button class="btn btn-orange">
-                                              Search
-                                            </button>
-                                          </div>
-                                        </div>
-                                      </form>
-                                    </div>
-                                  )}
-                                </div>
-                              </Form>
-                            </div>
+                                )}
+                              </div>
+                            </Form>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </section>
-              <div class="row">
-                <div class="col-12 col-md-12 col-lg-12 col-xl-12 content-side">
-                  <div class="row pb-4">
-                    <div class="col-12 col-md-12 col-lg-12 col-xl-12">
-                      <h2 className="font-weight-bold">
-                        Flights Deals to Top Destination
-                      </h2>
+              </div>
+            </section>
+            <div className="row">
+              <div className="col-12 col-md-12 col-lg-12 col-xl-12 content-side">
+                <div className="row pb-4">
+                  <div className="col-12 col-md-12 col-lg-12 col-xl-12">
+                    <h2 className="font-weight-bold">
+                      Flights Deals to Top Destination
+                    </h2>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-12 col-md-6 col-lg-3 col-xl-3">
+                    <div className="grid-block main-block f-grid-block">
+                      <a href="flight-detail-left-sidebar.html">
+                        <div className="main-img f-img">
+                          <img
+                            src={flightimage}
+                            className="img-fluid"
+                            alt="flight-img"
+                          />
+                        </div>
+                      </a>
+                      <div className="block-info f-grid-info">
+                        <div className="f-grid-desc">
+                          <span className="f-grid-time">
+                            <i className="fa fa-clock-o"></i>6 hours - 30
+                            minutes
+                          </span>
+                          <h3 className="block-title">
+                            <a href="flight-detail-left-sidebar.html">
+                              Sydney to Paris
+                            </a>
+                          </h3>
+                          <p className="block-minor">
+                            <span>Fr 5379,</span> Oneway Flight
+                          </p>
+
+                          <ul className="list-unstyled list-inline offer-price-1">
+                            <li className="price">
+                              $568.00<span className="divider">|</span>
+                              <span className="pkg">2 Stay</span>
+                            </li>
+                          </ul>
+
+                          <p>
+                            Lorem ipsum dolor sit amet, ad duo fugit aeque
+                            fabulas, in lucilius prodesset pri. Veniam delectus
+                            ei{" "}
+                          </p>
+                        </div>
+
+                        <div className="f-grid-timing">
+                          <ul className="list-unstyled">
+                            <li>
+                              <span>
+                                <i className="fa fa-plane"></i>
+                              </span>
+                              <span className="date">Aug, 02-2017 </span>(8:40
+                              PM)
+                            </li>
+                            <li>
+                              <span>
+                                <i className="fa fa-plane"></i>
+                              </span>
+                              <span className="date">Aug, 03-2017 </span>(8:40
+                              PM)
+                            </li>
+                          </ul>
+                        </div>
+
+                        <div className="grid-btn">
+                          <a
+                            href="flight-detail-left-sidebar.html"
+                            className="btn btn-orange btn-block btn-lg"
+                          >
+                            View Details
+                          </a>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="col-12 col-md-6 col-lg-3 col-xl-3">
-                      <div class="grid-block main-block f-grid-block">
-                        <a href="flight-detail-left-sidebar.html">
-                          <div class="main-img f-img">
-                            <img
-                              src={flightimage}
-                              class="img-fluid"
-                              alt="flight-img"
-                            />
-                          </div>
-                        </a>
-                        <div class="block-info f-grid-info">
-                          <div class="f-grid-desc">
-                            <span class="f-grid-time">
-                              <i class="fa fa-clock-o"></i>6 hours - 30 minutes
-                            </span>
-                            <h3 class="block-title">
-                              <a href="flight-detail-left-sidebar.html">
-                                Sydney to Paris
-                              </a>
-                            </h3>
-                            <p class="block-minor">
-                              <span>Fr 5379,</span> Oneway Flight
-                            </p>
 
-                            <ul class="list-unstyled list-inline offer-price-1">
-                              <li class="price">
-                                $568.00<span class="divider">|</span>
-                                <span class="pkg">2 Stay</span>
-                              </li>
-                            </ul>
+                  <div className="col-12 col-md-6 col-lg-3 col-xl-3">
+                    <div className="grid-block main-block f-grid-block">
+                      <a href="flight-detail-left-sidebar.html">
+                        <div className="main-img f-img">
+                          <img
+                            src={flightimage}
+                            className="img-fluid"
+                            alt="flight-img"
+                          />
+                        </div>
+                      </a>
 
-                            <p>
-                              Lorem ipsum dolor sit amet, ad duo fugit aeque
-                              fabulas, in lucilius prodesset pri. Veniam
-                              delectus ei{" "}
-                            </p>
-                          </div>
-
-                          <div class="f-grid-timing">
-                            <ul class="list-unstyled">
-                              <li>
-                                <span>
-                                  <i class="fa fa-plane"></i>
-                                </span>
-                                <span class="date">Aug, 02-2017 </span>(8:40 PM)
-                              </li>
-                              <li>
-                                <span>
-                                  <i class="fa fa-plane"></i>
-                                </span>
-                                <span class="date">Aug, 03-2017 </span>(8:40 PM)
-                              </li>
-                            </ul>
-                          </div>
-
-                          <div class="grid-btn">
-                            <a
-                              href="flight-detail-left-sidebar.html"
-                              class="btn btn-orange btn-block btn-lg"
-                            >
-                              View Details
+                      <div className="block-info f-grid-info">
+                        <div className="f-grid-desc">
+                          <span className="f-grid-time">
+                            <i className="fa fa-clock-o"></i>6 hours - 30
+                            minutes
+                          </span>
+                          <h3 className="block-title">
+                            <a href="flight-detail-left-sidebar.html">
+                              Sydney to Paris
                             </a>
-                          </div>
+                          </h3>
+                          <p className="block-minor">
+                            <span>Fr 5379,</span> Oneway Flight
+                          </p>
+                          <ul className="list-unstyled list-inline offer-price-1">
+                            <li className="price">
+                              $568.00<span className="divider">|</span>
+                              <span className="pkg">2 Stay</span>
+                            </li>
+                          </ul>
+
+                          <p>
+                            Lorem ipsum dolor sit amet, ad duo fugit aeque
+                            fabulas, in lucilius prodesset pri. Veniam delectus
+                            ei{" "}
+                          </p>
+                        </div>
+
+                        <div className="f-grid-timing">
+                          <ul className="list-unstyled">
+                            <li>
+                              <span>
+                                <i className="fa fa-plane"></i>
+                              </span>
+                              <span className="date">Aug, 02-2017 </span>(8:40
+                              PM)
+                            </li>
+                            <li>
+                              <span>
+                                <i className="fa fa-plane"></i>
+                              </span>
+                              <span className="date">Aug, 03-2017 </span>(8:40
+                              PM)
+                            </li>
+                          </ul>
+                        </div>
+
+                        <div className="grid-btn">
+                          <a
+                            href="flight-detail-left-sidebar.html"
+                            className="btn btn-orange btn-block btn-lg"
+                          >
+                            View Details
+                          </a>
                         </div>
                       </div>
                     </div>
+                  </div>
 
-                    <div class="col-12 col-md-6 col-lg-3 col-xl-3">
-                      <div class="grid-block main-block f-grid-block">
-                        <a href="flight-detail-left-sidebar.html">
-                          <div class="main-img f-img">
-                            <img
-                              src={flightimage}
-                              class="img-fluid"
-                              alt="flight-img"
-                            />
-                          </div>
-                        </a>
+                  <div className="col-12 col-md-6 col-lg-3 col-xl-3">
+                    <div className="grid-block main-block f-grid-block">
+                      <a href="flight-detail-left-sidebar.html">
+                        <div className="main-img f-img">
+                          <img
+                            src={flightimage}
+                            className="img-fluid"
+                            alt="flight-img"
+                          />
+                        </div>
+                      </a>
 
-                        <div class="block-info f-grid-info">
-                          <div class="f-grid-desc">
-                            <span class="f-grid-time">
-                              <i class="fa fa-clock-o"></i>6 hours - 30 minutes
-                            </span>
-                            <h3 class="block-title">
-                              <a href="flight-detail-left-sidebar.html">
-                                Sydney to Paris
-                              </a>
-                            </h3>
-                            <p class="block-minor">
-                              <span>Fr 5379,</span> Oneway Flight
-                            </p>
-                            <ul class="list-unstyled list-inline offer-price-1">
-                              <li class="price">
-                                $568.00<span class="divider">|</span>
-                                <span class="pkg">2 Stay</span>
-                              </li>
-                            </ul>
-
-                            <p>
-                              Lorem ipsum dolor sit amet, ad duo fugit aeque
-                              fabulas, in lucilius prodesset pri. Veniam
-                              delectus ei{" "}
-                            </p>
-                          </div>
-
-                          <div class="f-grid-timing">
-                            <ul class="list-unstyled">
-                              <li>
-                                <span>
-                                  <i class="fa fa-plane"></i>
-                                </span>
-                                <span class="date">Aug, 02-2017 </span>(8:40 PM)
-                              </li>
-                              <li>
-                                <span>
-                                  <i class="fa fa-plane"></i>
-                                </span>
-                                <span class="date">Aug, 03-2017 </span>(8:40 PM)
-                              </li>
-                            </ul>
-                          </div>
-
-                          <div class="grid-btn">
-                            <a
-                              href="flight-detail-left-sidebar.html"
-                              class="btn btn-orange btn-block btn-lg"
-                            >
-                              View Details
+                      <div className="block-info f-grid-info">
+                        <div className="f-grid-desc">
+                          <span className="f-grid-time">
+                            <i className="fa fa-clock-o"></i>6 hours - 30
+                            minutes
+                          </span>
+                          <h3 className="block-title">
+                            <a href="flight-detail-left-sidebar.html">
+                              Sydney to Paris
                             </a>
-                          </div>
+                          </h3>
+                          <p className="block-minor">
+                            <span>Fr 5379,</span> Oneway Flight
+                          </p>
+                          <ul className="list-unstyled list-inline offer-price-1">
+                            <li className="price">
+                              $568.00<span className="divider">|</span>
+                              <span className="pkg">2 Stay</span>
+                            </li>
+                          </ul>
+                          <p>
+                            Lorem ipsum dolor sit amet, ad duo fugit aeque
+                            fabulas, in lucilius prodesset pri. Veniam delectus
+                            ei{" "}
+                          </p>
+                        </div>
+
+                        <div className="f-grid-timing">
+                          <ul className="list-unstyled">
+                            <li>
+                              <span>
+                                <i className="fa fa-plane"></i>
+                              </span>
+                              <span className="date">Aug, 02-2017 </span>(8:40
+                              PM)
+                            </li>
+                            <li>
+                              <span>
+                                <i className="fa fa-plane"></i>
+                              </span>
+                              <span className="date">Aug, 03-2017 </span>(8:40
+                              PM)
+                            </li>
+                          </ul>
+                        </div>
+
+                        <div className="grid-btn">
+                          <a
+                            href="flight-detail-left-sidebar.html"
+                            className="btn btn-orange btn-block btn-lg"
+                          >
+                            View Details
+                          </a>
                         </div>
                       </div>
                     </div>
+                  </div>
 
-                    <div class="col-12 col-md-6 col-lg-3 col-xl-3">
-                      <div class="grid-block main-block f-grid-block">
-                        <a href="flight-detail-left-sidebar.html">
-                          <div class="main-img f-img">
-                            <img
-                              src={flightimage}
-                              class="img-fluid"
-                              alt="flight-img"
-                            />
-                          </div>
-                        </a>
-
-                        <div class="block-info f-grid-info">
-                          <div class="f-grid-desc">
-                            <span class="f-grid-time">
-                              <i class="fa fa-clock-o"></i>6 hours - 30 minutes
-                            </span>
-                            <h3 class="block-title">
-                              <a href="flight-detail-left-sidebar.html">
-                                Sydney to Paris
-                              </a>
-                            </h3>
-                            <p class="block-minor">
-                              <span>Fr 5379,</span> Oneway Flight
-                            </p>
-                            <ul class="list-unstyled list-inline offer-price-1">
-                              <li class="price">
-                                $568.00<span class="divider">|</span>
-                                <span class="pkg">2 Stay</span>
-                              </li>
-                            </ul>
-                            <p>
-                              Lorem ipsum dolor sit amet, ad duo fugit aeque
-                              fabulas, in lucilius prodesset pri. Veniam
-                              delectus ei{" "}
-                            </p>
-                          </div>
-
-                          <div class="f-grid-timing">
-                            <ul class="list-unstyled">
-                              <li>
-                                <span>
-                                  <i class="fa fa-plane"></i>
-                                </span>
-                                <span class="date">Aug, 02-2017 </span>(8:40 PM)
-                              </li>
-                              <li>
-                                <span>
-                                  <i class="fa fa-plane"></i>
-                                </span>
-                                <span class="date">Aug, 03-2017 </span>(8:40 PM)
-                              </li>
-                            </ul>
-                          </div>
-
-                          <div class="grid-btn">
-                            <a
-                              href="flight-detail-left-sidebar.html"
-                              class="btn btn-orange btn-block btn-lg"
-                            >
-                              View Details
-                            </a>
-                          </div>
+                  <div className="col-12 col-md-6 col-lg-3 col-xl-3">
+                    <div className="grid-block main-block f-grid-block">
+                      <a href="flight-detail-left-sidebar.html">
+                        <div className="main-img f-img">
+                          <img
+                            src={flightimage}
+                            className="img-fluid"
+                            alt="flight-img"
+                          />
                         </div>
-                      </div>
-                    </div>
+                      </a>
 
-                    <div class="col-12 col-md-6 col-lg-3 col-xl-3">
-                      <div class="grid-block main-block f-grid-block">
-                        <a href="flight-detail-left-sidebar.html">
-                          <div class="main-img f-img">
-                            <img
-                              src={flightimage}
-                              class="img-fluid"
-                              alt="flight-img"
-                            />
-                          </div>
-                        </a>
-
-                        <div class="block-info f-grid-info">
-                          <div class="f-grid-desc">
-                            <span class="f-grid-time">
-                              <i class="fa fa-clock-o"></i>6 hours - 30 minutes
-                            </span>
-                            <h3 class="block-title">
-                              <a href="flight-detail-left-sidebar.html">
-                                Sydney to Paris
-                              </a>
-                            </h3>
-                            <p class="block-minor">
-                              <span>Fr 5379,</span> Oneway Flight
-                            </p>
-                            <ul class="list-unstyled list-inline offer-price-1">
-                              <li class="price">
-                                $568.00<span class="divider">|</span>
-                                <span class="pkg">2 Stay</span>
-                              </li>
-                            </ul>
-
-                            <p>
-                              Lorem ipsum dolor sit amet, ad duo fugit aeque
-                              fabulas, in lucilius prodesset pri. Veniam
-                              delectus ei{" "}
-                            </p>
-                          </div>
-
-                          <div class="f-grid-timing">
-                            <ul class="list-unstyled">
-                              <li>
-                                <span>
-                                  <i class="fa fa-plane"></i>
-                                </span>
-                                <span class="date">Aug, 02-2017 </span>(8:40 PM)
-                              </li>
-                              <li>
-                                <span>
-                                  <i class="fa fa-plane"></i>
-                                </span>
-                                <span class="date">Aug, 03-2017 </span>(8:40 PM)
-                              </li>
-                            </ul>
-                          </div>
-
-                          <div class="grid-btn">
-                            <a
-                              href="flight-detail-left-sidebar.html"
-                              class="btn btn-orange btn-block btn-lg"
-                            >
-                              View Details
+                      <div className="block-info f-grid-info">
+                        <div className="f-grid-desc">
+                          <span className="f-grid-time">
+                            <i className="fa fa-clock-o"></i>6 hours - 30
+                            minutes
+                          </span>
+                          <h3 className="block-title">
+                            <a href="flight-detail-left-sidebar.html">
+                              Sydney to Paris
                             </a>
-                          </div>
+                          </h3>
+                          <p className="block-minor">
+                            <span>Fr 5379,</span> Oneway Flight
+                          </p>
+                          <ul className="list-unstyled list-inline offer-price-1">
+                            <li className="price">
+                              $568.00<span className="divider">|</span>
+                              <span className="pkg">2 Stay</span>
+                            </li>
+                          </ul>
+
+                          <p>
+                            Lorem ipsum dolor sit amet, ad duo fugit aeque
+                            fabulas, in lucilius prodesset pri. Veniam delectus
+                            ei{" "}
+                          </p>
+                        </div>
+
+                        <div className="f-grid-timing">
+                          <ul className="list-unstyled">
+                            <li>
+                              <span>
+                                <i className="fa fa-plane"></i>
+                              </span>
+                              <span className="date">Aug, 02-2017 </span>(8:40
+                              PM)
+                            </li>
+                            <li>
+                              <span>
+                                <i className="fa fa-plane"></i>
+                              </span>
+                              <span className="date">Aug, 03-2017 </span>(8:40
+                              PM)
+                            </li>
+                          </ul>
+                        </div>
+
+                        <div className="grid-btn">
+                          <a
+                            href="flight-detail-left-sidebar.html"
+                            className="btn btn-orange btn-block btn-lg"
+                          >
+                            View Details
+                          </a>
                         </div>
                       </div>
                     </div>
@@ -1007,9 +1015,9 @@ export const Body = (props) => {
               </div>
             </div>
           </div>
-        </section>
-      </body>
-    </div>
+        </div>
+      </section>
+    </>
   );
 };
 

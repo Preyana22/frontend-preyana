@@ -3,6 +3,7 @@ import Header from "../Layout/Header"; // Import the Header component
 import Footer from "../Layout/Footer";
 import axios from "axios";
 import sideimage from "../assets/images/registration2.jpg";
+import { Link } from "react-router-dom";
 
 const Registration = (props) => {
   const [formData, setFormData] = useState({
@@ -180,7 +181,8 @@ const Registration = (props) => {
 
                     <div className="other-links">
                       <p className="link-line">
-                        Already Have An Account ? <a href="/">Login Here</a>
+                      
+                        Already Have An Account ? <Link to="/"> Login Here</Link> 
                       </p>
                     </div>
                   </div>
