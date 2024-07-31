@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Header from "../Layout/Header";
 import Footer from "../Layout/Footer"; // Import the Footer component
 import sideimage from "../assets/images/login.jpg";
-import { Link,useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 const Login = (props) => {
   const [formData, setFormData] = useState({
@@ -138,8 +138,10 @@ const Login = (props) => {
                       <p className="link-line">
                         New Here ? <Link to="/registration"> Signup</Link>
                       </p>
-                      <Link className="simple-link" to="/forgot"> Forgot Password ?</Link>
-                    
+                      <Link className="simple-link" to="/forgot">
+                        {" "}
+                        Forgot Password ?
+                      </Link>
                     </div>
                   </div>
 
