@@ -3227,9 +3227,16 @@ background: transparent;
 /* -----------------------------------------------------
 		Custom Forms
    ----------------------------------------------------- */
-
+.wrapper-border{
+	border-bottom: 3px solid;
+    border-color: #004eb7
+}
 .custom-form{
-	background:#efeff0;
+	
+}
+.row-bg-color
+{
+	background:#F5F6F9
 }
 
 .custom-form h3{
@@ -3252,7 +3259,7 @@ background: transparent;
 
 .custom-form .link-line,
 .custom-form .simple-link{
-	color:#6e7071;
+	color:#000000;	
 }
 
 .custom-form .link-line > a{

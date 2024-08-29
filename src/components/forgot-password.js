@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import sideimage from "../assets/images/registration2.jpg";
+import { Link } from "react-router-dom";
+
 
 const ForgotPassword = () => {
   return (
@@ -34,10 +36,11 @@ const ForgotPassword = () => {
 
                     <div class="other-links">
                       <p class="link-line">
-                        Already Have An Account ? <a href="/">Login Here</a>
+                        Already Have An Account ?
+                        <Link  to="/"> Login Here </Link>
                       </p>
                       <p class="link-line">
-                        New Here ? <a href="/registration">Join Us</a>
+                        New Here ?<Link  to="/registration"> Join Us </Link>
                       </p>
                     </div>
                   </div>

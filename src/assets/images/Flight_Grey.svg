@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 512.4 231.9">
+  <defs>
+    <style>
+      .cls-1 {
+        isolation: isolate;
+      }
+
+      .cls-2 {
+        fill: #f8f8f8;
+      }
+    </style>
+  </defs>
+  <!-- Generator: Adobe Illustrator 28.6.0, SVG Export Plug-In . SVG Version: 1.2.0 Build 709)  -->
+  <g>
+    <g id="Layer_1">
+      <g id="Group_299">
+        <path id="Path_268" class="cls-2" d="M1,114.3c7.8-34.8,26.1-63.5,156.3-95.6S411.6-.6,452.5,30.3s99.8,86.3,21.4,139.4-201.8,71.7-323.6,57.5S-6.8,149.1,1,114.3Z"/>
+        <image id="Flight" class="cls-1" width="680" height="147" transform="translate(76 74.6) scale(.5)" xlink:href="Flight_Grey-1.png"/>
+      </g>
+    </g>
+  </g>
+</svg>

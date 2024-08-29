@@ -2988,6 +2988,7 @@ Author:			Star Travel
 	.flex-content-img{
 		position: relative;
 		overflow: hidden;
+		padding: 10%;
 	}
 	
 	.flex-content-img img{

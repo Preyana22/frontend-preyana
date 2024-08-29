@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import logoimage from "../assets/images/footer-logo.svg";
 import mobileapp from "../assets/images/mobileapp.jpg";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -16,19 +17,19 @@ const Footer = () => {
                 <h3 className="footer-heading">Company</h3>
                 <ul className="list-unstyled">
                   <li>
-                    <a href="/about">About</a>
+                  <Link to="/about"> About</Link>
                   </li>
                   <li>
-                    <a href="/careers">Careers</a>
+                    <Link to="/careers">Careers </Link>
                   </li>
                   <li>
-                    <a href="/mobile">Mobile</a>
+                     <Link to="/mobile">Mobile </Link>
                   </li>
                   <li>
-                    <a href="/blog">Blog</a>
+                     <Link to="/blog">Blog </Link>
                   </li>
                   <li>
-                    <a href="/howweworks">How we works</a>
+                     <Link to="/howweworks">How we works </Link>
                   </li>
                 </ul>
               </div>
@@ -37,22 +38,22 @@ const Footer = () => {
                 <h3 className="footer-heading">Contact Us</h3>
                 <ul className="list-unstyled">
                   <li>
-                    <a href="/helpfaq">Help/FAQ</a>
+                     <Link to="/helpfaq">Help/FAQ </Link>
                   </li>
                   <li>
-                    <a href="press">Press</a>
+                     <Link to="press">Press </Link>
                   </li>
                   <li>
-                    <a href="/affilates">Affilates</a>
+                     <Link to="/affilates">Affilates </Link>
                   </li>
                   <li>
-                    <a href="/hotelowners">Hotel owners</a>
+                     <Link to="/hotelowners">Hotel owners </Link>
                   </li>
                   <li>
-                    <a href="/partners">Partners</a>
+                     <Link to="/partners">Partners </Link>
                   </li>
                   <li>
-                    <a href="/advertise">Advertise with us</a>
+                     <Link to="/advertise">Advertise with us </Link>
                   </li>
                 </ul>
               </div>
@@ -60,16 +61,16 @@ const Footer = () => {
                 <h3 className="footer-heading">More</h3>
                 <ul className="list-unstyled">
                   <li>
-                    <a href="/airlinefees">Airline Fees</a>
+                     <Link to="/airlinefees">Airline Fees </Link>
                   </li>
                   <li>
-                    <a href="/airlines">Airlines</a>
+                     <Link to="/airlines">Airlines </Link>
                   </li>
                   <li>
-                    <a href="/lowfare">Low fare tips</a>
+                     <Link to="/lowfare">Low fare tips </Link>
                   </li>
                   <li>
-                    <a href="/badges">Badges & certificates</a>
+                     <Link to="/badges">Badges & certificates </Link>
                   </li>
                 </ul>
               </div>
@@ -87,60 +88,60 @@ const Footer = () => {
             <div className="row">
               <div className="col-12 col-md-2 col-lg-2 col-xl-2" id="copyright">
                 <p className="mt-1">
-                  © 2024 <a href="#">Preyana</a>
+                  © 2024  <Link to="#">Preyana </Link>
                 </p>
               </div>
               <div className="col-12 col-md-10 col-lg-10 col-xl-10" id="terms">
                 <ul className="list-unstyled list-inline">
                   <li className="list-inline-item">
-                    <a href="/privacy">Privacy</a>
+                     <Link to="/privacy">Privacy </Link>
                   </li>
                   <li className="list-inline-item">
-                    <a href="/terms">Terms & Condition</a>
+                     <Link to="/terms">Terms & Condition </Link>
                   </li>
                   <li className="list-inline-item">
-                    <a href="/adchoices">Ad Choices</a>
+                     <Link to="/adchoices">Ad Choices </Link>
                   </li>
                   <li className="list-inline-item">
-                    <a href="#" className="font-weight-bold">
+                     <Link to="#" className="font-weight-bold">
                       Preyana.com
-                    </a>
+                     </Link>
                   </li>
                   <li className="list-inline-item">
-                    <a href="#">
+                     <Link to="#">
                       <img src={logoimage} alt="footer logo" />
-                    </a>
+                     </Link>
                   </li>
                   <li className="list-inline-item">
                     <ul className="social-links list-inline list-unstyled">
                       <li className="list-inline-item">
-                        <a href="#">
+                         <Link to="#">
                           <span>
                             <i className="fa fa-facebook"></i>
                           </span>
-                        </a>
+                         </Link>
                       </li>
                       <li className="list-inline-item">
-                        <a href="#">
+                         <Link to="#">
                           <span>
                             <i className="fa fa-twitter"></i>
                           </span>
-                        </a>
+                         </Link>
                       </li>
                       <li className="list-inline-item">
-                        <a href="#">
+                         <Link to="#">
                           <span>
                             <i className="fa fa-youtube-play"></i>
                           </span>
-                        </a>
+                         </Link>
                       </li>
 
                       <li className="list-inline-item">
-                        <a href="#">
+                         <Link to="#">
                           <span>
                             <i className="fa fa-instagram"></i>
                           </span>
-                        </a>
+                         </Link>
                       </li>
                     </ul>
                   </li>

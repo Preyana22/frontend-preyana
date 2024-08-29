@@ -1,16 +1,18 @@
 import React from "react";
-import headerlogoimage from "../assets/images/logo.svg";
+import headerlogoimage from "../assets/images/Preyana_Logo.svg";
+import { Link } from "react-router-dom";
+
 function Header() {
   return (
-    <div className="wrapper">
+    <div className="wrapper wrapper-border">
       <nav
         className="navbar navbar-expand-xl sticky-top navbar-custom main-navbar p-1"
         id="mynavbar-1"
       >
         <div className="container">
-          <a href="#" className="navbar-brand py-1 m-0">
-            <img src={headerlogoimage} alt="header logo" />
-          </a>
+        <Link to="/" className="navbar-brand py-1 m-0">
+            <img style={{ width: '150px', height: 'auto' }}  src={headerlogoimage} alt="header logo" />
+          </Link>
         </div>
       </nav>
     </div>

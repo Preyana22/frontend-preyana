@@ -70,10 +70,20 @@ function App(props) {
   const { origin, destination, departureDate, returnDate } =
     props.filters || {};
   return (
-    <BrowserRouter className="App" basename="/preyana">
+    <BrowserRouter className="App" basename="/">
       <Routes>
         <Route
           path="/"
+          element={
+            <Fragment>
+              <InnerHeader />
+              <Body />
+              <Footer />
+            </Fragment>
+          }
+        />
+          <Route
+          path="/login"
           element={
             <Fragment>
               <Header />
@@ -117,12 +127,7 @@ function App(props) {
         />
         <Route
           path="/booking"
-          element={
-            <Fragment>
-              <InnerHeader />
-              <MyComponent flights={props.flights}></MyComponent> <Footer />
-            </Fragment>
-          }
+          element={<MyComponent flights={props.flights}></MyComponent>}
         />
         <Route
           path="/contacts"

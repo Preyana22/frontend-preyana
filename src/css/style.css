@@ -72,7 +72,7 @@ ul{
 }
 
 h1,h2,h3,h4,h5,h6,.main-title a, .flight-info h3 .flight-destination,.blog-post-title a, .block-title a, .detail-block .detail-title a, .side-bar .detail-block-2 .detail-title a, #travel-guide .tv-guide-block .tab-text h3 a{
-	font-family: 'Merriweather', serif;
+	font-family: 'Lato';
 	margin-top:0;
 	line-height:1.3em;
 }
@@ -3866,13 +3866,23 @@ nav.navbar .container.padding {
    ----------------------------------------------------- */
 
 .custom-form{
-	padding:45px 40px 55px;
+	padding:35px 30px 30px;
 }
 
 .custom-form h3{
 	font-size:25px;
-	text-transform:uppercase;
-	margin-bottom:10px;
+	/* text-transform:uppercase; */
+	/* margin-bottom:10px; */
+}
+.text-black{
+	color: '#000000';
+}
+
+.hide-show-label{
+	position: absolute;
+    top: 33px;
+    right: 15px;
+    font-size: 14px;
 }
 
 .custom-form p{
@@ -3901,12 +3911,20 @@ nav.navbar .container.padding {
 }
 
 .custom-form .form-group input{
-	height:45px;
-	padding-left:40px;
+	height:35px;
+	padding-left:10px;
+	border: 1px solid #dfdfe0;
+	border-radius: 4px;
+}
+.custom-form label{
+	margin-bottom: 2px;
+}
+.link-text{
+	color:#004eb7 !important;
 }
 
 .custom-form .form-group textarea{
-	padding-left:40px;
+	padding-left:10px;
 	padding-top:14px;
 	height:97px;
 }
@@ -3974,6 +3992,8 @@ nav.navbar .container.padding {
 	font-size:12px;
 	padding-top:1px;
 }
+
+
 
 
 /************ PAGE-SEARCH-FORM ***********/
@@ -6281,8 +6301,38 @@ nav.navbar .container.padding {
 #banner-sec{
 	z-index: 500;
 }
+
+.sub-title-text
+{
+	font-family: 'Lato', sans-serif;
+}
+.container-bg
+{
+	background-color: rgb(8 103 210/var(--tw-bg-opacity))
+}
+.plane_hotel_icon
+{
+	width:20px;
+	height: 20px;
+	margin-right: 5px;
+}
+.login-option-icon
+{
+	width:20px;
+	height: 20px;
+}
 #banner-sec .banner-image{
 	margin-top: -2rem;
+}
+.sign-in-label
+{
+	color: #2264bf !important;
+	font-size: 14px;
+	margin-left: 4px;
+}
+.user-img{
+	width: 18px;
+	height: 18px;
 }
 
 .page-search-form .input-icon {
