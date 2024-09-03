@@ -1,0 +1,122 @@
+.filters {
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.filters-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #e2dcdc;
+    margin-bottom: 15px;
+}
+
+.filters-header h5 {
+    margin: 0;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.clear-all {
+    font-size: 14px;
+    color: #007bff;
+    /* Bootstrap's primary link color */
+    text-decoration: none;
+}
+
+.clear-all:hover {
+    text-decoration: underline;
+}
+
+.filter-section {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #e2dcdc;
+}
+
+.filter-section h5 {
+    font-size: 14px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.filter-section input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.filter-section input[type="range"] {
+    width: 100%;
+}
+
+.filter-section div {
+    margin-bottom: 10px;
+}
+
+.filter-section .more {
+    font-size: 12px;
+}
+
+.filter-section .more a {
+    text-decoration: none;
+    color: #007bff;
+}
+
+/* range-slider-custom */
+#range-slider-custom {
+        height: 3px !important;
+}
+
+#range-slider-custom .range-slider__range {
+height: 20%;
+    background: #007bff !important;
+    transition: height 0.3s;
+}
+
+#range-slider-custom .range-slider__thumb {
+    background: #fff !important;
+    transition: transform 0.3s;
+}
+
+#range-slider-custom .range-slider__thumb[data-active] {
+    transform: translate(-50%, -50%) scale(1.25);
+}
+
+#range-slider-custom .range-slider__range[data-active] {
+    height: 16px;
+}
+
+.bags-control {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.bag-counter {
+    display: flex;
+    align-items: center;
+}
+
+.bag-counter button {
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+.bag-counter span {
+    margin: 0 10px;
+    font-size: 16px;
+}
+/* Remove bottom border of the last filter section */
+.filter-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}

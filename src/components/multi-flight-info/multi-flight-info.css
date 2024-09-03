@@ -5,7 +5,7 @@
   display: -ms-flexbox;
   display: -webkit-flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: start;
   align-items: center;
   padding: 10px;
 }
@@ -48,8 +48,8 @@
   
   transition: max-height var(--default-transition),margin-top var(--default-transition);
   border-top: 1px solid var(--grey-200);
-  margin-top: -17px;
-  margin-left: 92px;
+  margin-top: -5rem;
+  margin-left: 0px;
 }
 
 .itinerary-card__travel-item--origin {
@@ -57,9 +57,9 @@
 }
 
 .itinerary-card__travel-item {
-  display: grid;
-  grid-template-columns: 48px 20px auto;
-  column-gap: 16px;
+  display: flex;
+  /* grid-template-columns: 48px 20px auto;
+  column-gap: 16px; */
   padding: 16px 24px;
   font-size: 14px;
   line-height: 20px
@@ -211,6 +211,6 @@
 }
 
 .airline-logo--small {
-  width: 16px;
-  height: 16px;
+  width: 30px;
+  height: 30px;
 }

@@ -42,16 +42,16 @@ export const FlightInfo = (props) => {
       <section
         className={`Flight-info ${isMultiMode ? "gray-background" : ""}`}
       >
-        <FlightLogo data={flight}></FlightLogo>
+        {/* <FlightLogo data={flight}></FlightLogo> */}
 
-        <DetailLabel mainText={name} subText={flightNo}></DetailLabel>
+        {/* <DetailLabel mainText={name} subText={flightNo}></DetailLabel>
 
         <DetailLabel mainText={arrivalTime} subText={destination}></DetailLabel>
-        <DetailLabel mainText="Duration" subText={time}></DetailLabel>
+        <DetailLabel mainText="Duration" subText={time}></DetailLabel> */}
         {isMultiMode ? null : <PriceInfo amount={price} />}
         {isMultiMode ? null : (
-          <Button variant="outline-danger" onClick={navigateToContacts}>
-            Book
+          <Button className="btn btn-orange" onClick={navigateToContacts}>
+            Book Now
           </Button>
         )}
       </section>

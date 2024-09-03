@@ -1,5 +1,5 @@
-import React from 'react';
+import React from "react";
 
 export const PriceInfo = (props) => {
-  return <p>$ {props.amount}</p>
-}
+  return <p>$ {props.amount}</p>;
+};

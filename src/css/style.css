@@ -4024,7 +4024,7 @@ nav.navbar .container.padding {
 	margin-right:8px;
 }
 
-.pg-search-form .btn{
+.pg-search-form .btn, .Flight-info .btn{
 	/* margin-top:15px; */
 	padding:8px 34px;
 	background-color: #0047b1;
@@ -6356,4 +6356,9 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 	right: 0;
 	top: 0;
 	width: auto;
+}
+
+.search-btn {
+	background: #ffd400 !important;
+	color: #000000 !important;
 }
