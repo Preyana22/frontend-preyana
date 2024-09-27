@@ -6,7 +6,7 @@ import "react-bootstrap-typeahead/css/Typeahead.css";
 import { connect } from "react-redux";
 import { findFlights, fetchFlights } from "../../actions";
 import Button from "react-bootstrap/Button";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "../body.css";
 import axios from "axios";
 import flightimage from "../../assets/images/flightimage.svg";
@@ -16,9 +16,14 @@ import hotelIcon from "../../assets/images/hotel.svg";
 import inoutimage from "../../assets/images/inoutimage.svg";
 import locationimage from "../../assets/images/locationimage.svg";
 import calendarimage from "../../assets/images/calendarimage.svg";
+import destination_1 from "../../assets/images/destination_1.jpg";
+import destination_2 from "../../assets/images/destination_2.jpg";
+import { Carousel } from "react-bootstrap";
 const isDate = (date) => {
   return new Date(date) !== "Invalid Date" && !isNaN(new Date(date));
 };
+// Get today's date in yyyy-mm-dd format
+const today = new Date().toISOString().split("T")[0];
 
 const ErrorLabel = (props) => {
   return <label style={{ color: "red" }}>{props.message}</label>;
@@ -31,23 +36,127 @@ export const SearchFlight = (props) => {
   const [options, setOptions] = useState({
     adult: 1,
     children: 0,
-    infant: 1,
+    infant: 0,
   });
+
+  const [selectedCabinClass, setSelectedCabinClass] = useState([]);
+  const [selectedOrigin, setSelectedOrigin] = useState([]);
+  const [selectedDestination, setSelectedDestination] = useState([]);
+  const [selectedDateOfDep, setSelectedDateOfDep] = useState("");
+  const [selectedDateOfRet, setSelectedDateOfRet] = useState("");
+  // Clear localStorage when navigating to the home page
+  const location = useLocation();
+  // Load saved cabin class from localStorage on component mount
+  useEffect(() => {
+    if (location.pathname === "/" || location.pathname === "search") {
+      localStorage.removeItem("cabinclass");
+      localStorage.removeItem("origin");
+      localStorage.removeItem("destination");
+      localStorage.removeItem("dateOfDeparture");
+      localStorage.removeItem("dateOfReturn");
+      localStorage.removeItem("options");
+      localStorage.removeItem("isReturn");
+    }
+
+    const savedCabinClass = localStorage.getItem("cabinclass");
+    const savedOrigin = localStorage.getItem("origin");
+    const savedDestination = localStorage.getItem("destination");
+    const savedDateOfDep = JSON.parse(localStorage.getItem("dateOfDeparture"));
+    const savedDateOfRet = JSON.parse(localStorage.getItem("dateOfReturn"));
+    const storedOptions = localStorage.getItem("options");
+    const storedTripType = localStorage.getItem("isReturn");
+
+    if (storedTripType) {
+      setIsReturn(JSON.parse(storedTripType));
+    }
+
+    if (storedOptions) {
+      setOptions(JSON.parse(storedOptions));
+    }
+
+    if (savedDateOfDep) {
+      setSelectedDateOfDep(savedDateOfDep);
+    }
+
+    if (savedDateOfRet) {
+      setSelectedDateOfRet(savedDateOfRet);
+    }
+
+    if (savedOrigin) {
+      setSelectedOrigin(JSON.parse(savedOrigin));
+    }
+
+    if (savedDestination) {
+      setSelectedDestination(JSON.parse(savedDestination));
+    }
+
+    if (savedCabinClass) {
+      setSelectedCabinClass(JSON.parse(savedCabinClass));
+    }
+  }, [location.pathname]);
+
+  // Handle the change event of the Origin Typeahead
+  const handleOriginChange = (selected) => {
+    setSelectedOrigin(selected);
+    localStorage.setItem("origin", JSON.stringify(selected));
+  };
+
+  // Handle the change event of the Destination Typeahead
+  const handleDestinationChange = (selected) => {
+    setSelectedDestination(selected);
+    localStorage.setItem("destination", JSON.stringify(selected));
+  };
+
+  // Handle the change event of the Typeahead component
+  const handleCabinClassChange = (selected) => {
+    setSelectedCabinClass(selected);
+    localStorage.setItem("cabinclass", JSON.stringify(selected));
+  };
+
+  const [dateOfDep, setDateOfDep] = useState("");
+  const [returnDate, setDateOfRet] = useState("");
+  // Handle dateOfDep change
+  const handleDateOfDepChange = (event) => {
+    const selectedDate = event.target.value; // Get the value directly
+    setDateOfRet(selectedDate);
+    setSelectedDateOfDep(selectedDate); // Set state directly
+    localStorage.setItem("dateOfDeparture", JSON.stringify(selectedDate));
+  };
+
+  // Handle dateOfRet change
+  const handleDateOfRetChange = (event) => {
+    const selectedDate = event.target.value; // Get the value directly
+    setDateOfRet(selectedDate);
+    setSelectedDateOfRet(selectedDate); // Set state directly
+    localStorage.setItem("dateOfReturn", JSON.stringify(selectedDate));
+  };
+
+  const setFlightType = (value) => {
+    setIsReturn(value);
+    // Store the selected trip type in local storage
+    localStorage.setItem("isReturn", JSON.stringify(value));
+  };
+
   const handleOption = (name, operation) => {
     setOptions((prev) => {
-      return {
+      const newValue = operation === "i" ? prev[name] + 1 : prev[name] - 1;
+      const updatedOptions = {
         ...prev,
-        [name]: operation === "i" ? options[name] + 1 : options[name] - 1,
+        [name]:
+          name === "adult" ? Math.max(1, newValue) : Math.max(0, newValue), // Ensuring adult is at least 1 and children/infants are at least 0
       };
+
+      // Store the updated options in local storage
+      localStorage.setItem("options", JSON.stringify(updatedOptions));
+
+      return updatedOptions;
     });
   };
 
   useEffect(() => {
     const getAirports = async () => {
       try {
-        const { data } = await axios.get(
-          `http://3.128.255.176:3000/airlines/airports`
-        );
+        const { data } = await axios.get(`http://192.168.1.92:3000/airports`);
         // console.log(data);
         setAirports(data);
         // setAirports(data.results);
@@ -66,11 +175,7 @@ export const SearchFlight = (props) => {
 
   if (result1) {
     // console.log("result1", result1);
-    data1 = result1.map((t) =>
-      t.city_name == null
-        ? "abc"
-        : t.city_name + "(" + t.iata_code + "-" + t.name + ")"
-    );
+    data1 = result1.map((t) => (t.city_name == null ? "abc" : t.iata_code));
     //data1 = result1.map(t=>t.IATAcode==null?'abc':t.IATAcode);
   }
 
@@ -86,13 +191,13 @@ export const SearchFlight = (props) => {
     "SIN",
     "HKG",
   ];
-  const airports = data1 ? dummyairports : dummyairports;
-  // console.log("airports" + airports);
+  const airports = data1 ? data1 : dummyairports;
+  // console.log("airports list" + airports);
   const navigate = useNavigate();
   let origin, destination, cabinclass;
   let criteria;
 
-  const [isReturn, setFlightType] = useState(false);
+  const [isReturn, setIsReturn] = useState(false);
   const [status, setFormValid] = useState({ isValid: false });
   // console.log(status);
   let invalidFields = {};
@@ -171,6 +276,13 @@ export const SearchFlight = (props) => {
     }
     if (!isDate(criteria.departureDate)) {
       invalidFields.departureDate = true;
+    }
+
+    if (!criteria.destination) {
+      invalidFields.destination = true;
+    }
+    if (!criteria.origin) {
+      invalidFields.origin = true;
     }
     if (Object.keys(invalidFields).length > 0) {
       setFormValid({ isValid: false, ...invalidFields });
@@ -282,6 +394,8 @@ export const SearchFlight = (props) => {
             src={sideimage}
             className="img-fluid banner-image"
             alt="banner-img"
+            width={600}
+            height={400}
           />
         </div>
       </div>
@@ -352,9 +466,12 @@ export const SearchFlight = (props) => {
                                             label="Round Trip"
                                             name="flightType"
                                             id="formHorizontalRadios2"
-                                            onChange={(e) =>
-                                              setFlightType(true)
-                                            }
+                                            onChange={(e) => {
+                                              setFlightType(true);
+                                              setTimeout(() => {
+                                                setTripOptions(false);
+                                              }, 100); // Delay hiding to ensure the selection is registered
+                                            }}
                                           />
                                           <Form.Check
                                             inline
@@ -363,9 +480,12 @@ export const SearchFlight = (props) => {
                                             label="One way"
                                             name="flightType"
                                             id="formHorizontalRadios1"
-                                            onChange={(e) =>
-                                              setFlightType(false)
-                                            }
+                                            onChange={(e) => {
+                                              setFlightType(false);
+                                              setTimeout(() => {
+                                                setTripOptions(false);
+                                              }, 100); // Delay hiding to ensure the selection is registered
+                                            }}
                                           />
                                         </Form.Group>
                                       </div>
@@ -383,6 +503,8 @@ export const SearchFlight = (props) => {
                                 id="cabinclass"
                                 placeholder="Cabin Class"
                                 ref={(ref) => (cabinclass = ref)}
+                                selected={selectedCabinClass}
+                                onChange={handleCabinClassChange}
                               />
 
                               {status.cabinclass && (
@@ -505,6 +627,8 @@ export const SearchFlight = (props) => {
                                           options={airports}
                                           placeholder="From"
                                           ref={(ref) => (origin = ref)}
+                                          selected={selectedOrigin}
+                                          onChange={handleOriginChange}
                                         />
                                         {status.origin && (
                                           <ErrorLabel message="Please enter a valid airport"></ErrorLabel>
@@ -528,6 +652,8 @@ export const SearchFlight = (props) => {
                                           options={airports}
                                           placeholder="To"
                                           ref={(ref) => (destination = ref)}
+                                          selected={selectedDestination}
+                                          onChange={handleDestinationChange}
                                         />
                                         {status.destination && (
                                           <ErrorLabel message="Please enter a valid airport"></ErrorLabel>
@@ -552,6 +678,9 @@ export const SearchFlight = (props) => {
                                               name="dateOfDep"
                                               placeholder="Departure Date"
                                               required
+                                              min={today} // Set the minimum date to today
+                                              value={selectedDateOfDep} // Bind the input value to the state
+                                              onChange={handleDateOfDepChange}
                                             />
                                             {status.dateOfDep && (
                                               <ErrorLabel message="Please enter a valid return date"></ErrorLabel>
@@ -574,6 +703,9 @@ export const SearchFlight = (props) => {
                                               name="returnDate"
                                               required
                                               placeholder="Return Date"
+                                              min={dateOfDep} // Set the minimum date to today
+                                              value={selectedDateOfRet} // Bind the input value to the state
+                                              onChange={handleDateOfRetChange}
                                             />
                                             {status.returnDate && (
                                               <ErrorLabel message="Please enter a valid return date"></ErrorLabel>
@@ -614,6 +746,8 @@ export const SearchFlight = (props) => {
                                           id="origin"
                                           placeholder="From"
                                           ref={(ref) => (origin = ref)}
+                                          selected={selectedOrigin}
+                                          onChange={handleOriginChange}
                                         />
                                         {status.origin && (
                                           <ErrorLabel message="Please enter a valid airport"></ErrorLabel>
@@ -638,6 +772,8 @@ export const SearchFlight = (props) => {
                                           options={airports}
                                           placeholder="To"
                                           ref={(ref) => (destination = ref)}
+                                          selected={selectedDestination}
+                                          onChange={handleDestinationChange}
                                         />
                                         {status.destination && (
                                           <ErrorLabel message="Please enter a valid airport"></ErrorLabel>
@@ -661,6 +797,9 @@ export const SearchFlight = (props) => {
                                           name="dateOfDep"
                                           placeholder="Departure Date"
                                           required
+                                          min={today} // Set the minimum date to today
+                                          value={selectedDateOfDep} // Bind the input value to the state
+                                          onChange={handleDateOfDepChange}
                                         />
                                         {status.dateOfDep && (
                                           <ErrorLabel message="Please enter a valid return date"></ErrorLabel>
@@ -674,7 +813,7 @@ export const SearchFlight = (props) => {
                                     </div>
                                   </div>
                                   <div className="col-12 col-md-12 col-lg-1 col-xl-1">
-                                    <button className="btn btn-orange search-btn">
+                                    <button className="btn btn-orange">
                                       Search
                                     </button>
                                   </div>
@@ -684,6 +823,59 @@ export const SearchFlight = (props) => {
                           )}
                         </div>
                       </Form>
+                    </div>
+                  </div>
+                  <div id="hotels" className="tab-pane in border-0">
+                    <div className="m-4">
+                      <div className="col-12 col-md-12 col-lg-12 col-xl-12 mb-5">
+                        <h4>
+                          <strong>Coming Soon!!!!</strong>
+                        </h4>
+                        <span>
+                          Stay tuned to discover and book the perfect
+                          accommodations for your next adventure.
+                        </span>
+                      </div>
+                      <div className="col-12 col-md-12 col-lg-12 col-xl-12">
+                        <div className="flex-content-img p-0">
+                          <Carousel
+                            controls={false}
+                            indicators={false}
+                            interval={1500}
+                          >
+                            <Carousel.Item>
+                              <img
+                                style={{ height: "500px", width: "1000px" }}
+                                className="d-block w-100"
+                                src={sideimage}
+                                alt="First slide"
+                              />
+                            </Carousel.Item>
+                            <Carousel.Item>
+                              <img
+                                style={{ height: "500px", width: "1000px" }}
+                                className="d-block"
+                                src={destination_1}
+                                alt="Second slide"
+                              />
+                            </Carousel.Item>
+                            <Carousel.Item>
+                              <img
+                                style={{ height: "500px", width: "1000px" }}
+                                className="d-block"
+                                src={destination_2}
+                                alt="Third slide"
+                              />
+                            </Carousel.Item>
+                          </Carousel>
+
+                          {/* <img
+                      src={sideimage}
+                      className="img-fluid custom-form-img"
+                      alt="registration-img"
+                    /> */}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>

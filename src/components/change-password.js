@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import sideimage from "../assets/images/registration2.jpg";
 
 const ChangePassword = () => {

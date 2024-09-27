@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import sideimage from "../assets/images/registration2.jpg";
+import React from "react";
 
 const HowWeWorks = () => {
   return (

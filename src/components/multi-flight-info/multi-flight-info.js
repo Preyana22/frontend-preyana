@@ -1,14 +1,8 @@
 import React, { useState } from "react";
-import Card from "react-bootstrap/Card";
-import Button from "react-bootstrap/Button";
-import { DetailLabel } from "./../detail-label/detail-label";
-import { FlightInfo } from "./../flight-info/flight-info";
-import { PriceInfo } from "./../price-info/price-info";
-import { getTimeDifferece } from "./../../lib/utils";
 import multiFlightLogo from "./../../assets/multiflight.png";
 import "./multi-flight-info.css";
 import "./../flight-info/flight-info.css";
-
+import moment from "moment"; // Import Moment.js
 const MultiFlightLogo = (props) => {
   return (
     <img
@@ -26,16 +20,16 @@ const LayoverInfo = (props) => {
 
 export const MultiFlightInfo = (props) => {
   console.log(props.data + "props.datass");
-  const arrTime = props.data.slices[0].segments[0].arriving_at;
-  const depTime = props.data.slices[0].segments[0].departing_at;
-  const arrivalTime = new Date(arrTime).toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-  const departureTime = new Date(depTime).toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  // const arrTime = props.data.slices[0].segments[0].arriving_at;
+  // const depTime = props.data.slices[0].segments[0].departing_at;
+  // const arrivalTime = new Date(arrTime).toLocaleTimeString([], {
+  //   hour: "2-digit",
+  //   minute: "2-digit",
+  // });
+  // const departureTime = new Date(depTime).toLocaleTimeString([], {
+  //   hour: "2-digit",
+  //   minute: "2-digit",
+  // });
 
   const iata_code =
     props.data.slices[0].segments[0].operating_carrier.iata_code;
@@ -45,8 +39,8 @@ export const MultiFlightInfo = (props) => {
   const img =
     props.data.slices[0].segments[0].operating_carrier.logo_symbol_url;
   const name = props.data.slices[0].segments[0].operating_carrier.name;
-  const destinationName = props.data.slices[0].destination.name;
-  const OriginName = props.data.slices[0].origin.name;
+  // const destinationName = props.data.slices[0].destination.name;
+  // const OriginName = props.data.slices[0].origin.name;
   const arrivalTimeStamp = new Date(
     `${props.data.slices[0].segments[0].arriving_at}`
   ).getTime();
@@ -76,10 +70,18 @@ export const MultiFlightInfo = (props) => {
     month: "short",
     day: "numeric",
   });
-  const originCode = props.data.slices[0].origin.iata_code;
-  const destinationCode = props.data.slices[0].destination.iata_code;
-  const totalFare = props.data.total_amount;
+  // const originCode = props.data.slices[0].origin.iata_code;
+  // const destinationCode = props.data.slices[0].destination.iata_code;
+  // const totalFare = props.data.total_amount;
   const durationTime = props.data.slices[0].segments[0].duration;
+  // Parse the duration using moment.js
+  const momentDuration = moment.duration(durationTime);
+
+  // Extract the components
+  const days = momentDuration.days();
+  const hours = momentDuration.hours();
+  const minutes = momentDuration.minutes();
+
   const aircraftName = props.data.slices[0].segments[0].aircraft
     ? props.data.slices[0].segments[0].aircraft.name
     : null;
@@ -100,10 +102,10 @@ export const MultiFlightInfo = (props) => {
    
        { showHideLabel === 'Hide Details' &&  */}
         <>
-          <div class="itinerary-card__travel-items itinerary-card__travel-items--with-footer">
-            <div class="itinerary-card__travel-item itinerary-card__travel-item--origin">
+          <div className="itinerary-card__travel-items itinerary-card__travel-items--with-footer">
+            <div className="itinerary-card__travel-item itinerary-card__travel-item--origin">
               <p className="mb-0">
-                <strong class="mr-3">Depart:</strong> {departuredatename}
+                <strong className="mr-3">Depart:</strong> {departuredatename}
                 {","}
                 {name}
                 {" | "}
@@ -111,19 +113,26 @@ export const MultiFlightInfo = (props) => {
               </p>
             </div>
 
-            <div class="itinerary-card__travel-item itinerary-card__travel-item--segment-info">
+            <div className="itinerary-card__travel-item itinerary-card__travel-item--segment-info">
               <div></div>
               <div></div>
               <p className="mb-0">
                 <img
-                  class="airline-logo--small mr-4"
+                  className="airline-logo--small mr-4"
                   src={img}
                   alt="Logo for Duffel Airways"
                   onerror="handleAirlineLogoError(this, 'ZZ')"
                   id="logo-Heathrow Airport (LHR)-Duffel Airways-off_0000AdJAB7UV6XKZGN2MZH_0-arp_lhr_gb"
                   phx-update="ignore"
                 />
-                {durationTime}
+                {`${days > 0 ? `${days} day${days !== 1 ? "s" : ""}, ` : ""}${
+                  hours > 0 ? `${hours} hour${hours !== 1 ? "s" : ""}, ` : ""
+                }${
+                  minutes > 0
+                    ? `${minutes} minute${minutes !== 1 ? "s" : ""}`
+                    : ""
+                }`}
+
                 <span>•</span>
                 {name}
                 <span>•</span>
@@ -135,30 +144,30 @@ export const MultiFlightInfo = (props) => {
               </p>
             </div>
 
-            {/* <div class="itinerary-card__travel-item itinerary-card__travel-item--departure">
+            {/* <div className="itinerary-card__travel-item itinerary-card__travel-item--departure">
               <div></div>
-              <span class="material-symbols-outlined">calendar_month</span>
+              <span className="material-symbols-outlined">calendar_month</span>
               <p>{arrivaldatename}</p>
             </div> */}
 
-            {/* <div class="itinerary-card__travel-item itinerary-card__travel-item--origin">
+            {/* <div className="itinerary-card__travel-item itinerary-card__travel-item--origin">
               <p>{departureTime}</p>
-              <span class="material-symbols-outlined">flight_takeoff</span>
+              <span className="material-symbols-outlined">flight_takeoff</span>
               <p>
                 Depart from {OriginName}-{originCode}
               </p>
             </div> */}
 
-            <div class="itinerary-card__travel-item itinerary-card__travel-item--destination">
+            <div className="itinerary-card__travel-item itinerary-card__travel-item--destination">
               <p className="mb-0">
-                <strong class="mr-3">Arrive at:</strong> {arrivaldatename}
+                <strong className="mr-3">Arrive at:</strong> {arrivaldatename}
                 {/* {destinationName}-{destinationCode} */}
               </p>
             </div>
 
-            {/* <div class="itinerary-card__travel-item itinerary-card__travel-item--arrival">
+            {/* <div className="itinerary-card__travel-item itinerary-card__travel-item--arrival">
               <div></div>
-              <span class="material-symbols-outlined">calendar_month</span>
+              <span className="material-symbols-outlined">calendar_month</span>
               <p></p>
             </div> */}
           </div>

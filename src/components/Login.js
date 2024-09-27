@@ -1,7 +1,4 @@
 import React, { useState } from "react";
-import Header from "../Layout/Header";
-import Footer from "../Layout/Footer"; // Import the Footer component
-import sideimage from "../assets/images/login.jpg";
 import destination_1 from "../assets/images/destination_1.jpg";
 import destination_2 from "../assets/images/destination_2.jpg";
 import destination_3 from "../assets/images/destination_3.jpg";
@@ -51,7 +48,7 @@ const Login = (props) => {
         console.log("Form data:", formData);
         const configuration = {
           method: "post",
-          url: "http://localhost:3000/authentication/log-in",
+          url: "http://192.168.1.92:3000/authentication/log-in",
           data: {
             email: formData.username,
             password: formData.password,
@@ -68,9 +65,22 @@ const Login = (props) => {
         setLogin(true);
         navigate("/search");
       } catch (error) {
-        console.error("Login error:", error);
+        // console.error("Login error:", error);
         setLogin(false);
-        alert("Invalid username or password");
+        if (error.response) {
+          // Check if the error status is 400
+          if (error.response.status === 400) {
+            console.log("Bad Request", error.response.data); // Log the error response
+            alert(`Error: ${error.response.data.message}`); // Show error message to user
+          } else {
+            // Handle other status codes
+            alert(`Error: ${error.response.status}`);
+          }
+        } else {
+          // Handle network or other errors
+          console.log("Error", error);
+          alert("Something went wrong. Please try again later.");
+        }
       }
     }
   };

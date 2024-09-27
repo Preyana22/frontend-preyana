@@ -1,5 +1,5 @@
 import React, { useEffect, Fragment } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import "./App.css";
 // import "./css/atomic.css";
 // import "./css/blue-violet.css";
@@ -29,9 +29,7 @@ import "./css/slick.css";
 import "./css/style.css";
 
 import { connect } from "react-redux";
-import SearchForm from "./container/search-form/search-form";
 import FlightsGrid from "./components/flights-grid/flights-grid";
-import BookingGrid from "./components/booking/booking-grid";
 import { getFlights } from "./actions";
 import Header from "./components/Head";
 import Body from "./components/Body";
@@ -62,10 +60,14 @@ import BadgesAndCertificates from "./components/badges-and-certificates";
 import Privacy from "./components/privacy";
 import TermsAndCondition from "./components/terms-and-condition";
 import AdChoices from "./components/ad-choices";
+import MyBookings from "./components/booking/my-bookings/my-bookings";
+import SingleBookingDetails from "./components/booking/single-booking/single-booking-details";
+
 function App(props) {
   useEffect(() => {
     props.getFlights();
   }, [(props.flights || []).legnth]);
+
   const flights = props.flights;
   const { origin, destination, departureDate, returnDate } =
     props.filters || {};
@@ -82,7 +84,7 @@ function App(props) {
             </Fragment>
           }
         />
-          <Route
+        <Route
           path="/login"
           element={
             <Fragment>
@@ -127,7 +129,13 @@ function App(props) {
         />
         <Route
           path="/booking"
-          element={<MyComponent flights={props.flights}></MyComponent>}
+          element={
+            <Fragment>
+              <InnerHeader />
+              <MyComponent flights={props.flights}></MyComponent>
+              <Footer />
+            </Fragment>
+          }
         />
         <Route
           path="/contacts"
@@ -345,6 +353,26 @@ function App(props) {
             <Fragment>
               <Header />
               <AdChoices />
+              <Footer />
+            </Fragment>
+          }
+        />
+        <Route
+          path="/mybookings"
+          element={
+            <Fragment>
+              <InnerHeader />
+              <MyBookings />
+              <Footer />
+            </Fragment>
+          }
+        />
+        <Route
+          path="/singlebooking"
+          element={
+            <Fragment>
+              <InnerHeader />
+              <SingleBookingDetails />
               <Footer />
             </Fragment>
           }

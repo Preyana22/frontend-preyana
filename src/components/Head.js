@@ -1,5 +1,5 @@
 import React from "react";
-import headerlogoimage from "../assets/images/Preyana_Logo.svg";
+import headerlogoimage from "../assets/images/Preyana_Logo.png";
 import { Link } from "react-router-dom";
 
 function Header() {
@@ -10,8 +10,12 @@ function Header() {
         id="mynavbar-1"
       >
         <div className="container">
-        <Link to="/" className="navbar-brand py-1 m-0">
-            <img style={{ width: '150px', height: 'auto' }}  src={headerlogoimage} alt="header logo" />
+          <Link to="/" className="navbar-brand py-1 m-0">
+            <img
+              style={{ width: "150px", height: "auto" }}
+              src={headerlogoimage}
+              alt="header logo"
+            />
           </Link>
         </div>
       </nav>

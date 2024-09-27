@@ -9,15 +9,16 @@ import "react-phone-input-2/lib/style.css";
 import "./contact-grid.css";
 import { useLocation } from "react-router-dom";
 import flightimage from "../../assets/images/flightimage.svg";
+import axios from "axios";
 
 const Contacts = (props) => {
   const location = useLocation();
-  console.log(location.state.flight);
-  const name =
-    location.state.flight.slices[0].segments[0].operating_carrier["name"];
-  const flightNo =
-    location.state.flight.slices[0].segments[0].marketing_carrier_flight_number;
-  const arrivalTime = location.state.flight.slices[0].segments[0].arriving_at;
+  console.log("location.state.flight", location.state.flight);
+  // const name =
+  //   location.state.flight.slices[0].segments[0].operating_carrier["name"];
+  // const flightNo =
+  //   location.state.flight.slices[0].segments[0].marketing_carrier_flight_number;
+  // const arrivalTime = location.state.flight.slices[0].segments[0].arriving_at;
   const origin = location.state.flight.slices[0].origin.iata_code;
   const destination = location.state.flight.slices[0].destination.iata_code;
   const price = location.state.flight.total_amount;
@@ -33,10 +34,12 @@ const Contacts = (props) => {
   const navigate = useNavigate();
   let titles, genderdetails;
   let contactDetails = [];
+
   const title = ["Mr", "Mrs", "Miss", "Doctor"];
-
+  const paymenttype =
+    location.state.flight.payment_requirements.requires_instant_payment;
   const gender = ["Female", "Male"];
-
+  console.log("paymenttype" + paymenttype);
   const flights = props.flights || {};
   flights.nonStopFlights = props.flights;
   const flightsCount = flights.length;
@@ -52,17 +55,19 @@ const Contacts = (props) => {
       let familyname1 = "familyname" + index;
       let given_name1 = "given_name" + index;
       let email1 = "email" + index;
+      let dateOfBirth1 = "dateOfBirth" + index;
+      console.log(dateOfBirth1);
       console.log(JSON.stringify(item));
       contactDetails.push({
         title: titles.state.text,
         offer_id: location.state.flight.id,
-        passenger_id: location.state.flight.passengers[index].id,
-        familyname: event.target[familyname1].value,
-        givenName: event.target[given_name1].value,
+        id: location.state.flight.passengers[index].id,
+        family_name: event.target[familyname1].value,
+        given_name: event.target[given_name1].value,
         email: event.target[email1].value,
-        phone: phone,
-        gender: genderdetails.state.text,
-        dateOfBirth: event.target.dateOfBirth[index].value,
+        phone_number: "+" + phone.trim(),
+        gender: genderdetails.state.text.charAt(0).toLowerCase(),
+        born_on: event.target[dateOfBirth1].value,
         type: item.type,
       });
     });
@@ -73,8 +78,8 @@ const Contacts = (props) => {
     console.log("location");
     console.log(location);
 
-    const amount = location.state.flight.base_amount;
-    const currency = location.state.flight.base_currency;
+    const amount = location.state.flight.total_amount;
+    const currency = location.state.flight.total_currency;
     const type = "balance";
 
     const payments = { type: type, amount: amount, currency: currency };
@@ -89,44 +94,70 @@ const Contacts = (props) => {
     console.log("test");
     console.log(test);
 
-    const { data, errors } = await (
-      await fetch("http://3.128.255.176:3000/airlines/book", {
-        method: "post",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(test),
-      })
-    ).json();
+    try {
+      const response = await axios.post(
+        "http://192.168.1.92:3000/airlines/book",
+        test,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-    if (data) {
-      navigate("/booking", { state: { contactDetails, data } });
-    } else {
-      // TODO: handle the errors properly
-      console.info(errors);
+      const { data, errors } = response.data;
+
+      console.log("Response Data:", data.orderResponse?.errors || []);
+      console.log("Response Errors:", errors);
+
+      if (data) {
+        console.log("contact details data", data);
+        navigate("/booking", { state: { contactDetails, data } });
+      } else {
+        console.error("Errors:", errors);
+      }
+    } catch (error) {
+      if (error.response) {
+        // Handle the case where the server responded with an error status
+        console.error("Response Error:", error.response.data);
+        console.error("Status Code:", error.response.status);
+        console.error("Headers:", error.response.headers);
+      } else if (error.request) {
+        // Handle the case where no response was received
+        console.error("No response received:", error.request);
+      } else {
+        // Handle other errors
+        console.error("Error", error.message);
+      }
     }
     setIsFetching(false);
   };
 
   return (
-    <section class="innerpage-wrapper">
-      <div id="flight-booking" class="innerpage-section-padding">
-        <div class="container">
-          <div class="row">
-            <div class="col-12 col-md-12 col-lg-7 col-xl-8 content-side">
+    <section className="innerpage-wrapper">
+      <div id="flight-booking" className="innerpage-section-padding">
+        <div className="container">
+          <div className="row">
+            <div className="col-12 col-md-12 col-lg-7 col-xl-8 content-side">
               <Form onSubmit={handleSubmit}>
-                <div class="lg-booking-form-heading">
+                <div className="lg-booking-form-heading">
                   <h3>Personal Information</h3>
                 </div>
                 {arr.map((item, index) => {
-                  console.log(JSON.stringify(item));
+                  console.log(item);
 
                   return (
-                    <div class={`personal-info${index}`}>
-                      <h1>
-                        {item.type} {index >= 0 ? index : ""}
-                      </h1>
-                      <div class="row">
-                        <div class="col-6 col-md-6">
-                          <div class="form-group">
+                    <div className={`personal-info${index}`}>
+                      <h4>
+                        <strong>
+                          {item.type === "adult"
+                            ? `Adult Information`
+                            : `Infant Information`}
+                        </strong>
+                      </h4>
+                      <div className="row">
+                        <div className="col-6 col-md-6">
+                          <div className="form-group">
                             <label>Title</label>
                             <Form.Group controlId="titles">
                               <Typeahead
@@ -140,14 +171,14 @@ const Contacts = (props) => {
                           </div>
                         </div>
 
-                        <div class="col-6 col-md-6">
-                          <div class="form-group">
+                        <div className="col-6 col-md-6">
+                          <div className="form-group">
                             <label>Given Name</label>
 
                             <Form.Group controlId={`given_name${index}`}>
                               <Form.Control
                                 type="text"
-                                class="form-control"
+                                className="form-control"
                                 name={`given_name${index}`}
                                 placeholder="Given Name"
                                 required
@@ -157,15 +188,15 @@ const Contacts = (props) => {
                         </div>
                       </div>
 
-                      <div class="row">
-                        <div class="col-md-6">
-                          <div class="form-group">
+                      <div className="row">
+                        <div className="col-md-6">
+                          <div className="form-group">
                             <label>Family name</label>
 
                             <Form.Group controlId={`familyname${index}`}>
                               <Form.Control
                                 type="text"
-                                class="form-control"
+                                className="form-control"
                                 name={`familyname${index}`}
                                 placeholder="Family name"
                                 required
@@ -174,8 +205,8 @@ const Contacts = (props) => {
                           </div>
                         </div>
 
-                        <div class="col-md-6">
-                          <div class="form-group">
+                        <div className="col-md-6">
+                          <div className="form-group">
                             <label>Gender</label>
                             <Form.Group controlId={`genderdetails${index}`}>
                               <Typeahead
@@ -190,15 +221,15 @@ const Contacts = (props) => {
                         </div>
                       </div>
 
-                      <div class="row">
-                        <div class="col-md-6">
-                          <div class="form-group">
+                      <div className="row">
+                        <div className="col-md-6">
+                          <div className="form-group">
                             <label>Email Address</label>
 
                             <Form.Group controlId={`email${index}`}>
                               <Form.Control
                                 type="email"
-                                class="form-control dpd1"
+                                className="form-control dpd1"
                                 name={`email${index}`}
                                 placeholder="email"
                                 required
@@ -206,9 +237,8 @@ const Contacts = (props) => {
                             </Form.Group>
                           </div>
                         </div>
-
-                        <div class="col-md-6">
-                          <div class="form-group">
+                        <div className="col-md-6">
+                          <div className="form-group">
                             <label>Phone Number</label>
                             <Form.Group controlId={`phone${index}`}>
                               <PhoneInput
@@ -219,49 +249,51 @@ const Contacts = (props) => {
                             </Form.Group>
                           </div>
                         </div>
-                        <div class="col-md-6">
-                          <div class="form-group">
+                        <div className="col-md-6">
+                          <div className="form-group">
                             <label>Date Of Birth</label>
-                            <Form.Group controlId="formGriddateOfDep">
+                            <Form.Group controlId={`dateOfBirth${index}`}>
                               <Form.Control
                                 type="date"
-                                class="form-control dpd1"
-                                name="dateOfBirth"
+                                className="form-control dpd1"
+                                name={`dateOfBirth${index}`}
                                 placeholder="DOB"
                                 required
                               />
                             </Form.Group>
                           </div>
-                        </div>
+                        </div>{" "}
                       </div>
                     </div>
                   );
                 })}
-                <button class="btn btn-contactorange">Book</button>
+                <button className="btn btn-contactorange" disabled={isFetching}>
+                  {isFetching ? "Booking..." : "Book"}
+                </button>
               </Form>
             </div>
-            <div class="col-12 col-md-12 col-lg-5 col-xl-4 side-bar left-side-bar">
-              <div class="row">
-                <div class="col-12 col-md-6 col-lg-12">
-                  <div class="side-bar-block detail-block style1 text-center">
-                    <div class="detail-img text-center">
+            <div className="col-12 col-md-12 col-lg-5 col-xl-4 side-bar left-side-bar">
+              <div className="row">
+                <div className="col-12 col-md-6 col-lg-12">
+                  <div className="side-bar-block detail-block style1 text-center">
+                    <div className="detail-img text-center">
                       <a href="#">
-                        <img src={flightimage} class="img-fluid" />
+                        <img src={flightimage} className="img-fluid" />
                       </a>
                     </div>
 
-                    <div class="detail-title">
+                    <div className="detail-title">
                       <h4>
                         <a href="#">
                           {origin} To {destination}
                         </a>
                       </h4>
                       <p>Oneway Flight</p>
-                      <div class="rating"></div>
+                      <div className="rating"></div>
                     </div>
 
-                    <div class="table-responsive">
-                      <table class="table table-hover">
+                    <div className="table-responsive">
+                      <table className="table table-hover">
                         <tbody>
                           <tr>
                             <td>Departure</td>
