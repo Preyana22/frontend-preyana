@@ -152,7 +152,7 @@ const Contacts = (props) => {
 
     try {
       const response = await axios.post(
-        "http://192.168.1.92:3000/airlines/book",
+        "http://3.128.255.176:3000/airlines/book",
         test,
         {
           headers: {

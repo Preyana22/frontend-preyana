@@ -51,7 +51,7 @@ const MyComponent = (props) => {
     };
 
     const { data, errors } = await (
-      await fetch("http://192.168.1.92:3000/airlines/confirm", {
+      await fetch("http://3.128.255.176:3000/airlines/confirm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(test),
@@ -69,7 +69,7 @@ const MyComponent = (props) => {
 
     const configuration = {
       method: "post",
-      url: "http://192.168.1.92:3000/booking/createbooking",
+      url: "http://3.128.255.176:3000/booking/createbooking",
       data: {
         email: location.state.data.orderResponse.data.passengers[0].email,
         userName: localStorage.getItem("userName"),

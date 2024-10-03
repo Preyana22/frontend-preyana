@@ -70,7 +70,7 @@ const Registration = (props) => {
       };
       const configuration = {
         method: "post",
-        url: "http://192.168.1.92:3000/authentication/register",
+        url: "http://3.128.255.176:3000/authentication/register",
         data: {
           email: formData.email,
           userName: formData.username,
@@ -101,7 +101,7 @@ const Registration = (props) => {
             alert("Something went wrong. Please try again later.");
           }
         });
-      //const response = await axios.post('http://192.168.1.92:3000/authentication/register', payload);
+      //const response = await axios.post('http://3.128.255.176:3000/authentication/register', payload);
 
       //this.setState(response.data);
       /*f(response.status==201)
