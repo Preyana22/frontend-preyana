@@ -297,7 +297,7 @@ function App(props) {
             </Fragment>
           }
         />
-        <Route
+        {/* <Route
           path="/airlines"
           element={
             <Fragment>
@@ -306,7 +306,7 @@ function App(props) {
               <Footer />
             </Fragment>
           }
-        />
+        /> */}
         <Route
           path="/lowfare"
           element={

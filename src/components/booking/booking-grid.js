@@ -102,15 +102,25 @@ const MyComponent = (props) => {
         error = new Error();
       });
   };
+  const convertToString = (input) => {
+    // Check if the input is an object and not null
+    if (typeof input === "object" && input !== null) {
+      return Object.values(input).join(""); // Convert object to string
+    }
+    return input; // If it's not an object, return it unchanged
+  };
 
   useEffect(() => {
     if (props.flights) {
       const duffelAncillariesElement =
         document.querySelector("duffel-ancillaries");
+
+      const client_key = convertToString(props.flights[0]);
+
       if (duffelAncillariesElement) {
         duffelAncillariesElement.render({
           offer_id: location.state.contactDetails[0].offer_id,
-          client_key: props.flights[0],
+          client_key: client_key,
           services: ["bags", "seats"],
           passengers: passengers,
         });
@@ -121,7 +131,7 @@ const MyComponent = (props) => {
           ).toFixed(2);
           event.detail.data.payments[0].amount = final_amountdata;
           let body = JSON.stringify({ data: event.detail.data });
-          console.log("body");
+          console.log("duffelAncillariesElement body");
           console.log(body);
         });
       }

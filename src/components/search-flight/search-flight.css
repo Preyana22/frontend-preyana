@@ -7,4 +7,6 @@
   margin: 10px;
 }
 
-
+.form-control:focus{
+      color: transparent !important;
+}

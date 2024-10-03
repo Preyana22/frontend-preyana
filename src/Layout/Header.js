@@ -75,7 +75,7 @@ const Header = () => {
                     className="img-fluid user-img"
                     alt="flight-img"
                   />
-                  <span class="sign-in-label">Sign In</span>
+                  <span className="sign-in-label">Sign In</span>
                 </Link>
               )}
             </ul>

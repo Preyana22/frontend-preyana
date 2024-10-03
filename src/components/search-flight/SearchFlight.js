@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useEffect, useState } from "react";
 import { Typeahead } from "react-bootstrap-typeahead";
 import Form from "react-bootstrap/Form";
@@ -29,23 +29,34 @@ const ErrorLabel = (props) => {
   return <label style={{ color: "red" }}>{props.message}</label>;
 };
 
+const cabin_details = ["Economy", "Premium Economy", "Business", "First"];
 export const SearchFlight = (props) => {
   const [airportsData, setAirports] = useState([]);
   const [openOptions, setOpenOptions] = useState(false);
   const [tripOptions, setTripOptions] = useState(false);
+  const [keyword, setKeyword] = useState("IN");
   const [options, setOptions] = useState({
     adult: 1,
     children: 0,
     infant: 0,
   });
-
+  const dropdownRef = useRef(null);
+  const dropdownSearchRef = useRef(null);
   const [selectedCabinClass, setSelectedCabinClass] = useState([]);
   const [selectedOrigin, setSelectedOrigin] = useState([]);
   const [selectedDestination, setSelectedDestination] = useState([]);
   const [selectedDateOfDep, setSelectedDateOfDep] = useState("");
   const [selectedDateOfRet, setSelectedDateOfRet] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  // Toggle dropdown open/close
+  const toggleDropdown = (isOpen) => {
+    setIsDropdownOpen(isOpen);
+  };
+
   // Clear localStorage when navigating to the home page
   const location = useLocation();
+
   // Load saved cabin class from localStorage on component mount
   useEffect(() => {
     if (location.pathname === "/" || location.pathname === "search") {
@@ -137,13 +148,52 @@ export const SearchFlight = (props) => {
     localStorage.setItem("isReturn", JSON.stringify(value));
   };
 
+  // Close the dropdown if clicked outside of it
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setTripOptions(false);
+      }
+      if (
+        dropdownSearchRef.current &&
+        !dropdownSearchRef.current.contains(event.target)
+      ) {
+        setOpenOptions(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownRef, dropdownSearchRef]);
+
   const handleOption = (name, operation) => {
     setOptions((prev) => {
-      const newValue = operation === "i" ? prev[name] + 1 : prev[name] - 1;
+      let newValue;
+
+      // Determine the new value based on the operation
+      if (operation === "i") {
+        // Increment, but restrict based on max values
+        if (name === "adult" && prev[name] < 6) {
+          newValue = prev[name] + 1;
+        } else if (name === "children" && prev[name] < 5) {
+          newValue = prev[name] + 1;
+        } else if (name === "infant" && prev[name] < 4) {
+          newValue = prev[name] + 1;
+        } else {
+          newValue = prev[name]; // No change if limit is reached
+        }
+      } else {
+        // Decrement, but restrict adult to minimum 1 and children/infants to minimum 0
+        newValue = prev[name] - 1;
+      }
+
+      // Make sure the values don't fall below the minimums
       const updatedOptions = {
         ...prev,
         [name]:
-          name === "adult" ? Math.max(1, newValue) : Math.max(0, newValue), // Ensuring adult is at least 1 and children/infants are at least 0
+          name === "adult" ? Math.max(1, newValue) : Math.max(0, newValue),
       };
 
       // Store the updated options in local storage
@@ -153,46 +203,30 @@ export const SearchFlight = (props) => {
     });
   };
 
-  useEffect(() => {
-    const getAirports = async () => {
-      try {
-        const { data } = await axios.get(`http://192.168.1.92:3000/airports`);
-        // console.log(data);
-        setAirports(data);
-        // setAirports(data.results);
-      } catch (error) {
-        console.log(error);
+  const getAirports = async (search) => {
+    try {
+      const { data } = await axios.get(
+        `http://localhost:3000/airlines/airports/` + search
+      );
+      console.log("airports data");
+      console.log(data.data);
+
+      if (data.data) {
+        // console.log("result1", result1);
+        //  t.iata_city_code == null ? "abc" : t.name + "(" + t.iata_code + ")";
+        setAirports(
+          data.data.map((t) =>
+            t.iata_city_code == null ? "abc" : t.name + "(" + t.iata_code + ")"
+          )
+        );
+
+        //data1 = result1.map(t=>t.IATAcode==null?'abc':t.IATAcode);
       }
-    };
-    getAirports();
-  }, []);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-  //console.log("airportsData.results"+airportsData.data);
-  // var result1 =airportsData;
-  var result1 = airportsData.data;
-
-  var data1 = [];
-
-  if (result1) {
-    // console.log("result1", result1);
-    data1 = result1.map((t) => (t.city_name == null ? "abc" : t.iata_code));
-    //data1 = result1.map(t=>t.IATAcode==null?'abc':t.IATAcode);
-  }
-
-  const dummyairports = [
-    "LHR",
-    "CDG",
-    "BCN",
-    "LAX",
-    "MEL",
-    "SYD",
-    "AKL",
-    "DEL",
-    "SIN",
-    "HKG",
-  ];
-  const airports = data1 ? data1 : dummyairports;
-  // console.log("airports list" + airports);
   const navigate = useNavigate();
   let origin, destination, cabinclass;
   let criteria;
@@ -239,10 +273,17 @@ export const SearchFlight = (props) => {
       Adults.push(infantData);
     }
     // console.log(Adults);
-    // console.log("origin.state.text" + origin.state.text);
-    const origin_city = origin.state.text;
+    console.log("origin.state.text" + origin.state.text);
+    const originStateText = origin.state.text;
+    const originCode = originStateText.match(/\(([^)]+)\)/)[1]; // Extracts the code within parentheses
+    console.log(originCode); // Output: IND
+    const origin_city = originCode;
 
-    const destination_city = destination.state.text;
+    const destinationStateText = destination.state.text;
+    const destinationCode = destinationStateText.match(/\(([^)]+)\)/)[1]; // Extracts the code within parentheses
+    console.log(destinationCode); // Output: IND
+
+    const destination_city = destinationCode;
 
     if (isReturn === false) {
       criteria = {
@@ -284,6 +325,16 @@ export const SearchFlight = (props) => {
     if (!criteria.origin) {
       invalidFields.origin = true;
     }
+
+    // Check if origin and destination are the same
+    if (
+      criteria.origin &&
+      criteria.destination &&
+      criteria.origin === criteria.destination
+    ) {
+      invalidFields.destination = true;
+    }
+
     if (Object.keys(invalidFields).length > 0) {
       setFormValid({ isValid: false, ...invalidFields });
       return;
@@ -327,11 +378,11 @@ export const SearchFlight = (props) => {
         }
       }*/
 
-    if (!airports.includes(criteria.origin)) {
+    if (!airportsData.includes(criteria.origin)) {
       invalidFields.origin = true;
     }
     if (
-      !airports.includes(criteria.destination) ||
+      !airportsData.includes(criteria.destination) ||
       criteria.origin === criteria.destination
     ) {
       invalidFields.destination = true;
@@ -376,7 +427,14 @@ export const SearchFlight = (props) => {
        
       ];*/
 
-  const cabin_details = ["Economy", "Premium Economy", "Business", "First"];
+  // Set the first option as selected when cabin_details changes
+  useEffect(() => {
+    getAirports(keyword);
+    if (cabin_details.length > 0) {
+      setSelectedCabinClass([cabin_details[0]]);
+    }
+  }, [cabin_details]);
+
   return (
     <>
       <div className="row pb-5">
@@ -445,7 +503,10 @@ export const SearchFlight = (props) => {
                         <div className="row mt-3">
                           <div className="col-12 col-md-6 col-lg-2 col-xl-2">
                             <div className="form-group">
-                              <div className="headerSearchTripItem">
+                              <div
+                                className="headerSearchTripItem"
+                                ref={dropdownRef}
+                              >
                                 <span
                                   onClick={() => setTripOptions(!tripOptions)}
                                   className={`headerSearchTripText ${
@@ -495,18 +556,28 @@ export const SearchFlight = (props) => {
                               </div>
                             </div>
                           </div>
-                          <div className="col-12 col-md-6 col-lg-2 col-xl-2">
+                          <div className="col-12 col-md-6 col-lg-3 col-xl-3">
                             <Form.Group controlId="cabinclass">
-                              <Typeahead
-                                labelKey="cabinclass"
-                                options={cabin_details}
-                                id="cabinclass"
-                                placeholder="Cabin Class"
-                                ref={(ref) => (cabinclass = ref)}
-                                selected={selectedCabinClass}
-                                onChange={handleCabinClassChange}
-                              />
-
+                              <div className="typeahead-container">
+                                <Typeahead
+                                  labelKey="cabinclass"
+                                  options={cabin_details}
+                                  id="cabinclass"
+                                  placeholder="Cabin Class"
+                                  ref={(ref) => (cabinclass = ref)}
+                                  selected={selectedCabinClass}
+                                  onChange={handleCabinClassChange}
+                                  onFocus={() => toggleDropdown(true)}
+                                  onBlur={() => toggleDropdown(false)}
+                                />
+                                <span
+                                  className={`arrow ${
+                                    isDropdownOpen
+                                      ? "cabinarrow-up"
+                                      : "cabinarrow-down"
+                                  }`}
+                                ></span>
+                              </div>
                               {status.cabinclass && (
                                 <ErrorLabel message="Please select cabin className"></ErrorLabel>
                               )}
@@ -514,7 +585,10 @@ export const SearchFlight = (props) => {
                           </div>
                           <div className="col-12 col-md-6 col-lg-3 col-xl-3">
                             <div className="form-group">
-                              <div className="headerSearchItem">
+                              <div
+                                className="headerSearchItem"
+                                ref={dropdownSearchRef}
+                              >
                                 <span
                                   onClick={() => setOpenOptions(!openOptions)}
                                   className={`headerSearchText ${
@@ -531,6 +605,7 @@ export const SearchFlight = (props) => {
                                       <span className="optionText">Adult</span>
                                       <div className="optionCounter">
                                         <button
+                                          type="button" // Prevents the button from submitting the form
                                           disabled={options.adult <= 1}
                                           className="optionCounterButton"
                                           onClick={() =>
@@ -543,6 +618,8 @@ export const SearchFlight = (props) => {
                                           {options.adult}
                                         </span>
                                         <button
+                                          type="button" // Prevents the button from submitting the form
+                                          disabled={options.children >= 6}
                                           className="optionCounterButton"
                                           onClick={() =>
                                             handleOption("adult", "i")
@@ -558,6 +635,7 @@ export const SearchFlight = (props) => {
                                       </span>
                                       <div className="optionCounter">
                                         <button
+                                          type="button" // Prevents the button from submitting the form
                                           disabled={options.children <= 0}
                                           className="optionCounterButton"
                                           onClick={() =>
@@ -570,6 +648,8 @@ export const SearchFlight = (props) => {
                                           {options.children}
                                         </span>
                                         <button
+                                          type="button" // Prevents the button from submitting the form
+                                          disabled={options.children >= 5}
                                           className="optionCounterButton"
                                           onClick={() =>
                                             handleOption("children", "i")
@@ -583,7 +663,8 @@ export const SearchFlight = (props) => {
                                       <span className="optionText">Infant</span>
                                       <div className="optionCounter">
                                         <button
-                                          disabled={options.infant <= 1}
+                                          type="button" // Prevents the button from submitting the form
+                                          disabled={options.infant <= 0}
                                           className="optionCounterButton"
                                           onClick={() =>
                                             handleOption("infant", "d")
@@ -595,6 +676,8 @@ export const SearchFlight = (props) => {
                                           {options.infant}
                                         </span>
                                         <button
+                                          type="button" // Prevents the button from submitting the form
+                                          disabled={options.infant >= 4}
                                           className="optionCounterButton"
                                           onClick={() =>
                                             handleOption("infant", "i")
@@ -624,7 +707,7 @@ export const SearchFlight = (props) => {
                                       <Form.Group controlId="origin">
                                         <Typeahead
                                           labelKey="origin"
-                                          options={airports}
+                                          options={airportsData}
                                           placeholder="From"
                                           ref={(ref) => (origin = ref)}
                                           selected={selectedOrigin}
@@ -649,15 +732,20 @@ export const SearchFlight = (props) => {
                                       <Form.Group controlId="destination">
                                         <Typeahead
                                           labelKey="destination"
-                                          options={airports}
+                                          options={airportsData}
                                           placeholder="To"
                                           ref={(ref) => (destination = ref)}
                                           selected={selectedDestination}
                                           onChange={handleDestinationChange}
+                                          onInputChange={(input) => {
+                                            console.log(input);
+                                            getAirports(input);
+                                          }} // Calls getAirports when typing
                                         />
                                         {status.destination && (
                                           <ErrorLabel message="Please enter a valid airport"></ErrorLabel>
                                         )}
+
                                         <img
                                           src={locationimage}
                                           alt="from-to-image"
@@ -742,12 +830,16 @@ export const SearchFlight = (props) => {
                                       <Form.Group controlId="origin">
                                         <Typeahead
                                           labelKey="origin"
-                                          options={airports}
+                                          options={airportsData}
                                           id="origin"
                                           placeholder="From"
                                           ref={(ref) => (origin = ref)}
-                                          selected={selectedOrigin}
+                                          selected={selectedOrigin} // Find the airport object based on selected IATA code
                                           onChange={handleOriginChange}
+                                          onInputChange={(input) => {
+                                            console.log(input);
+                                            getAirports(input);
+                                          }} // Calls getAirports when typing
                                         />
                                         {status.origin && (
                                           <ErrorLabel message="Please enter a valid airport"></ErrorLabel>
@@ -769,14 +861,21 @@ export const SearchFlight = (props) => {
                                         <Typeahead
                                           labelKey="destination"
                                           id="destination"
-                                          options={airports}
+                                          options={airportsData}
                                           placeholder="To"
                                           ref={(ref) => (destination = ref)}
                                           selected={selectedDestination}
                                           onChange={handleDestinationChange}
+                                          onInputChange={(input) => {
+                                            console.log(input);
+                                            getAirports(input);
+                                          }} // Calls getAirports when typing
                                         />
                                         {status.destination && (
                                           <ErrorLabel message="Please enter a valid airport"></ErrorLabel>
+                                        )}
+                                        {status.sameLocation && (
+                                          <ErrorLabel message="Please select different location"></ErrorLabel>
                                         )}
 
                                         <img
