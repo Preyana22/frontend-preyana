@@ -18,6 +18,11 @@ const Header = () => {
   const bookings = () => {
     navigate("/mybookings");
   };
+
+  const changepassword = () => {
+    navigate("/change");
+  };
+
   useEffect(() => {
     if (!email) {
       navigate("/");
@@ -35,7 +40,7 @@ const Header = () => {
     `}
   </style>;
   return (
-    <div className="wrapper">
+    <div className="wrapper  wrapper-border">
       <nav
         className="navbar navbar-expand-xl sticky-top navbar-custom main-navbar p-1"
         id="mynavbar-1"
@@ -59,6 +64,14 @@ const Header = () => {
                       onClick={bookings}
                     >
                       <span> {"my bookings"}</span>
+                    </button>
+                  </li>
+                  <li className="nav-item ">
+                    <button
+                      className="btn d-block text-left mt-2"
+                      onClick={changepassword}
+                    >
+                      <span> {"change password"}</span>
                     </button>
                   </li>
                   <li className="nav-item ">

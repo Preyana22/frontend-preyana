@@ -1,0 +1,11 @@
+#success-booking .btn-orange{
+    /* margin-top:15px; */
+    padding: 8px 34px;
+    background-color: #0047b1;
+    color: #fff;
+  }
+
+    #success-booking .btn-orange:hover {
+    background-color: #ffd842;
+    color: #000;
+  }

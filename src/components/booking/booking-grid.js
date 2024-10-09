@@ -34,6 +34,12 @@ const MyComponent = (props) => {
       title: location.state.contactDetails[index].title,
       born_on: location.state.contactDetails[index].born_on,
       id: location.state.contactDetails[index].id,
+      address1: location.state.contactDetails[index].address1,
+      address2: location.state.contactDetails[index].address2,
+      city: location.state.contactDetails[index].city,
+      region: location.state.contactDetails[index].region,
+      postal: location.state.contactDetails[index].postal,
+      country: location.state.contactDetails[index].country,
     });
     if (location.state.contactDetails[index].type === "infant_without_seat") {
       passengers[0].infant_passenger_id =
@@ -51,7 +57,7 @@ const MyComponent = (props) => {
     };
 
     const { data, errors } = await (
-      await fetch("http://3.128.255.176:3000/airlines/confirm", {
+      await fetch("http://192.168.1.92:3000/airlines/confirm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(test),
@@ -62,14 +68,14 @@ const MyComponent = (props) => {
   };
 
   const saveBooking = async () => {
-    console.log(
-      "location.state.data.orderResponse.data",
-      location.state.data.orderResponse
-    );
-
+    // console.log(
+    //   "location.state.data.orderResponse.data",
+    //   location.state.data.orderResponse
+    // );
+    // console.log("location.state.contactdetails", location.state.contactDetails);
     const configuration = {
       method: "post",
-      url: "http://3.128.255.176:3000/booking/createbooking",
+      url: "http://192.168.1.92:3000/booking/createbooking",
       data: {
         email: location.state.data.orderResponse.data.passengers[0].email,
         userName: localStorage.getItem("userName"),
@@ -87,6 +93,12 @@ const MyComponent = (props) => {
             ? "pending"
             : "success",
         booking_id: location.state.data.orderResponse.data.id,
+        address1: location.state.contactDetails[0].address1,
+        address2: location.state.contactDetails[0].address2,
+        city: location.state.contactDetails[0].city,
+        region: location.state.contactDetails[0].region,
+        postal: location.state.contactDetails[0].postal,
+        country: location.state.contactDetails[0].country,
       },
     };
     await axios(configuration)
@@ -95,7 +107,8 @@ const MyComponent = (props) => {
 
         if (result) {
           confirmPayment();
-          navigate("/mybookings");
+
+          navigate("/success");
         }
       })
       .catch((error) => {

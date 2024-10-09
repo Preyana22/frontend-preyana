@@ -2,6 +2,8 @@ import React from "react";
 import { useState } from "react";
 import { Typeahead } from "react-bootstrap-typeahead";
 import Form from "react-bootstrap/Form";
+import Alert from "react-bootstrap/Alert";
+import { Accordion, Card, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 //import { PhoneInput } from 'react-international-phone';
 import PhoneInput from "react-phone-input-2";
@@ -11,6 +13,10 @@ import { useLocation } from "react-router-dom";
 import flightimage from "../../assets/images/flightimage.svg";
 import axios from "axios";
 import moment from "moment"; // Import Moment.js
+import { Link } from "react-router-dom";
+import { findFlights } from "../../actions";
+import { connect } from "react-redux";
+import { CountryDropdown, RegionDropdown } from "react-country-region-selector";
 
 const formatDate = (timestamp) => {
   const date = new Date(timestamp);
@@ -40,6 +46,13 @@ const Contacts = (props) => {
   const [selectedDay, setSelectedDay] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
+  const [country, setCountry] = useState("");
+  const [region, setRegion] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleTerms = () => {
+    setIsOpen(!isOpen);
+  };
 
   const days = Array.from({ length: 31 }, (_, i) => i + 1); // Days from 1 to 31
   const months = Array.from({ length: 12 }, (_, i) => i + 1); // Months from 1 to 12
@@ -59,13 +72,29 @@ const Contacts = (props) => {
   // const arrivalTime = location.state.flight.slices[0].segments[0].arriving_at;
   const origin = location.state.flight.slices[0].origin.iata_code;
   const destination = location.state.flight.slices[0].destination.iata_code;
+  const origincity = location.state.flight.slices[0].origin.city_name;
+  const destinationcity = location.state.flight.slices[0].destination.city_name;
   const price = location.state.flight.total_amount;
   const base_amount = location.state.flight.base_amount;
   const tax_amount = location.state.flight.tax_amount;
   const date = location.state.flight.slices[0].segments[0].departing_at;
-  const formattedDate = moment(date).format("DD-MM-YYYY");
-  const formattedTime = moment(date).format("hh:mm A");
+  const formattedDate = moment(date).format("ddd D MM, YYYY, hh:mm A");
+  const arrivaldate = location.state.flight.slices[0].segments[0].arriving_at;
+  const formattedArrivalDate = moment(arrivaldate).format("D MM YYYY, hh:mm A");
   const time = location.state.flight.slices[0].segments[0].duration;
+  const stops = location.state.flight.slices[0].segments[0].stops;
+  const aircraftName = location.state.flight.slices[0].segments[0].aircraft
+    ? location.state.flight.slices[0].segments[0].aircraft.name
+    : null;
+
+  const operating_carrier_flight_number =
+    location.state.flight.slices[0].segments[0].operating_carrier.iata_code &&
+    location.state.flight.slices[0].segments[0].operating_carrier_flight_number
+      ? location.state.flight.slices[0].segments[0].operating_carrier
+          .iata_code +
+        location.state.flight.slices[0].segments[0]
+          .operating_carrier_flight_number
+      : null;
   // Parse the duration using moment.js
   const momentDuration = moment.duration(time);
 
@@ -93,16 +122,17 @@ const Contacts = (props) => {
   let arr = [];
   arr = location.state.flight.passengers;
   const handleSubmit = async (event) => {
-    console.log(props);
     event.preventDefault();
     const { flights } = props;
 
-    console.log(phone);
     arr.map((item, index) => {
       let familyname1 = "familyname" + index;
       let given_name1 = "given_name" + index;
       let email1 = "email" + index;
-
+      let address1 = "address1" + index;
+      let address2 = "address2" + index;
+      let city = "city" + index;
+      let postal = "postal" + index;
       const day = event.target[`dayOfBirth${index}`].value;
       const month = event.target[`monthOfBirth${index}`].value;
       const year = event.target[`yearOfBirth${index}`].value;
@@ -112,8 +142,6 @@ const Contacts = (props) => {
         "0"
       )}`; // YYYY-MM-DD format
 
-      console.log(dateOfBirth);
-      console.log(JSON.stringify(item));
       contactDetails.push({
         title: titles.state.text,
         offer_id: location.state.flight.id,
@@ -125,8 +153,47 @@ const Contacts = (props) => {
         gender: genderdetails.state.text.charAt(0).toLowerCase(),
         born_on: dateOfBirth,
         type: item.type,
+        address1: event.target[address1].value,
+        address2: event.target[address2].value,
+        city: event.target[city].value,
+        region: region,
+        postal: event.target[postal].value,
+        country: country,
       });
     });
+
+    if (localStorage.getItem("userId") === null) {
+      const configuration = {
+        method: "post",
+        url: "http://192.168.1.92:3000/authentication/register",
+        data: {
+          email: event.target["email0"].value,
+          userName: event.target["email0"].value,
+          password: null,
+        },
+      };
+      await axios(configuration)
+        .then((result) => {
+          console.log("response", result.data);
+          console.log(result.data.message);
+        })
+        .catch((error) => {
+          if (error.response) {
+            // Check if the error status is 400
+            if (error.response.status === 400) {
+              console.log("Bad Request", error.response.data); // Log the error response
+              alert(`Error: ${error.response.data.message}`); // Show error message to user
+            } else {
+              // Handle other status codes
+              alert(`Error: ${error.response.status}`);
+            }
+          } else {
+            // Handle network or other errors
+            console.log("Error", error);
+            alert("Something went wrong. Please try again later.");
+          }
+        });
+    }
 
     console.log("fsddddddddddddddd");
     setIsFetching(true);
@@ -152,7 +219,7 @@ const Contacts = (props) => {
 
     try {
       const response = await axios.post(
-        "http://3.128.255.176:3000/airlines/book",
+        "http://192.168.1.92:3000/airlines/book",
         test,
         {
           headers: {
@@ -189,28 +256,121 @@ const Contacts = (props) => {
     setIsFetching(false);
   };
 
+  const transformPassengerData = (passengerData) => {
+    const result = [];
+
+    for (let type in passengerData) {
+      if (type === "children") {
+        type = "child"; // Converting "children" to "child"
+      }
+
+      for (let i = 0; i < passengerData[type]; i++) {
+        if (type === "infant") {
+          result.push({ type: "infant_without_seat" });
+        } else {
+          result.push({ type });
+        }
+      }
+    }
+
+    return result;
+  };
+
+  const onSearchResultClick = () => {
+    let criteria = {}; // Change to 'let' so it can be reassigned
+    const originStateText = localStorage.getItem("origin");
+    const originCode = originStateText.match(/\(([^)]+)\)/)[1]; // Extracts the code within parentheses
+    console.log(originCode); // Output: IND
+    const savedOrigin = originCode;
+
+    const destinationStateText = localStorage.getItem("destination");
+    const destinationCode = destinationStateText.match(/\(([^)]+)\)/)[1]; // Extracts the code within parentheses
+    console.log(destinationCode); // Output: IND
+
+    const savedDestination = destinationCode;
+
+    const savedCabinClass = JSON.parse(localStorage.getItem("cabinclass"));
+    const savedDateOfDep = JSON.parse(localStorage.getItem("dateOfDeparture"));
+    const savedDateOfRet = JSON.parse(localStorage.getItem("dateOfReturn"));
+    const storedOptions = transformPassengerData(
+      JSON.parse(localStorage.getItem("options"))
+    );
+    const storedTripType = localStorage.getItem("isReturn");
+    const flights = props.flights;
+
+    if (storedTripType === "false") {
+      criteria = {
+        origin: savedOrigin,
+        destination: savedDestination,
+        departureDate: savedDateOfDep,
+        numOfPassengers: storedOptions,
+        cabin_class: savedCabinClass[0],
+      };
+    } else {
+      criteria = {
+        origin: savedOrigin,
+        destination: savedDestination,
+        departureDate: savedDateOfDep,
+        returnDate: savedDateOfRet,
+        numOfPassengers: storedOptions,
+        cabin_class: savedCabinClass[0],
+      };
+    }
+
+    // console.log("flights", flights);
+    // console.log("criteria", criteria);
+    props.findFlights({ flights, criteria });
+
+    navigate("/results");
+  };
+
   return (
     <section className="innerpage-wrapper">
       <div id="flight-booking" className="innerpage-section-padding">
         <div className="container">
-          <div className="row">
-            <div className="col-12 col-md-12 col-lg-7 col-xl-8 content-side">
-              <Form onSubmit={handleSubmit}>
+          <Form onSubmit={handleSubmit}>
+            <div className="row">
+              <div className="col-12">
+                <nav aria-label="breadcrumb">
+                  <ol className="breadcrumb">
+                    <li className="breadcrumb-item">
+                      <span
+                        style={{
+                          color: "blue",
+                          cursor: "pointer",
+                          textDecoration: "underline",
+                        }}
+                        onClick={onSearchResultClick}
+                      >
+                        Search Result
+                      </span>
+                    </li>
+                    <li className="breadcrumb-item">
+                      <label>Checkout</label>
+                    </li>
+                  </ol>
+                </nav>
+              </div>
+              <div className="col-12 col-md-12 col-lg-7 col-xl-8 content-side">
                 <div className="lg-booking-form-heading">
-                  <h3>Personal Information</h3>
+                  <h2 className="font-weight-bold">Checkout</h2>
+                  <h5 className="font-weight-bold">Billing Information</h5>
                 </div>
                 {arr.map((item, index) => {
                   console.log(item);
 
                   return (
                     <div className={`personal-info${index}`}>
-                      <h4>
+                      <h6 className="font-weight-bold">
                         <strong>
                           {item.type === "adult"
-                            ? `Adult Information`
-                            : `Infant Information`}
+                            ? "Adult Information"
+                            : item.type === "child"
+                            ? "Children Information"
+                            : "Infant Information"}
                         </strong>
-                      </h4>
+                      </h6>
+
                       <div className="row">
                         <div className="col-6 col-md-6">
                           <div className="form-group">
@@ -295,17 +455,6 @@ const Contacts = (props) => {
                         </div>
                         <div className="col-md-6">
                           <div className="form-group">
-                            <label>Phone Number</label>
-                            <Form.Group controlId={`phone${index}`}>
-                              <PhoneInput
-                                value={phone}
-                                onChange={(phone) => setPhone(phone)}
-                              />
-                            </Form.Group>
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="form-group">
                             <label>Date Of Birth</label>
                             <div className="row">
                               <div className="col-4">
@@ -360,56 +509,155 @@ const Contacts = (props) => {
                           </div>
                         </div>
                       </div>
+                      <div className="row">
+                        <div className="col-md-12">
+                          <div className="form-group">
+                            <label>Address Line 1</label>
+
+                            <Form.Group controlId={`address1${index}`}>
+                              <Form.Control
+                                type="text"
+                                className="form-control"
+                                name={`address1${index}`}
+                                placeholder="Address line 1"
+                                required
+                              />
+                            </Form.Group>
+                          </div>
+                        </div>
+                        <div className="col-md-12">
+                          <div className="form-group">
+                            <label>Address Line 2</label>
+
+                            <Form.Group controlId={`address2${index}`}>
+                              <Form.Control
+                                type="text"
+                                className="form-control"
+                                name={`address2${index}`}
+                                placeholder="Address line 1"
+                                required
+                              />
+                            </Form.Group>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-md-12">
+                          <div className="form-group">
+                            <label>Country</label>
+
+                            <Form.Group controlId={`country${index}`}>
+                              <CountryDropdown
+                                className="custom-dropdown country-dropdown"
+                                value={country}
+                                onChange={(val) => setCountry(val)}
+                              />
+                            </Form.Group>
+                          </div>
+                        </div>
+                        <div className="col-md-4">
+                          <div className="form-group">
+                            <label>City/Town/Department</label>
+
+                            <Form.Group controlId={`city${index}`}>
+                              <Form.Control
+                                type="text"
+                                className="form-control"
+                                name={`city1${index}`}
+                                placeholder="City/Town/Department"
+                                required
+                              />
+                            </Form.Group>
+                          </div>
+                        </div>
+                        <div className="col-md-4">
+                          <div className="form-group">
+                            <label>State/Province/Region</label>
+
+                            <Form.Group controlId={`region${index}`}>
+                              <RegionDropdown
+                                className="custom-dropdown region-dropdown"
+                                country={country}
+                                value={region}
+                                onChange={(val) => setRegion(val)}
+                              />
+                            </Form.Group>
+                          </div>
+                        </div>
+                        <div className="col-md-4">
+                          <div className="form-group">
+                            <label>Zip/Postal Code</label>
+
+                            <Form.Group controlId={`postal${index}`}>
+                              <Form.Control
+                                type="text"
+                                className="form-control"
+                                name={`postal${index}`}
+                                placeholder="Zip/Postal Code"
+                                required
+                              />
+                            </Form.Group>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-md-12">
+                          <div className="form-group">
+                            <label>Phone Number</label>
+                            <Form.Group controlId={`phone${index}`}>
+                              <PhoneInput
+                                country={"us"}
+                                value={phone}
+                                onChange={(phone) => setPhone(phone)}
+                              />
+                            </Form.Group>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   );
                 })}
-                <button className="btn btn-contactorange" disabled={isFetching}>
+                {/* <button className="btn btn-contactorange" disabled={isFetching}>
                   {isFetching ? "Booking..." : "Book"}
-                </button>
-              </Form>
-            </div>
-            <div className="col-12 col-md-12 col-lg-5 col-xl-4 side-bar left-side-bar">
-              <div className="row">
-                <div className="col-12 col-md-6 col-lg-12">
-                  <div className="side-bar-block detail-block style1 text-center">
-                    <div className="detail-img text-center">
-                      <a href="#">
-                        <img src={flightimage} className="img-fluid" />
-                      </a>
-                    </div>
+                </button> */}
+              </div>
+              <div className="col-12 col-md-12 col-lg-5 col-xl-4 side-bar left-side-bar">
+                <div className="row">
+                  <div className="container">
+                    <div className="card shadow-sm" style={{ width: "22rem;" }}>
+                      {/* <!-- Image Section --> */}
+                      <div className="card-header bg-light text-center p-3">
+                        <img
+                          src={flightimage}
+                          alt="Airplane"
+                          className="img-fluid"
+                          style={{ width: "50px;" }}
+                        />
+                      </div>
 
-                    <div className="detail-title">
-                      <h4>
-                        <a href="#">
-                          {origin} To {destination}
-                        </a>
-                      </h4>
-                      <p>Oneway Flight</p>
-                      <div className="rating"></div>
-                    </div>
+                      {/* <!-- Flight Info Section --> */}
+                      <div className="card-body text-center">
+                        <h5 className="card-title font-weight-bold">
+                          {origincity} {"to"} {destinationcity}
+                        </h5>
+                        <p className="card-text text-muted">
+                          {operating_carrier_flight_number},{" "}
+                          {location.state.flight.slices.length === 1
+                            ? "One Way Flight"
+                            : "Round Trip Flight"}
+                        </p>
 
-                    <div className="table-responsive">
-                      <table className="table table-hover">
-                        <tbody>
-                          <tr>
-                            <td>Departure</td>
-                            <td>{formattedDate}</td>
-                          </tr>
-                          <tr>
-                            <td>Time</td>
-                            <td>{formattedTime}</td>
-                          </tr>
-                          <tr>
-                            <td>Class</td>
-                            <td>{cabin}</td>
-                          </tr>
-                          <tr>
-                            <td>Stops</td>
-                            <td>Direct Flight</td>
-                          </tr>
-                          <tr>
-                            <td>Flight Duration</td>
-                            <td>
+                        <hr />
+
+                        {/* <!-- Flight Details --> */}
+                        <ul className="list-unstyled">
+                          <li className="d-flex justify-content-between">
+                            <strong>Departure:</strong>
+                            <span>{formattedDate}</span>
+                          </li>
+                          <li className="d-flex justify-content-between">
+                            <strong>Flight Duration:</strong>
+                            <span>
                               {" "}
                               {`${
                                 timedays > 0
@@ -428,26 +676,98 @@ const Contacts = (props) => {
                                     }`
                                   : ""
                               }`}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>Price</td>
-                            <td>{base_amount}</td>
-                          </tr>
-                          <tr>
-                            <td>Tax</td>
-                            <td>{tax_amount}</td>
-                          </tr>
-                          <tr>
-                            <td>Totel Price</td>
-                            <td>{price}</td>
-                          </tr>
-                        </tbody>
-                      </table>
+                            </span>
+                          </li>
+                          <li className="d-flex justify-content-between">
+                            <strong>className:</strong>
+                            <span>{cabin}</span>
+                          </li>
+                          <li className="d-flex justify-content-between">
+                            <strong>Stops:</strong>
+                            <span>{stops}</span>
+                          </li>
+                          <li className="d-flex justify-content-between">
+                            <strong>Aircraft Type:</strong>
+                            <span>{aircraftName}</span>
+                          </li>
+                        </ul>
+
+                        <hr />
+
+                        {/* <!-- Pricing Section --> */}
+                        <div className="d-flex justify-content-between">
+                          <span>
+                            <strong>Fare:</strong>
+                          </span>
+                          <span>{base_amount}</span>
+                        </div>
+                        <div className="d-flex justify-content-between">
+                          <span>
+                            <a href="#" className="text-primary">
+                              Taxes & Fees
+                            </a>
+                          </span>
+                          <span>{tax_amount}</span>
+                        </div>
+
+                        <hr />
+
+                        {/* <!-- Total Due Section --> */}
+                        <div className="d-flex justify-content-between">
+                          <h5 className="font-weight-bold">Total Due:</h5>
+                          <h5 className="font-weight-bold">{price}</h5>
+                        </div>
+
+                        {/* <!-- Button Section --> */}
+                        <div className="text-center mt-3">
+                          <button
+                            className="btn btn-primary btn-lg btn-block rounded-pill"
+                            disabled={isFetching}
+                          >
+                            {isFetching ? "Booking..." : "Buy Now"}
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
+            </div>
+          </Form>
+          <div className="col-12 col-md-12 col-lg-7 col-xl-8 content-side p-0">
+            <div className="agreement-section">
+              {/* Agreement of Purchase */}
+              <h5 className="font-weight-bold">Agreement of Purchase</h5>
+              <p className="text-dark">
+                By selecting <strong>"Buy now,"</strong> you agree to the terms
+                and conditions that are associated with this purchase.
+              </p>
+
+              {/* Terms and Condition Accordion */}
+              <Accordion>
+                <Card>
+                  <Card.Header className="d-flex justify-content-between align-items-center">
+                    <Accordion.Toggle
+                      as={Button}
+                      variant="link"
+                      eventKey="0"
+                      onClick={toggleTerms}
+                      className="w-100 text-left"
+                    >
+                      <strong>Terms and Condition</strong>
+                    </Accordion.Toggle>
+                    <span className="arrow">{isOpen ? "▲" : "▼"}</span>
+                  </Card.Header>
+                  <Accordion.Collapse eventKey="0">
+                    <Card.Body>
+                      <p className="text-dark">
+                        Here you can add the detailed terms and conditions text
+                        associated with the purchase.
+                      </p>
+                    </Card.Body>
+                  </Accordion.Collapse>
+                </Card>
+              </Accordion>
             </div>
           </div>
         </div>
@@ -456,4 +776,12 @@ const Contacts = (props) => {
   );
 };
 
-export default Contacts;
+const mapStateToProps = (state) => ({
+  flights: state.flights,
+});
+
+const mapDispatchToProps = {
+  findFlights,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Contacts);

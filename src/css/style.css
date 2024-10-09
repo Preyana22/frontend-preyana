@@ -433,8 +433,7 @@ nav.navbar{
 	margin:0px;
 	z-index:200;
 	height: 80px;
-	transition: background 0s,
-				height 0.2s;
+	transition: background 0s,height 0.2s;
 }
 
 
@@ -4032,6 +4031,12 @@ nav.navbar .container.padding {
 	color: #fff;
 }
 
+.pg-search-form .btn:hover,
+.Flight-info .btn:hover {
+	background-color: #ffd842;
+	color: #000;
+}
+
 /************ LG-BOOKING-FORM ***********/
 
 .lg-booking-form .lg-booking-form-heading{
@@ -6323,7 +6328,7 @@ nav.navbar .container.padding {
 	height: 20px;
 }
 #banner-sec .banner-image{
-	margin-top: -2rem;
+	margin-top: -1.5rem;
 }
 .sign-in-label
 {

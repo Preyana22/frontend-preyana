@@ -19,7 +19,7 @@ const LayoverInfo = (props) => {
 };
 
 export const MultiFlightInfo = (props) => {
-  console.log(props.data + "props.datass");
+  console.log("props.datass" + props.data);
   // const arrTime = props.data.slices[0].segments[0].arriving_at;
   // const depTime = props.data.slices[0].segments[0].departing_at;
   // const arrivalTime = new Date(arrTime).toLocaleTimeString([], {
@@ -30,6 +30,19 @@ export const MultiFlightInfo = (props) => {
   //   hour: "2-digit",
   //   minute: "2-digit",
   // });
+
+  const formatDuration = (duration) => {
+    // Extract hours, minutes, and seconds using a regular expression
+    const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+
+    // Get hours, minutes, seconds from match (if present, or default to 0)
+    const hours = match[1] ? parseInt(match[1], 10) : 0;
+    const minutes = match[2] ? parseInt(match[2], 10) : 0;
+    const seconds = match[3] ? parseInt(match[3], 10) : 0;
+
+    // Return a formatted string
+    return `${hours}h ${minutes}m ${seconds}s`;
+  };
 
   const iata_code =
     props.data.slices[0].segments[0].operating_carrier.iata_code;
@@ -60,6 +73,8 @@ export const MultiFlightInfo = (props) => {
     // year: "numeric",
     month: "short",
     day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   });
 
   const arrivaldatename = new Date(
@@ -69,6 +84,8 @@ export const MultiFlightInfo = (props) => {
     // year: "numeric",
     month: "short",
     day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   });
   // const originCode = props.data.slices[0].origin.iata_code;
   // const destinationCode = props.data.slices[0].destination.iata_code;
@@ -93,95 +110,74 @@ export const MultiFlightInfo = (props) => {
   return (
     <>
       <section className="Flight-info-details">
-        {/* <div className="detail-label">
-          
-          <a href="javascript:void(0)" onClick={() => toggleLabel( showHideLabel === 'Trip Details' ? 'Hide Details' : 'Trip Details') }>
-            {showHideLabel}
-          </a>
-        </div>
-   
-       { showHideLabel === 'Hide Details' &&  */}
-        <>
-          <div className="itinerary-card__travel-items itinerary-card__travel-items--with-footer">
-            <div className="itinerary-card__travel-item itinerary-card__travel-item--origin">
-              <p className="mb-0">
-                <strong className="mr-3">Depart:</strong> {departuredatename}
-                {","}
-                {name}
-                {" | "}
-                {aircraftName}
-              </p>
-            </div>
-
-            <div className="itinerary-card__travel-item itinerary-card__travel-item--segment-info">
-              <div></div>
-              <div></div>
-              <p className="mb-0">
-                <img
-                  className="airline-logo--small mr-4"
-                  src={img}
-                  alt="Logo for Duffel Airways"
-                  onerror="handleAirlineLogoError(this, 'ZZ')"
-                  id="logo-Heathrow Airport (LHR)-Duffel Airways-off_0000AdJAB7UV6XKZGN2MZH_0-arp_lhr_gb"
-                  phx-update="ignore"
-                />
-                {`${days > 0 ? `${days} day${days !== 1 ? "s" : ""}, ` : ""}${
-                  hours > 0 ? `${hours} hour${hours !== 1 ? "s" : ""}, ` : ""
-                }${
-                  minutes > 0
-                    ? `${minutes} minute${minutes !== 1 ? "s" : ""}`
-                    : ""
-                }`}
-
-                <span>•</span>
-                {name}
-                <span>•</span>
-                {aircraftName}
-                <span>•</span>
-                {operating_carrier_flight_number}
-                <span>•</span>
-                {cabin_class}
-              </p>
-            </div>
-
-            {/* <div className="itinerary-card__travel-item itinerary-card__travel-item--departure">
-              <div></div>
-              <span className="material-symbols-outlined">calendar_month</span>
-              <p>{arrivaldatename}</p>
-            </div> */}
-
-            {/* <div className="itinerary-card__travel-item itinerary-card__travel-item--origin">
-              <p>{departureTime}</p>
-              <span className="material-symbols-outlined">flight_takeoff</span>
-              <p>
-                Depart from {OriginName}-{originCode}
-              </p>
-            </div> */}
-
-            <div className="itinerary-card__travel-item itinerary-card__travel-item--destination">
-              <p className="mb-0">
-                <strong className="mr-3">Arrive at:</strong> {arrivaldatename}
-                {/* {destinationName}-{destinationCode} */}
-              </p>
-            </div>
-
-            {/* <div className="itinerary-card__travel-item itinerary-card__travel-item--arrival">
-              <div></div>
-              <span className="material-symbols-outlined">calendar_month</span>
-              <p></p>
-            </div> */}
+        {props.data.slices.map((flight) => (
+          <div
+            key={flight.comparison_key}
+            className="itinerary-card__travel-items itinerary-card__travel-items--with-footer"
+          >
+            {flight.segments.map((segment, index) => (
+              <div
+                key={segment.id}
+                className="itinerary-card__travel-item itinerary-card__travel-item--origin d-block"
+              >
+                <p className="mb-0">
+                  <strong className="mr-1">Depart:</strong>{" "}
+                  {new Date(segment.departing_at).toLocaleString("en-US", {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                  {","}
+                  <strong>
+                    {segment.origin.city_name} ({segment.origin.iata_code})
+                  </strong>
+                </p>
+                <div className="itinerary-card__travel-item itinerary-card__travel-item--segment-info">
+                  <div>
+                    <img
+                      className="airline-logo--small mr-4"
+                      src={segment.operating_carrier.logo_symbol_url}
+                      alt={`Logo for ${segment.operating_carrier.name}`}
+                      id={`logo-${segment.origin.iata_code}-${segment.operating_carrier.iata_code}`}
+                      phx-update="ignore"
+                    />
+                    <p className="mb-0">{segment.operating_carrier.name}</p>
+                  </div>
+                  <p className="mb-0">
+                    {formatDuration(segment.duration)}
+                    <span>•</span>
+                    {segment.origin.city_name}
+                    <span>•</span>
+                    {segment.operating_carrier_flight_number}
+                    <span>•</span>
+                    {segment.passengers[0].cabin_class_marketing_name}
+                  </p>
+                </div>
+                <div className="itinerary-card__travel-item itinerary-card__travel-item--destination">
+                  <p className="mb-0">
+                    <strong className="mr-1">Arrive at:</strong>{" "}
+                    {new Date(segment.arriving_at).toLocaleString("en-US", {
+                      weekday: "long",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                    {","}
+                    <strong>
+                      {segment.destination.city_name} (
+                      {segment.destination.iata_code})
+                    </strong>
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
-
-          {/*<React.Fragment>
-
-              <DetailLabel mainText={departureTime} subText={origin}></DetailLabel>
-              <DetailLabel mainText={arrivalTime} subText={destination}></DetailLabel>
-              <DetailLabel mainText={getTimeDifferece(timeDiff)} subText={'Total Duration'}></DetailLabel>
-              <PriceInfo amount={totalFare} />
-          </React.Fragment>*/}
-        </>
-
-        {/* } */}
+        ))}
       </section>
     </>
   );

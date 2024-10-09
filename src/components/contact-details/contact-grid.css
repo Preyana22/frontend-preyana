@@ -14,3 +14,60 @@
 	background:#010101;
 	color:white;
 }
+
+.bg-light{
+		background-color: #cde6f4 !important;
+}
+
+.react-tel-input .form-control
+{
+	width: 100% !important;
+}
+
+.content-side label{
+	font-size: 12px;
+}
+.form-control{
+	font-size: 0.8rem;
+}
+
+.custom-dropdown {
+	width: 100%;
+	padding: 8px;
+	font-size: 0.8rem;
+	border-radius: 4px;
+	border: 1px solid #ccc;
+}
+
+.country-dropdown {
+	background-color: #f0f8ff;
+}
+
+.region-dropdown {
+	background-color: #fffaf0;
+}
+
+.accordion .card-header {
+	background-color: #f8f9fa;
+border: 1px solid #00000024;
+	padding: 0rem;
+}
+
+.accordion .card-body {
+	font-size: 0.9rem;
+	line-height: 1.6;
+	border: 1px solid #00000024;
+}
+
+.accordion .btn-link {
+	text-decoration: none;
+	font-size: 0.8rem;
+	color: #000;
+}
+
+.accordion .btn-link:hover {
+	text-decoration: underline;
+}
+.accordion>.card:first-of-type{
+		border-bottom: 1px solid #00000024;
+}

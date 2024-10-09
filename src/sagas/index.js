@@ -3,17 +3,17 @@ import { findPaths } from "./../lib/flightManager";
 import { transformFlightDates } from "./../lib/utils";
 
 function* fetchFlights() {
-  try {
-    //https://my-json-server.typicode.com/mneema/mock-db/flights
-    const json = yield fetch("http://3.128.255.176:3000/airlines").then(
-      (response) => response.json()
-    );
-    return json;
-    // yield put({ type: "GET_FLIGHTS_SUCCESS", json: transformFlightDates(json) });
-  } catch (e) {
-    console.log("error", e);
-    yield put({ type: "GET_FLIGHTS_FAIL", error: e });
-  }
+  // try {
+  //   //https://my-json-server.typicode.com/mneema/mock-db/flights
+  //   const json = yield fetch("http://192.168.1.92:3000/airlines").then(
+  //     (response) => response.json()
+  //   );
+  //   return json;
+  //   // yield put({ type: "GET_FLIGHTS_SUCCESS", json: transformFlightDates(json) });
+  // } catch (e) {
+  //   console.log("error", e);
+  //   yield put({ type: "GET_FLIGHTS_FAIL", error: e });
+  // }
 }
 
 function* findFlights(payload) {
@@ -39,12 +39,12 @@ function* findFlights(payload) {
     } = payload.payload;
     const listOfFlights = {};
     const json1 = yield fetch(
-      "http://3.128.255.176:3000/airlines/test",
+      "http://192.168.1.92:3000/airlines/test",
       requestOptions
     ).then((response) => response.json());
     console.log(JSON.stringify(json1));
 
-    /*const json = yield fetch('http://3.128.255.176:3000/airlines')
+    /*const json = yield fetch('http://192.168.1.92:3000/airlines')
       .then(response => response.json());*/
     yield put({ type: "GET_FLIGHTS_SUCCESS", json: json1 });
     yield put({

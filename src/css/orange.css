@@ -350,6 +350,7 @@ nav.navbar .navbar-collapse .navbar-nav li.dropdown ul.dropdown-menu li.dropdown
 
 .dropdown-item {
 	background: unset;
+	font-size: 0.8rem;
 }
 
 nav.navbar#mynavbar-1 li.dropdown-submenu:hover .dropdown-toggle {
@@ -3228,7 +3229,7 @@ background: transparent;
 		Custom Forms
    ----------------------------------------------------- */
 .wrapper-border{
-	border-bottom: 3px solid;
+	border-bottom: 2px solid;
     border-color: #004eb7
 }
 .custom-form{

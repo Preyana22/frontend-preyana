@@ -62,6 +62,7 @@ import TermsAndCondition from "./components/terms-and-condition";
 import AdChoices from "./components/ad-choices";
 import MyBookings from "./components/booking/my-bookings/my-bookings";
 import SingleBookingDetails from "./components/booking/single-booking/single-booking-details";
+import Success from "./components/success";
 
 function App(props) {
   useEffect(() => {
@@ -373,6 +374,16 @@ function App(props) {
             <Fragment>
               <InnerHeader />
               <SingleBookingDetails />
+              <Footer />
+            </Fragment>
+          }
+        />
+        <Route
+          path="/success"
+          element={
+            <Fragment>
+              <InnerHeader />
+              <Success />
               <Footer />
             </Fragment>
           }

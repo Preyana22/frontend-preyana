@@ -48,7 +48,7 @@ const Login = (props) => {
         console.log("Form data:", formData);
         const configuration = {
           method: "post",
-          url: "http://3.128.255.176:3000/authentication/log-in",
+          url: "http://192.168.1.92:3000/authentication/log-in",
           data: {
             email: formData.username,
             password: formData.password,
@@ -96,7 +96,7 @@ const Login = (props) => {
                     <h3>Sign In</h3>
                     <form onSubmit={handleSubmit}>
                       <div className="form-group">
-                        <label class="custom-label">Username</label>
+                        <label class="custom-label">Email</label>
                         <input
                           type="text"
                           className={`form-control ${
@@ -204,7 +204,9 @@ const Login = (props) => {
                           />
                         </Link>
                       </p>
-
+                      <p className="text-rimary mt-3">
+                        <Link to="/forgot">Forgot Password ?</Link>
+                      </p>
                       {/* <Link className="simple-link" to="/forgot">
                         {" "}
                         Forgot Password ?

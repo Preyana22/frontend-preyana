@@ -39,23 +39,30 @@ export const FlightInfo = (props) => {
   };
   return (
     <Card>
-      <section
-        className={`Flight-info ${isMultiMode ? "gray-background" : ""}`}
-      >
-        {/* <FlightLogo data={flight}></FlightLogo> */}
+      <div className="row">
+        <div className="col-12 col-xl-8 col-lg-8 col-md-8 col-sm-12 col-xs-12  p-0">
+          <MultiFlightInfo data={flight} />
+        </div>
 
-        {/* <DetailLabel mainText={name} subText={flightNo}></DetailLabel>
+        <div
+          className={`Flight-info ${
+            isMultiMode ? "gray-background" : ""
+          } col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12`}
+        >
+          {/* <FlightLogo data={flight}></FlightLogo> */}
+
+          {/* <DetailLabel mainText={name} subText={flightNo}></DetailLabel>
 
         <DetailLabel mainText={arrivalTime} subText={destination}></DetailLabel>
         <DetailLabel mainText="Duration" subText={time}></DetailLabel> */}
-        {isMultiMode ? null : <PriceInfo amount={price} />}
-        {isMultiMode ? null : (
-          <Button className="btn btn-orange" onClick={navigateToContacts}>
-            Book Now
-          </Button>
-        )}
-      </section>
-      <MultiFlightInfo data={flight} />
+          {isMultiMode ? null : <PriceInfo amount={price} />}
+          {isMultiMode ? null : (
+            <Button className="btn btn-orange" onClick={navigateToContacts}>
+              Book Now
+            </Button>
+          )}
+        </div>
+      </div>
     </Card>
   );
 };

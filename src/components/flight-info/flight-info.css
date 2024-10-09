@@ -5,15 +5,14 @@
   display: -ms-flexbox;
   display: -webkit-flex;
   flex-wrap: wrap;
-    justify-content: flex-end;
-  align-items: center;
+    justify-content: center;
+  align-items: start;
   padding: 10px;
 }
 .Flight-info p{
   font-weight: bold !important;
     color: #000000 !important;
     font-size: 20px;
-    margin-top: 15px;
     margin-right: 15px;
 }
 .gray-background {
