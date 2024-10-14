@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { Typeahead } from "react-bootstrap-typeahead";
 import Form from "react-bootstrap/Form";
@@ -17,6 +17,7 @@ import { Link } from "react-router-dom";
 import { findFlights } from "../../actions";
 import { connect } from "react-redux";
 import { CountryDropdown, RegionDropdown } from "react-country-region-selector";
+import { parsePhoneNumberFromString } from "libphonenumber-js";
 
 const formatDate = (timestamp) => {
   const date = new Date(timestamp);
@@ -43,12 +44,14 @@ const formatDate = (timestamp) => {
 };
 
 const Contacts = (props) => {
-  const [selectedDay, setSelectedDay] = useState("");
-  const [selectedMonth, setSelectedMonth] = useState("");
-  const [selectedYear, setSelectedYear] = useState("");
+  const [selectedDay, setSelectedDay] = useState([]);
+  const [selectedMonth, setSelectedMonth] = useState([]);
+  const [selectedYear, setSelectedYear] = useState([]);
   const [country, setCountry] = useState("");
   const [region, setRegion] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const [error, setError] = useState("");
+  const [phone, setPhone] = useState("");
 
   const toggleTerms = () => {
     setIsOpen(!isOpen);
@@ -59,9 +62,26 @@ const Contacts = (props) => {
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 100 }, (_, i) => currentYear - i); // Last 100 years
 
-  const handleDayChange = (e) => setSelectedDay(e.target.value);
-  const handleMonthChange = (e) => setSelectedMonth(e.target.value);
-  const handleYearChange = (e) => setSelectedYear(e.target.value);
+  // Handle change for day
+  const handleDayChange = (index, event) => {
+    const newSelectedDays = [...selectedDay];
+    newSelectedDays[index] = event.target.value;
+    setSelectedDay(newSelectedDays);
+  };
+
+  // Handle change for month
+  const handleMonthChange = (index, event) => {
+    const newSelectedMonths = [...selectedMonth];
+    newSelectedMonths[index] = event.target.value;
+    setSelectedMonth(newSelectedMonths);
+  };
+
+  // Handle change for year
+  const handleYearChange = (index, event) => {
+    const newSelectedYears = [...selectedYear];
+    newSelectedYears[index] = event.target.value;
+    setSelectedYear(newSelectedYears);
+  };
 
   const location = useLocation();
   console.log("location.state.flight", location.state.flight);
@@ -105,7 +125,6 @@ const Contacts = (props) => {
   const cabin =
     location.state.flight.slices[0].segments[0].passengers[0]
       .cabin_class_marketing_name;
-  const [phone, setPhone] = useState("");
   const [isFetching, setIsFetching] = useState(false);
   const navigate = useNavigate();
   let titles, genderdetails;
@@ -124,15 +143,19 @@ const Contacts = (props) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const { flights } = props;
+    let hasError = false; // Track if there's any validation error
+    let contactDetails = [];
 
-    arr.map((item, index) => {
-      let familyname1 = "familyname" + index;
-      let given_name1 = "given_name" + index;
-      let email1 = "email" + index;
-      let address1 = "address1" + index;
-      let address2 = "address2" + index;
-      let city = "city" + index;
-      let postal = "postal" + index;
+    // Validate and iterate over the form data
+    arr.forEach((item, index) => {
+      const familyname1 = `familyname${index}`;
+      const given_name1 = `given_name${index}`;
+      const email1 = `email${index}`;
+      const address1 = `address1${index}`;
+      const address2 = `address2${index}`;
+      const city = `city${index}`;
+      const postal = `postal${index}`;
+
       const day = event.target[`dayOfBirth${index}`].value;
       const month = event.target[`monthOfBirth${index}`].value;
       const year = event.target[`yearOfBirth${index}`].value;
@@ -141,6 +164,30 @@ const Contacts = (props) => {
         2,
         "0"
       )}`; // YYYY-MM-DD format
+
+      // **Validation Logic**
+      if (!event.target[familyname1].value) {
+        alert(`Family name is required for passenger ${index + 1}`);
+        hasError = true;
+      }
+      if (!event.target[given_name1].value) {
+        alert(`Given name is required for passenger ${index + 1}`);
+        hasError = true;
+      }
+      if (!event.target[email1].value) {
+        alert(`Email is required for passenger ${index + 1}`);
+        hasError = true;
+      }
+      if (!genderdetails || !genderdetails.state || !genderdetails.state.text) {
+        alert(`Gender is required for passenger ${index + 1}`);
+        hasError = true;
+      }
+
+      if (!event.target[familyname1].value) {
+        alert(`Family name is required for passenger ${index + 1}`);
+        hasError = true;
+      }
+      // Continue adding other field validations as needed...
 
       contactDetails.push({
         title: titles.state.text,
@@ -162,10 +209,16 @@ const Contacts = (props) => {
       });
     });
 
+    // If there's an error, stop the form submission
+    if (hasError) {
+      return;
+    }
+
+    // Proceed with API calls if no errors
     if (localStorage.getItem("userId") === null) {
       const configuration = {
         method: "post",
-        url: "http://192.168.1.92:3000/authentication/register",
+        url: "http://3.128.255.176:3000/authentication/register",
         data: {
           email: event.target["email0"].value,
           userName: event.target["email0"].value,
@@ -178,48 +231,36 @@ const Contacts = (props) => {
           console.log(result.data.message);
         })
         .catch((error) => {
+          console.log("Error: " + error);
           if (error.response) {
-            // Check if the error status is 400
             if (error.response.status === 400) {
-              console.log("Bad Request", error.response.data); // Log the error response
-              alert(`Error: ${error.response.data.message}`); // Show error message to user
+              alert(`Error: ${error.response.data.message}`);
             } else {
-              // Handle other status codes
               alert(`Error: ${error.response.status}`);
             }
           } else {
-            // Handle network or other errors
-            console.log("Error", error);
             alert("Something went wrong. Please try again later.");
           }
         });
     }
 
-    console.log("fsddddddddddddddd");
     setIsFetching(true);
-
-    console.log("location");
-    console.log(location);
 
     const amount = location.state.flight.total_amount;
     const currency = location.state.flight.total_currency;
     const type = "balance";
 
     const payments = { type: type, amount: amount, currency: currency };
-
-    var test = {
+    const test = {
       type: "hold",
       selected_offers: [contactDetails[0].offer_id],
       passengers: contactDetails,
       payments: payments,
     };
 
-    console.log("test");
-    console.log(test);
-
     try {
       const response = await axios.post(
-        "http://192.168.1.92:3000/airlines/book",
+        "http://3.128.255.176:3000/airlines/book",
         test,
         {
           headers: {
@@ -229,29 +270,20 @@ const Contacts = (props) => {
       );
 
       const { data, errors } = response.data;
-      console.log("Response Data:", data.orderResponse);
-      console.log("Response Data:", data.orderResponse?.errors || []);
-      console.log("Response Errors:", errors);
 
       if (data) {
-        console.log("contact details data", data);
         navigate("/booking", { state: { contactDetails, data } });
       } else {
         console.error("Errors:", errors);
       }
     } catch (error) {
-      if (error.response) {
-        // Handle the case where the server responded with an error status
-        console.error("Response Error:", error.response.data);
-        console.error("Status Code:", error.response.status);
-        console.error("Headers:", error.response.headers);
-      } else if (error.request) {
-        // Handle the case where no response was received
-        console.error("No response received:", error.request);
-      } else {
-        // Handle other errors
-        console.error("Error", error.message);
-      }
+      // if (error.response) {
+      //   console.error("Response Error:", error.response.data);
+      // } else if (error.request) {
+      //   console.error("No response received:", error.request);
+      // } else {
+      //   console.error("Error", error.message);
+      // }
     }
     setIsFetching(false);
   };
@@ -276,6 +308,21 @@ const Contacts = (props) => {
     return result;
   };
 
+  useEffect(() => {
+    if (phone) {
+      const phoneNumber = parsePhoneNumberFromString(`+${phone}`);
+
+      if (!phoneNumber || !phoneNumber.isValid()) {
+        setError("Invalid phone number. Please enter a valid phone number.");
+      } else {
+        setError("");
+        console.log(
+          "Phone number is valid:",
+          phoneNumber.formatInternational()
+        );
+      }
+    }
+  }, [phone]); // Validate phone number every time it changes
   const onSearchResultClick = () => {
     let criteria = {}; // Change to 'let' so it can be reassigned
     const originStateText = localStorage.getItem("origin");
@@ -374,7 +421,16 @@ const Contacts = (props) => {
                       <div className="row">
                         <div className="col-6 col-md-6">
                           <div className="form-group">
-                            <label>Title</label>
+                            <label>
+                              <sup>
+                                <small>
+                                  <i className="fa fa-asterisk text-secondary mr-1">
+                                    {" "}
+                                  </i>
+                                </small>
+                              </sup>
+                              Title
+                            </label>
                             <Form.Group controlId="titles">
                               <Typeahead
                                 labelKey="titles"
@@ -389,7 +445,17 @@ const Contacts = (props) => {
 
                         <div className="col-6 col-md-6">
                           <div className="form-group">
-                            <label>Given Name</label>
+                            <label>
+                              {" "}
+                              <sup>
+                                <small>
+                                  <i className="fa fa-asterisk text-secondary mr-1">
+                                    {" "}
+                                  </i>
+                                </small>
+                              </sup>
+                              Given Name
+                            </label>
 
                             <Form.Group controlId={`given_name${index}`}>
                               <Form.Control
@@ -407,7 +473,17 @@ const Contacts = (props) => {
                       <div className="row">
                         <div className="col-md-6">
                           <div className="form-group">
-                            <label>Family name</label>
+                            <label>
+                              {" "}
+                              <sup>
+                                <small>
+                                  <i className="fa fa-asterisk text-secondary mr-1">
+                                    {" "}
+                                  </i>
+                                </small>
+                              </sup>
+                              Family name
+                            </label>
 
                             <Form.Group controlId={`familyname${index}`}>
                               <Form.Control
@@ -440,7 +516,17 @@ const Contacts = (props) => {
                       <div className="row">
                         <div className="col-md-6">
                           <div className="form-group">
-                            <label>Email Address</label>
+                            <label>
+                              {" "}
+                              <sup>
+                                <small>
+                                  <i className="fa fa-asterisk text-secondary mr-1">
+                                    {" "}
+                                  </i>
+                                </small>
+                              </sup>
+                              Email Address
+                            </label>
 
                             <Form.Group controlId={`email${index}`}>
                               <Form.Control
@@ -455,14 +541,24 @@ const Contacts = (props) => {
                         </div>
                         <div className="col-md-6">
                           <div className="form-group">
-                            <label>Date Of Birth</label>
+                            <label>
+                              {" "}
+                              <sup>
+                                <small>
+                                  <i className="fa fa-asterisk text-secondary mr-1">
+                                    {" "}
+                                  </i>
+                                </small>
+                              </sup>
+                              Date Of Birth
+                            </label>
                             <div className="row">
                               <div className="col-4">
                                 <select
                                   className="form-control"
                                   name={`dayOfBirth${index}`}
-                                  value={selectedDay}
-                                  onChange={handleDayChange}
+                                  value={selectedDay[index]}
+                                  onChange={(e) => handleDayChange(index, e)}
                                   required
                                 >
                                   <option value="">Day</option>
@@ -477,8 +573,8 @@ const Contacts = (props) => {
                                 <select
                                   className="form-control"
                                   name={`monthOfBirth${index}`}
-                                  value={selectedMonth}
-                                  onChange={handleMonthChange}
+                                  value={selectedMonth[index]}
+                                  onChange={(e) => handleMonthChange(index, e)}
                                   required
                                 >
                                   <option value="">Month</option>
@@ -493,8 +589,8 @@ const Contacts = (props) => {
                                 <select
                                   className="form-control"
                                   name={`yearOfBirth${index}`}
-                                  value={selectedYear}
-                                  onChange={handleYearChange}
+                                  value={selectedYear[index]}
+                                  onChange={(e) => handleYearChange(index, e)}
                                   required
                                 >
                                   <option value="">Year</option>
@@ -512,7 +608,17 @@ const Contacts = (props) => {
                       <div className="row">
                         <div className="col-md-12">
                           <div className="form-group">
-                            <label>Address Line 1</label>
+                            <label>
+                              {" "}
+                              <sup>
+                                <small>
+                                  <i className="fa fa-asterisk text-secondary mr-1">
+                                    {" "}
+                                  </i>
+                                </small>
+                              </sup>
+                              Address Line 1
+                            </label>
 
                             <Form.Group controlId={`address1${index}`}>
                               <Form.Control
@@ -534,8 +640,7 @@ const Contacts = (props) => {
                                 type="text"
                                 className="form-control"
                                 name={`address2${index}`}
-                                placeholder="Address line 1"
-                                required
+                                placeholder="Address line 2"
                               />
                             </Form.Group>
                           </div>
@@ -544,7 +649,17 @@ const Contacts = (props) => {
                       <div className="row">
                         <div className="col-md-12">
                           <div className="form-group">
-                            <label>Country</label>
+                            <label>
+                              {" "}
+                              <sup>
+                                <small>
+                                  <i className="fa fa-asterisk text-secondary mr-1">
+                                    {" "}
+                                  </i>
+                                </small>
+                              </sup>
+                              Country
+                            </label>
 
                             <Form.Group controlId={`country${index}`}>
                               <CountryDropdown
@@ -557,7 +672,17 @@ const Contacts = (props) => {
                         </div>
                         <div className="col-md-4">
                           <div className="form-group">
-                            <label>City/Town/Department</label>
+                            <label>
+                              {" "}
+                              <sup>
+                                <small>
+                                  <i className="fa fa-asterisk text-secondary mr-1">
+                                    {" "}
+                                  </i>
+                                </small>
+                              </sup>
+                              City/Town/Department
+                            </label>
 
                             <Form.Group controlId={`city${index}`}>
                               <Form.Control
@@ -572,7 +697,17 @@ const Contacts = (props) => {
                         </div>
                         <div className="col-md-4">
                           <div className="form-group">
-                            <label>State/Province/Region</label>
+                            <label>
+                              {" "}
+                              <sup>
+                                <small>
+                                  <i className="fa fa-asterisk text-secondary mr-1">
+                                    {" "}
+                                  </i>
+                                </small>
+                              </sup>
+                              State/Province/Region
+                            </label>
 
                             <Form.Group controlId={`region${index}`}>
                               <RegionDropdown
@@ -586,7 +721,17 @@ const Contacts = (props) => {
                         </div>
                         <div className="col-md-4">
                           <div className="form-group">
-                            <label>Zip/Postal Code</label>
+                            <label>
+                              {" "}
+                              <sup>
+                                <small>
+                                  <i className="fa fa-asterisk text-secondary mr-1">
+                                    {" "}
+                                  </i>
+                                </small>
+                              </sup>
+                              Zip/Postal Code
+                            </label>
 
                             <Form.Group controlId={`postal${index}`}>
                               <Form.Control
@@ -606,10 +751,13 @@ const Contacts = (props) => {
                             <label>Phone Number</label>
                             <Form.Group controlId={`phone${index}`}>
                               <PhoneInput
-                                country={"us"}
+                                country={"us"} // Default country
                                 value={phone}
                                 onChange={(phone) => setPhone(phone)}
                               />
+                              {error && (
+                                <div className="error text-danger">{error}</div>
+                              )}
                             </Form.Group>
                           </div>
                         </div>
@@ -699,7 +847,7 @@ const Contacts = (props) => {
                           <span>
                             <strong>Fare:</strong>
                           </span>
-                          <span>{base_amount}</span>
+                          <span>{"$ " + base_amount}</span>
                         </div>
                         <div className="d-flex justify-content-between">
                           <span>
@@ -707,7 +855,7 @@ const Contacts = (props) => {
                               Taxes & Fees
                             </a>
                           </span>
-                          <span>{tax_amount}</span>
+                          <span>{"$ " + tax_amount}</span>
                         </div>
 
                         <hr />
@@ -715,7 +863,7 @@ const Contacts = (props) => {
                         {/* <!-- Total Due Section --> */}
                         <div className="d-flex justify-content-between">
                           <h5 className="font-weight-bold">Total Due:</h5>
-                          <h5 className="font-weight-bold">{price}</h5>
+                          <h5 className="font-weight-bold">{"$ " + price}</h5>
                         </div>
 
                         {/* <!-- Button Section --> */}

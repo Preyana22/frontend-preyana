@@ -37,7 +37,7 @@ const SingleBookingDetails = (props) => {
 
     const configuration = {
       method: "get",
-      url: `http://192.168.1.92:3000/booking/singleorder/${bookingId}`,
+      url: `http://3.128.255.176:3000/booking/singleorder/${bookingId}`,
       headers: { "Content-Type": "application/json" },
     };
     try {
@@ -98,7 +98,7 @@ const SingleBookingDetails = (props) => {
   const cancelBooking = async (bookingId) => {
     console.log("Booking ID:", bookingId);
 
-    const baseURL = "http://192.168.1.92:3000/booking";
+    const baseURL = "http://3.128.255.176:3000/booking";
     const headers = { "Content-Type": "application/json" };
 
     // Fetch cancellation details
@@ -127,7 +127,7 @@ const SingleBookingDetails = (props) => {
 
   // Confirm cancellation
   const confirmCancellation = async (cancelId) => {
-    const baseURL = "http://192.168.1.92:3000/booking";
+    const baseURL = "http://3.128.255.176:3000/booking";
     const headers = { "Content-Type": "application/json" };
 
     try {
@@ -154,7 +154,7 @@ const SingleBookingDetails = (props) => {
 
   // Update booking status
   const updateBookingStatus = async () => {
-    const baseURL = "http://192.168.1.92:3000/booking";
+    const baseURL = "http://3.128.255.176:3000/booking";
     const headers = { "Content-Type": "application/json" };
 
     if (location.state && location.state.pkId !== undefined) {

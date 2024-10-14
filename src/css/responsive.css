@@ -4540,3 +4540,17 @@ Author:			Star Travel
 		margin:0px 7px;
 	}
 }
+
+
+@media (max-width: 992px) {
+	.navbar-nav {
+		flex-direction: column !important;
+		align-items: flex-start;
+	}
+		.collapse.show {
+			display: block !important;
+		}
+				.navbar-nav .nav-item {
+					margin-bottom: 10px;
+				}
+}

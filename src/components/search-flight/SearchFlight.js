@@ -29,7 +29,7 @@ const ErrorLabel = (props) => {
   return <label style={{ color: "red" }}>{props.message}</label>;
 };
 
-const cabin_details = ["Economy", "Premium Economy", "Business", "First"];
+var cabin_details = ["Economy", "Premium Economy", "Business", "First"];
 
 export const SearchFlight = (props) => {
   const [airportsData, setAirports] = useState([]);
@@ -53,6 +53,13 @@ export const SearchFlight = (props) => {
   // Toggle dropdown open/close
   const toggleDropdown = (isOpen) => {
     setIsDropdownOpen(isOpen);
+  };
+
+  // Handler for swapping origin and destination
+  const handleSwap = () => {
+    const originTemp = selectedOrigin;
+    setSelectedOrigin(selectedDestination);
+    setSelectedDestination(originTemp);
   };
 
   // Clear localStorage when navigating to the home page
@@ -213,9 +220,13 @@ export const SearchFlight = (props) => {
   };
 
   const getAirports = async (search) => {
+    if (!search) {
+      // If search is blank, null, or undefined, do not proceed
+      return;
+    }
     try {
       const { data } = await axios.get(
-        `http://192.168.1.92:3000/airlines/airports/` + search
+        `http://3.128.255.176:3000/airlines/airports/` + search
       );
 
       if (data.data) {
@@ -243,13 +254,19 @@ export const SearchFlight = (props) => {
   // console.log(status);
   let invalidFields = {};
 
+  const getCabinClassValue = () => {
+    const cabinClassElement = document.getElementById("cabinclass");
+    const cabinClassValue = cabinClassElement ? cabinClassElement.value : "";
+    return cabinClassValue;
+  };
   const handleSubmit1 = (event) => {
     let cabinValue;
-    console.log(selectedCabinClass);
-    if (selectedCabinClass == "Premium Economy") {
+    const cabinClassValue = getCabinClassValue();
+
+    if (cabinClassValue == "Premium Economy") {
       cabinValue = "premium_economy";
     } else {
-      cabinValue = selectedCabinClass;
+      cabinValue = cabinClassValue;
     }
     // console.log(isReturn);
     event.preventDefault();
@@ -281,7 +298,7 @@ export const SearchFlight = (props) => {
       Adults.push(infantData);
     }
     // console.log(Adults);
-    console.log("origin.state.text" + origin.state.text);
+
     const originStateText = origin.state.text;
     const originCode = originStateText.match(/\(([^)]+)\)/)[1]; // Extracts the code within parentheses
     console.log(originCode); // Output: IND
@@ -316,11 +333,7 @@ export const SearchFlight = (props) => {
     }
     // console.log(criteria);
 
-    if (!cabin_details.includes(selectedCabinClass)) {
-      console.log(
-        "selectedCabinClass valid: " +
-          !cabin_details.includes(selectedCabinClass)
-      );
+    if (!cabin_details.includes(cabinClassValue)) {
       invalidFields.cabinclass = true;
     }
 
@@ -518,8 +531,12 @@ export const SearchFlight = (props) => {
                     <div className="page-search-form">
                       <Form onSubmit={handleSubmit1}>
                         <div className="row mt-3">
+                          {/* Trip Type Selection */}
                           <div className="col-12 col-md-6 col-lg-3 col-xl-3">
                             <div className="form-group">
+                              <label htmlFor="tripType" className="form-label">
+                                Trip Type
+                              </label>
                               <div
                                 className="headerSearchTripItem"
                                 ref={dropdownRef}
@@ -530,7 +547,7 @@ export const SearchFlight = (props) => {
                                     tripOptions ? "arrow-up" : "arrow-down"
                                   }`}
                                 >
-                                  {isReturn == true ? "Rounds Trip" : "One Way"}
+                                  {isReturn ? "Round Trip" : "One Way"}
                                 </span>
                                 {tripOptions && (
                                   <div className="tripoptions">
@@ -548,21 +565,21 @@ export const SearchFlight = (props) => {
                                               setFlightType(true);
                                               setTimeout(() => {
                                                 setTripOptions(false);
-                                              }, 100); // Delay hiding to ensure the selection is registered
+                                              }, 100);
                                             }}
                                           />
                                           <Form.Check
                                             inline
                                             checked={!isReturn}
                                             type="radio"
-                                            label="One way"
+                                            label="One Way"
                                             name="flightType"
                                             id="formHorizontalRadios1"
                                             onChange={(e) => {
                                               setFlightType(false);
                                               setTimeout(() => {
                                                 setTripOptions(false);
-                                              }, 100); // Delay hiding to ensure the selection is registered
+                                              }, 100);
                                             }}
                                           />
                                         </Form.Group>
@@ -573,8 +590,16 @@ export const SearchFlight = (props) => {
                               </div>
                             </div>
                           </div>
+
+                          {/* Cabin Class Selection */}
                           <div className="col-12 col-md-6 col-lg-3 col-xl-3">
                             <Form.Group controlId="cabinclass">
+                              <label
+                                htmlFor="cabinclass"
+                                className="form-label"
+                              >
+                                Cabin Class
+                              </label>
                               <div className="select-container">
                                 <Form.Control
                                   as="select"
@@ -599,12 +624,20 @@ export const SearchFlight = (props) => {
                                 ></span>
                               </div>
                               {status.cabinclass && (
-                                <ErrorLabel message="Please select cabin class"></ErrorLabel>
+                                <ErrorLabel message="Please select cabin class" />
                               )}
                             </Form.Group>
                           </div>
+
+                          {/* Passengers Options */}
                           <div className="col-12 col-md-6 col-lg-3 col-xl-3">
                             <div className="form-group">
+                              <label
+                                htmlFor="passengers"
+                                className="form-label"
+                              >
+                                Passengers
+                              </label>
                               <div
                                 className="headerSearchItem"
                                 ref={dropdownSearchRef}
@@ -621,11 +654,12 @@ export const SearchFlight = (props) => {
                                 </span>
                                 {openOptions && (
                                   <div className="options">
+                                    {/* Adult Counter */}
                                     <div className="optionItem">
                                       <span className="optionText">Adult</span>
                                       <div className="optionCounter">
                                         <button
-                                          type="button" // Prevents the button from submitting the form
+                                          type="button"
                                           disabled={options.adult <= 1}
                                           className="optionCounterButton"
                                           onClick={() =>
@@ -638,8 +672,8 @@ export const SearchFlight = (props) => {
                                           {options.adult}
                                         </span>
                                         <button
-                                          type="button" // Prevents the button from submitting the form
-                                          disabled={options.children >= 6}
+                                          type="button"
+                                          disabled={options.adult >= 6}
                                           className="optionCounterButton"
                                           onClick={() =>
                                             handleOption("adult", "i")
@@ -649,13 +683,15 @@ export const SearchFlight = (props) => {
                                         </button>
                                       </div>
                                     </div>
+
+                                    {/* Children Counter */}
                                     <div className="optionItem">
                                       <span className="optionText">
                                         Children
                                       </span>
                                       <div className="optionCounter">
                                         <button
-                                          type="button" // Prevents the button from submitting the form
+                                          type="button"
                                           disabled={options.children <= 0}
                                           className="optionCounterButton"
                                           onClick={() =>
@@ -668,7 +704,7 @@ export const SearchFlight = (props) => {
                                           {options.children}
                                         </span>
                                         <button
-                                          type="button" // Prevents the button from submitting the form
+                                          type="button"
                                           disabled={options.children >= 5}
                                           className="optionCounterButton"
                                           onClick={() =>
@@ -679,11 +715,13 @@ export const SearchFlight = (props) => {
                                         </button>
                                       </div>
                                     </div>
+
+                                    {/* Infant Counter */}
                                     <div className="optionItem">
                                       <span className="optionText">Infant</span>
                                       <div className="optionCounter">
                                         <button
-                                          type="button" // Prevents the button from submitting the form
+                                          type="button"
                                           disabled={options.infant <= 0}
                                           className="optionCounterButton"
                                           onClick={() =>
@@ -696,7 +734,7 @@ export const SearchFlight = (props) => {
                                           {options.infant}
                                         </span>
                                         <button
-                                          type="button" // Prevents the button from submitting the form
+                                          type="button"
                                           disabled={options.infant >= 4}
                                           className="optionCounterButton"
                                           onClick={() =>
@@ -725,6 +763,7 @@ export const SearchFlight = (props) => {
                                   <div className="col-12 col-md-6 col-lg-3 col-xl-3">
                                     <div className="form-group left-icon">
                                       <Form.Group controlId="origin">
+                                        <Form.Label>Origin</Form.Label>
                                         <Typeahead
                                           labelKey="origin"
                                           options={airportsData}
@@ -744,12 +783,17 @@ export const SearchFlight = (props) => {
                                       </Form.Group>
                                     </div>
                                   </div>
-                                  <div className="">
-                                    <img src={inoutimage} alt="from-to-image" />
+                                  {/* Swap Button */}
+                                  <div
+                                    className="interchange-icon"
+                                    onClick={handleSwap}
+                                  >
+                                    <img src={inoutimage} alt="swap icon" />
                                   </div>
                                   <div className="col-12 col-md-6 col-lg-3 col-xl-3">
                                     <div className="form-group left-icon">
                                       <Form.Group controlId="destination">
+                                        <Form.Label>Destination</Form.Label>
                                         <Typeahead
                                           labelKey="destination"
                                           options={airportsData}
@@ -764,7 +808,6 @@ export const SearchFlight = (props) => {
                                         {status.destination && (
                                           <ErrorLabel message="Please enter a valid airport"></ErrorLabel>
                                         )}
-
                                         <img
                                           src={locationimage}
                                           alt="from-to-image"
@@ -779,6 +822,9 @@ export const SearchFlight = (props) => {
                                       <div className="col-6 col-md-6">
                                         <div className="form-group">
                                           <Form.Group controlId="formGriddateOfDep">
+                                            <Form.Label>
+                                              Departure Date
+                                            </Form.Label>
                                             <Form.Control
                                               type="date"
                                               className="form-control dpd1"
@@ -804,20 +850,20 @@ export const SearchFlight = (props) => {
                                       <div className="col-6 col-md-6">
                                         <div className="form-group">
                                           <Form.Group controlId="formGriddateOfReturn">
+                                            <Form.Label>Return Date</Form.Label>
                                             <Form.Control
                                               type="date"
                                               className="form-control dpd1"
                                               name="returnDate"
                                               required
                                               placeholder="Return Date"
-                                              min={dateOfDep} // Set the minimum date to today
+                                              min={selectedDateOfDep} // Set the minimum date to the selected departure date
                                               value={selectedDateOfRet} // Bind the input value to the state
                                               onChange={handleDateOfRetChange}
                                             />
                                             {status.returnDate && (
                                               <ErrorLabel message="Please enter a valid return date"></ErrorLabel>
                                             )}
-
                                             <img
                                               src={calendarimage}
                                               alt="from-to-image"
@@ -829,7 +875,7 @@ export const SearchFlight = (props) => {
                                     </div>
                                   </div>
                                   <div className="col-12 col-md-12 col-lg-1 col-xl-1">
-                                    <button className="btn btn-orange">
+                                    <button className="btn btn-orange searchbtn">
                                       Search
                                     </button>
                                   </div>
@@ -847,6 +893,7 @@ export const SearchFlight = (props) => {
                                   <div className="col-12 col-md-6 col-lg-3 col-xl-3">
                                     <div className="form-group left-icon">
                                       <Form.Group controlId="origin">
+                                        <Form.Label>Origin</Form.Label>
                                         <Typeahead
                                           labelKey="origin"
                                           options={airportsData}
@@ -870,12 +917,17 @@ export const SearchFlight = (props) => {
                                       </Form.Group>
                                     </div>
                                   </div>
-                                  <div className="">
-                                    <img src={inoutimage} alt="from-to-image" />
+                                  {/* Swap Button */}
+                                  <div
+                                    className="interchange-icon"
+                                    onClick={handleSwap}
+                                  >
+                                    <img src={inoutimage} alt="swap icon" />
                                   </div>
                                   <div className="col-12 col-md-6 col-lg-3 col-xl-3">
                                     <div className="form-group">
                                       <Form.Group controlId="destination">
+                                        <Form.Label>Destination</Form.Label>
                                         <Typeahead
                                           labelKey="destination"
                                           id="destination"
@@ -894,7 +946,6 @@ export const SearchFlight = (props) => {
                                         {status.sameLocation && (
                                           <ErrorLabel message="Please select different location"></ErrorLabel>
                                         )}
-
                                         <img
                                           src={locationimage}
                                           alt="from-to-image"
@@ -907,6 +958,7 @@ export const SearchFlight = (props) => {
                                   <div className="col-12 col-md-6 col-lg-3 col-xl-3">
                                     <div className="form-group">
                                       <Form.Group controlId="formGriddateOfDep">
+                                        <Form.Label>Departure Date</Form.Label>
                                         <Form.Control
                                           type="date"
                                           className="form-control dpd1"
@@ -929,7 +981,7 @@ export const SearchFlight = (props) => {
                                     </div>
                                   </div>
                                   <div className="col-12 col-md-12 col-lg-1 col-xl-1">
-                                    <button className="btn btn-orange">
+                                    <button className="btn btn-orange searchbtn">
                                       Search
                                     </button>
                                   </div>

@@ -13,17 +13,17 @@ const MyBookings = (props) => {
   const [bookings, setBookings] = useState([]);
 
   // Fetch userId from localStorage
-  const userId = localStorage.getItem("userId");
+  const email = localStorage.getItem("email");
 
   useEffect(() => {
-    getBookings(userId);
-  }, [userId]);
+    getBookings(email);
+  }, [email]);
 
   // Function to get bookings from API
-  const getBookings = async (userId) => {
+  const getBookings = async (email) => {
     const configuration = {
       method: "get",
-      url: `http://192.168.1.92:3000/booking/bookings/${userId}`,
+      url: `http://3.128.255.176:3000/booking/bookings/${email}`,
     };
     try {
       const result = await axios(configuration);

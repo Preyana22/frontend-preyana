@@ -1,18 +1,23 @@
 import React, { useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Navbar, Nav, Button, Container } from "react-bootstrap";
 import headerlogoimage from "../assets/images/Preyana_Logo.svg";
-import { Link, useNavigate } from "react-router-dom";
 import userimage from "../assets/images/user.svg";
 
-//import logo from '../assets/images/logo.jpg'; // Assuming logo.png is in the images folder
-/* eslint-disable */
 const Header = () => {
   const email = localStorage.getItem("email");
   const navigate = useNavigate();
+  const location = useLocation(); // To get the current path
+
   const logout = () => {
-    localStorage.clear();
-    setTimeout(() => {
-      navigate("/");
-    }, 1000);
+    // Show a confirmation dialog
+    if (window.confirm("Are you sure you want to log out?")) {
+      // If the user confirms, clear localStorage and navigate to the home page
+      localStorage.clear();
+      setTimeout(() => {
+        navigate("/");
+      }, 1000);
+    }
   };
 
   const bookings = () => {
@@ -29,73 +34,82 @@ const Header = () => {
     }
   }, [email]);
 
-  <style>
-    {`
-      #top-bar {
-        background-color: #0e265a !important;
-      }
-      .search-tabs {
-        bottom: 200px;
-      }
-    `}
-  </style>;
   return (
-    <div className="wrapper  wrapper-border">
-      <nav
-        className="navbar navbar-expand-xl sticky-top navbar-custom main-navbar p-1"
-        id="mynavbar-1"
-      >
-        <div className="container">
-          <Link to="/" className="navbar-brand py-1 m-0">
-            <img
-              style={{ width: "150px", height: "auto" }}
-              src={headerlogoimage}
-              alt="header logo"
-            />
-          </Link>
-
-          <div className="collapse navbar-collapse" id="myNavbar1">
-            <ul className="navbar-nav ml-auto navbar-search-link">
-              {email ? (
-                <>
-                  <li className="nav-item ">
-                    <button
-                      className="btn d-block text-left mt-2"
-                      onClick={bookings}
-                    >
-                      <span> {"my bookings"}</span>
-                    </button>
-                  </li>
-                  <li className="nav-item ">
-                    <button
-                      className="btn d-block text-left mt-2"
-                      onClick={changepassword}
-                    >
-                      <span> {"change password"}</span>
-                    </button>
-                  </li>
-                  <li className="nav-item ">
-                    <button className="btn d-block text-left" onClick={logout}>
-                      <i className="fa fa-power-off"></i>
-                      <span> {"logout"}</span>
-                    </button>
-                  </li>
-                </>
-              ) : (
-                <Link to="/login" className="navbar-brand py-1 m-0">
+    <Navbar
+      expand="lg"
+      sticky="top"
+      className="navbar-custom p-1  border-bottom border-6 border-primary"
+    >
+      <Container>
+        <Navbar.Brand as={Link} to="/">
+          <img
+            style={{ width: "150px", height: "auto" }}
+            src={headerlogoimage}
+            alt="header logo"
+          />
+        </Navbar.Brand>
+        <Navbar.Toggle aria-controls="basic-navbar-nav">
+          <i className="fa fa-bars"></i>
+        </Navbar.Toggle>
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="ml-auto">
+            {email ? (
+              <>
+                <Nav.Item>
+                  <Button
+                    variant="link"
+                    className={`nav-btn text-left ${
+                      location.pathname === "/mybookings" ? "active" : ""
+                    }`}
+                    onClick={bookings}
+                  >
+                    My Bookings
+                  </Button>
+                </Nav.Item>
+                <Nav.Item>
+                  <Button
+                    variant="link"
+                    className={`nav-btn text-left ${
+                      location.pathname === "/change" ? "active" : ""
+                    }`}
+                    onClick={changepassword}
+                  >
+                    Change Password
+                  </Button>
+                </Nav.Item>
+                <Nav.Item>
+                  <Button
+                    variant="link"
+                    className="nav-btn text-left"
+                    onClick={logout}
+                  >
+                    <i className="fa fa-power-off"></i> Logout
+                  </Button>
+                </Nav.Item>
+              </>
+            ) : (
+              <Nav.Item>
+                <Link
+                  to="/login"
+                  className={`navbar-brand py-1 m-0 ${
+                    location.pathname === "/login" ? "active" : ""
+                  }`}
+                >
                   <img
                     src={userimage}
                     className="img-fluid user-img"
                     alt="flight-img"
                   />
-                  <span className="sign-in-label">Sign In</span>
+                  <span className="sign-in-label font-weight-bold">
+                    Sign In
+                  </span>
                 </Link>
-              )}
-            </ul>
-          </div>
-        </div>
-      </nav>
-    </div>
+              </Nav.Item>
+            )}
+          </Nav>
+        </Navbar.Collapse>
+      </Container>
+    </Navbar>
   );
 };
 

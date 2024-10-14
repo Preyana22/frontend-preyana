@@ -3229,8 +3229,8 @@ background: transparent;
 		Custom Forms
    ----------------------------------------------------- */
 .wrapper-border{
-	border-bottom: 2px solid;
-    border-color: #004eb7
+	border-bottom: 1px solid;
+    border-color: #007bff
 }
 .custom-form{
 	
@@ -3323,7 +3323,7 @@ background: transparent;
 
 
 .pg-search-form label{
-	color:grey;
+	color:black;
 }
 
 .pg-search-form input,
@@ -4506,4 +4506,7 @@ background: transparent;
 	box-shadow:none;
 	background:#f2f2f2;
 	border:0px;
+}
+.interchange-icon{
+	margin-top: 2rem;
 }

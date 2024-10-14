@@ -6305,7 +6305,7 @@ nav.navbar .container.padding {
 }
 
 #banner-sec{
-	z-index: 500;
+	z-index: 10;
 }
 
 .sub-title-text
@@ -6345,7 +6345,7 @@ nav.navbar .container.padding {
 	position: absolute;
 	bottom: 1.6rem;
 	left: 0.7rem;
-	top: 0.5rem;
+	top: 2.5rem;
 }
 .pg-search-form input[type="date"] {
 	text-indent: 1rem;
@@ -6371,4 +6371,54 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .f-grid-desc .timeduration{
 		height: 30px;
+}
+
+.navbar-custom .nav-btn {
+	color: #000;
+	background: transparent;
+	border: none;
+	transition: all 0.3s ease;
+}
+
+.navbar-custom .nav-btn:hover,
+.navbar-custom .nav-btn:focus {
+	color: #0047b1;
+}
+
+.navbar-custom .nav-btn:active {
+	color: #0047b1;
+	/* Change to your desired color */
+	outline: none;
+}
+
+.navbar-custom .nav-item.active .nav-btn {
+	color: #1d3f87;
+	/* Active state background color */
+}
+
+.navbar-custom .navbar-brand.active .sign-in-label {
+	color: #1d3f87;
+	/* Active state for sign in label */
+}
+
+.navbar-custom .sign-in-label {
+	color: #000;
+	transition: color 0.3s ease;
+}
+
+.navbar-custom .sign-in-label:hover {
+	color: #1d3f87;
+	/* Hover effect for sign-in */
+}
+
+.navbar .container{
+	background-color: #fff;
+}
+
+.navbar-light .navbar-toggler{
+	margin-right: 2rem;
+}
+
+.searchbtn{
+	margin-top: 2rem;
 }

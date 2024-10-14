@@ -3,6 +3,8 @@ import "./booking-grid.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { findFlights } from "../../actions";
+import { connect } from "react-redux";
 
 const MyComponent = (props) => {
   const [isFetching, setIsFetching] = useState(false);
@@ -15,7 +17,7 @@ const MyComponent = (props) => {
 
       setTimeout(() => {
         alert(`Errors: ${errors[0].message}`);
-        navigate("/");
+        // navigate("/");
       }, 1000);
     }
   }, [location.state, navigate]);
@@ -57,7 +59,7 @@ const MyComponent = (props) => {
     };
 
     const { data, errors } = await (
-      await fetch("http://192.168.1.92:3000/airlines/confirm", {
+      await fetch("http://3.128.255.176:3000/airlines/confirm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(test),
@@ -75,15 +77,13 @@ const MyComponent = (props) => {
     // console.log("location.state.contactdetails", location.state.contactDetails);
     const configuration = {
       method: "post",
-      url: "http://192.168.1.92:3000/booking/createbooking",
+      url: "http://3.128.255.176:3000/booking/createbooking",
       data: {
         email: location.state.data.orderResponse.data.passengers[0].email,
-        userName: localStorage.getItem("userName"),
         name:
           location.state.data.orderResponse.data.passengers[0].given_name +
           " " +
           location.state.data.orderResponse.data.passengers[0].family_name,
-        user_id: localStorage.getItem("userId"),
         booking_reference:
           location.state.data.orderResponse.data.booking_reference,
         offer_id: location.state.data.orderResponse.data.offer_id,
@@ -180,6 +180,25 @@ const MyComponent = (props) => {
       }
     }
   }, [location.state]);
+  const transformPassengerData = (passengerData) => {
+    const result = [];
+
+    for (let type in passengerData) {
+      if (type === "children") {
+        type = "child"; // Converting "children" to "child"
+      }
+
+      for (let i = 0; i < passengerData[type]; i++) {
+        if (type === "infant") {
+          result.push({ type: "infant_without_seat" });
+        } else {
+          result.push({ type });
+        }
+      }
+    }
+
+    return result;
+  };
 
   const bookOffer = async () => {
     console.log("fsddddddddddddddd");
@@ -203,11 +222,80 @@ const MyComponent = (props) => {
       navigate("/"); // Redirect to home page
     }
   }, [props.flights, navigate]);
+
+  const onSearchResultClick = () => {
+    let criteria = {}; // Change to 'let' so it can be reassigned
+    const originStateText = localStorage.getItem("origin");
+    const originCode = originStateText.match(/\(([^)]+)\)/)[1]; // Extracts the code within parentheses
+    console.log(originCode); // Output: IND
+    const savedOrigin = originCode;
+
+    const destinationStateText = localStorage.getItem("destination");
+    const destinationCode = destinationStateText.match(/\(([^)]+)\)/)[1]; // Extracts the code within parentheses
+    console.log(destinationCode); // Output: IND
+
+    const savedDestination = destinationCode;
+
+    const savedCabinClass = JSON.parse(localStorage.getItem("cabinclass"));
+    const savedDateOfDep = JSON.parse(localStorage.getItem("dateOfDeparture"));
+    const savedDateOfRet = JSON.parse(localStorage.getItem("dateOfReturn"));
+    const storedOptions = transformPassengerData(
+      JSON.parse(localStorage.getItem("options"))
+    );
+    const storedTripType = localStorage.getItem("isReturn");
+    const flights = props.flights;
+
+    if (storedTripType === "false") {
+      criteria = {
+        origin: savedOrigin,
+        destination: savedDestination,
+        departureDate: savedDateOfDep,
+        numOfPassengers: storedOptions,
+        cabin_class: savedCabinClass[0],
+      };
+    } else {
+      criteria = {
+        origin: savedOrigin,
+        destination: savedDestination,
+        departureDate: savedDateOfDep,
+        returnDate: savedDateOfRet,
+        numOfPassengers: storedOptions,
+        cabin_class: savedCabinClass[0],
+      };
+    }
+
+    // console.log("flights", flights);
+    // console.log("criteria", criteria);
+    props.findFlights({ flights, criteria });
+
+    navigate("/results");
+  };
   return (
     <section className="innerpage-wrapper">
       <div className="innerpage-section-padding">
         <div className="container">
           <div className="row">
+            <div className="col-12">
+              <nav aria-label="breadcrumb">
+                <ol className="breadcrumb">
+                  <li className="breadcrumb-item">
+                    <span
+                      style={{
+                        color: "blue",
+                        cursor: "pointer",
+                        textDecoration: "underline",
+                      }}
+                      onClick={onSearchResultClick}
+                    >
+                      Search Result
+                    </span>
+                  </li>
+                  <li className="breadcrumb-item">
+                    <label>Booking payment</label>
+                  </li>
+                </ol>
+              </nav>
+            </div>
             <div className="col-12 col-md-12 col-lg-7 col-xl-8 content-side">
               {/* Main Content */}
               <main className="booking-main">
@@ -227,5 +315,12 @@ const MyComponent = (props) => {
     </section>
   );
 };
+const mapStateToProps = (state) => ({
+  flights: state.flights,
+});
 
-export default MyComponent;
+const mapDispatchToProps = {
+  findFlights,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(MyComponent);

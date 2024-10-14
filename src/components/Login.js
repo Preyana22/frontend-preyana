@@ -48,7 +48,7 @@ const Login = (props) => {
         console.log("Form data:", formData);
         const configuration = {
           method: "post",
-          url: "http://192.168.1.92:3000/authentication/log-in",
+          url: "http://3.128.255.176:3000/authentication/log-in",
           data: {
             email: formData.username,
             password: formData.password,
@@ -96,7 +96,7 @@ const Login = (props) => {
                     <h3>Sign In</h3>
                     <form onSubmit={handleSubmit}>
                       <div className="form-group">
-                        <label class="custom-label">Email</label>
+                        <label className="custom-label">Email</label>
                         <input
                           type="text"
                           className={`form-control ${
@@ -115,7 +115,7 @@ const Login = (props) => {
                       </div>
 
                       <div className="form-group">
-                        <label class="custom-label">Password</label>
+                        <label className="custom-label">Password</label>
                         <input
                           type={hidePassword ? "password" : "text"}
                           className={`form-control ${
@@ -149,11 +149,11 @@ const Login = (props) => {
                         </label>
                         <label>
                           By signing in, I agree to the Preyana's{" "}
-                          <Link to="" class="link-text">
+                          <Link to="" className="link-text">
                             Terms and Conditions{" "}
                           </Link>
                           &{" "}
-                          <Link to="" class="link-text">
+                          <Link to="" className="link-text">
                             Privacy statement{" "}
                           </Link>
                           .
@@ -179,7 +179,7 @@ const Login = (props) => {
                     <div className="other-links">
                       <p className="link-line">
                         Don't have an account?{" "}
-                        <Link class="link-text" to="/registration">
+                        <Link className="link-text" to="/registration">
                           Create One
                         </Link>
                       </p>
