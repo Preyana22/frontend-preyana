@@ -226,7 +226,7 @@ export const SearchFlight = (props) => {
     }
     try {
       const { data } = await axios.get(
-        `http://3.128.255.176:3000/airlines/airports/` + search
+        `http://192.168.1.92:3000/airlines/airports/` + search
       );
 
       if (data.data) {
@@ -785,7 +785,7 @@ export const SearchFlight = (props) => {
                                   </div>
                                   {/* Swap Button */}
                                   <div
-                                    className="interchange-icon"
+                                    className="col-12 col-md-1 col-lg-1 col-xl-1 interchange-icon"
                                     onClick={handleSwap}
                                   >
                                     <img src={inoutimage} alt="swap icon" />
@@ -919,7 +919,7 @@ export const SearchFlight = (props) => {
                                   </div>
                                   {/* Swap Button */}
                                   <div
-                                    className="interchange-icon"
+                                    className="col-12 col-md-1 col-lg-1 col-xl-1 interchange-icon"
                                     onClick={handleSwap}
                                   >
                                     <img src={inoutimage} alt="swap icon" />

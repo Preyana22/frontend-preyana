@@ -65,7 +65,7 @@ const ForgotPassword = () => {
         console.log("Form data:", formData);
         const configuration = {
           method: "post",
-          url: "http://3.128.255.176:3000/authentication/change-password",
+          url: "http://192.168.1.92:3000/authentication/change-password",
           data: {
             userId: localStorage.getItem("userId"),
             currentPassword: formData.password,

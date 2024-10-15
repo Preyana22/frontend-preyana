@@ -1,11 +1,20 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./success.css";
+
 const Success = () => {
   const navigate = useNavigate();
 
   const viewBookings = () => {
-    navigate("/mybookings");
+    // Check if userId is present in localStorage
+    const userId = localStorage.getItem("userId");
+
+    if (userId) {
+      // If userId exists, navigate to the "My Bookings" page
+      navigate("/mybookings");
+    } else {
+      alert("Please login to see your bookings");
+    }
   };
 
   const bookAnotherFlight = () => {

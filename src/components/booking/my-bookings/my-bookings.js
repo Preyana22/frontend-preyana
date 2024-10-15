@@ -23,7 +23,7 @@ const MyBookings = (props) => {
   const getBookings = async (email) => {
     const configuration = {
       method: "get",
-      url: `http://3.128.255.176:3000/booking/bookings/${email}`,
+      url: `http://192.168.1.92:3000/booking/bookings/${email}`,
     };
     try {
       const result = await axios(configuration);

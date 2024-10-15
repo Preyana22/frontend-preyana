@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import moment from "moment"; // Import Moment.js
 import flightimage from "../../../assets/images/flightimage.svg";
+
 const SingleBookingDetails = (props) => {
   const location = useLocation();
   const navigate = useNavigate(); // Use navigate for redirecting
@@ -19,8 +20,16 @@ const SingleBookingDetails = (props) => {
     tax_amount: "",
     total_amount: "",
     booking_id: "",
+    segments: {
+      operating_carrier_flight_number: "",
+      departure_date: "",
+      cabin: "",
+      stops: "",
+      aircraftName: "",
+    },
     // Other necessary defaults
   });
+  const [sliceLength, setSliceLength] = useState();
   const userId = localStorage.getItem("userId");
 
   useEffect(() => {
@@ -37,7 +46,7 @@ const SingleBookingDetails = (props) => {
 
     const configuration = {
       method: "get",
-      url: `http://3.128.255.176:3000/booking/singleorder/${bookingId}`,
+      url: `http://192.168.1.92:3000/booking/singleorder/${bookingId}`,
       headers: { "Content-Type": "application/json" },
     };
     try {
@@ -47,30 +56,43 @@ const SingleBookingDetails = (props) => {
       if (result.data.data != undefined) {
         // Assuming slices is an array and you want the first element
         const { slices } = result.data.data;
+        setSliceLength(slices.length);
+        console.log("slices", slices.length);
+        const { segments } = result.data.data.slices[0];
         const booking = result.data.data;
-        console.log(booking);
         const firstSlice = slices && slices.length > 0 ? slices[0] : {};
-        console.log(firstSlice.duration);
+        console.log("firstSlice", firstSlice.length);
+        const firstSegment = segments && segments.length > 0 ? segments[0] : {};
+        console.log(
+          "firstSegment",
+          firstSegment.operating_carrier_flight_number
+        );
         // Example ISO 8601 duration
-        const duration = firstSlice.duration;
+        const duration = firstSegment.duration;
         // Parse the duration using moment.js
         const momentDuration = moment.duration(duration);
-
         // Extract the components
         const days = momentDuration.days();
         const hours = momentDuration.hours();
         const minutes = momentDuration.minutes();
+        const cabin = firstSegment.passengers[0].cabin_class_marketing_name;
 
+        const date = firstSegment.departing_at;
+        const formattedDate = moment(date).format("ddd D MM, YYYY, hh:mm A");
+        const stops = firstSegment.stops;
+        const aircraftName = firstSegment.aircraft
+          ? firstSegment.aircraft.name
+          : null;
         setBookingData({
           slices: {
             origin: {
-              iata_code: firstSlice.origin.iata_code
-                ? firstSlice.origin.iata_code
+              iata_code: firstSlice.origin.city_name
+                ? firstSlice.origin.city_name
                 : "",
             },
             destination: {
-              iata_code: firstSlice.destination.iata_code
-                ? firstSlice.destination.iata_code
+              iata_code: firstSlice.destination.city_name
+                ? firstSlice.destination.city_name
                 : "",
             },
             fare_brand_name: firstSlice.fare_brand_name
@@ -81,6 +103,20 @@ const SingleBookingDetails = (props) => {
             }${hours > 0 ? `${hours} hour${hours !== 1 ? "s" : ""}, ` : ""}${
               minutes > 0 ? `${minutes} minute${minutes !== 1 ? "s" : ""}` : ""
             }`, // Format the output as "1 day, 7 hours, 25 minutes"
+          },
+          segments: {
+            operating_carrier_flight_number:
+              firstSegment.operating_carrier.iata_code &&
+              firstSegment.operating_carrier_flight_number
+                ? firstSegment.operating_carrier.iata_code +
+                  "" +
+                  firstSegment.operating_carrier_flight_number
+                : "",
+
+            departure_date: formattedDate,
+            cabin: cabin,
+            stops: stops,
+            aircraftName: aircraftName,
           },
           base_amount: booking.base_amount,
           tax_amount: booking.tax_amount,
@@ -98,7 +134,7 @@ const SingleBookingDetails = (props) => {
   const cancelBooking = async (bookingId) => {
     console.log("Booking ID:", bookingId);
 
-    const baseURL = "http://3.128.255.176:3000/booking";
+    const baseURL = "http://192.168.1.92:3000/booking";
     const headers = { "Content-Type": "application/json" };
 
     // Fetch cancellation details
@@ -127,7 +163,7 @@ const SingleBookingDetails = (props) => {
 
   // Confirm cancellation
   const confirmCancellation = async (cancelId) => {
-    const baseURL = "http://3.128.255.176:3000/booking";
+    const baseURL = "http://192.168.1.92:3000/booking";
     const headers = { "Content-Type": "application/json" };
 
     try {
@@ -154,7 +190,7 @@ const SingleBookingDetails = (props) => {
 
   // Update booking status
   const updateBookingStatus = async () => {
-    const baseURL = "http://3.128.255.176:3000/booking";
+    const baseURL = "http://192.168.1.92:3000/booking";
     const headers = { "Content-Type": "application/json" };
 
     if (location.state && location.state.pkId !== undefined) {
@@ -189,64 +225,86 @@ const SingleBookingDetails = (props) => {
           </button>
         </div>
         {/* Additional booking details can be rendered here */}
-        <div className="col-12 col-md-12 col-lg-12 col-xl-12 side-bar left-side-bar">
+
+        <div className="col-12 col-md-8 col-lg-8 col-xl-8 offset-xl-2  side-bar left-side-bar">
           <div className="row">
-            <div className="col-12 col-md-12 col-lg-12">
-              <div className="side-bar-block detail-block style1 text-center">
-                <div className="detail-img text-center">
-                  <a href="#">
-                    <img src={flightimage} className="img-fluid" />
-                  </a>
+            <div className="container">
+              <div className="card shadow-sm" style={{ width: "22rem;" }}>
+                {/* <!-- Image Section --> */}
+                <div className="card-header bg-light text-center p-3">
+                  <img
+                    src={flightimage}
+                    alt="Airplane"
+                    className="img-fluid"
+                    style={{ width: "50px;" }}
+                  />
                 </div>
 
-                <div className="detail-title">
-                  <h4>
-                    <a href="#">
-                      {bookingData.slices.origin?.iata_code || "Unknown"} To{" "}
-                      {bookingData.slices.destination?.iata_code || "Unknown"}
-                    </a>
-                  </h4>
-                  <p>Oneway Flight</p>
-                  <div className="rating"></div>
-                </div>
+                {/* <!-- Flight Info Section --> */}
+                <div className="card-body text-center">
+                  <h5 className="card-title font-weight-bold">
+                    {bookingData.slices.origin?.iata_code || "Unknown"} To{" "}
+                    {bookingData.slices.destination?.iata_code || "Unknown"}
+                  </h5>
+                  <p>
+                    {" "}
+                    {bookingData.segments.operating_carrier_flight_number},{" "}
+                    {sliceLength === 1 ? "One Way Flight" : "Round Trip Flight"}
+                  </p>
 
-                <div className="table-responsive">
-                  <table className="table table-hover">
-                    <tbody>
-                      {/* <tr>
-                        <td>Departure</td>
-                        <td>{""}</td>
-                      </tr>
-                      <tr>
-                        <td>Time</td>
-                        <td>{""}</td>
-                      </tr> */}
-                      <tr>
-                        <td>Class</td>
-                        <td>{bookingData.slices?.fare_brand_name}</td>
-                      </tr>
-                      <tr>
-                        <td>Stops</td>
-                        <td>Direct Flight</td>
-                      </tr>
-                      <tr>
-                        <td>Flight Duration</td>
-                        <td>{bookingData.slices?.duration}</td>
-                      </tr>
-                      <tr>
-                        <td>Price</td>
-                        <td>{bookingData.base_amount}</td>
-                      </tr>
-                      <tr>
-                        <td>Tax</td>
-                        <td>{bookingData.tax_amount}</td>
-                      </tr>
-                      <tr>
-                        <td>Totel Price</td>
-                        <td>{bookingData.total_amount}</td>
-                      </tr>
-                    </tbody>
-                  </table>
+                  <hr />
+
+                  {/* <!-- Flight Details --> */}
+                  <ul className="list-unstyled">
+                    <li className="d-flex justify-content-between">
+                      <strong>Departure:</strong>
+                      <span>{bookingData.segments.departure_date}</span>
+                    </li>
+                    <li className="d-flex justify-content-between">
+                      <strong>Flight Duration:</strong>
+                      <span>{bookingData.slices.duration}</span>
+                    </li>
+                    <li className="d-flex justify-content-between">
+                      <strong>className:</strong>
+                      <span>{bookingData.segments.cabin}</span>
+                    </li>
+                    <li className="d-flex justify-content-between">
+                      <strong>Stops:</strong>
+                      <span>{bookingData.segments.stops}</span>
+                    </li>
+                    <li className="d-flex justify-content-between">
+                      <strong>Aircraft Type:</strong>
+                      <span>{bookingData.segments.aircraftName}</span>
+                    </li>
+                  </ul>
+
+                  <hr />
+
+                  {/* <!-- Pricing Section --> */}
+                  <div className="d-flex justify-content-between">
+                    <span>
+                      <strong>Fare:</strong>
+                    </span>
+                    <span>{"$ " + bookingData.base_amount}</span>
+                  </div>
+                  <div className="d-flex justify-content-between">
+                    <span>
+                      <a href="#" className="text-primary">
+                        Taxes & Fees
+                      </a>
+                    </span>
+                    <span>{"$ " + bookingData.tax_amount}</span>
+                  </div>
+
+                  <hr />
+
+                  {/* <!-- Total Due Section --> */}
+                  <div className="d-flex justify-content-between">
+                    <h5 className="font-weight-bold">Total Due:</h5>
+                    <h5 className="font-weight-bold">
+                      {"$ " + bookingData.total_amount}
+                    </h5>
+                  </div>
                 </div>
               </div>
             </div>

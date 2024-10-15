@@ -4554,3 +4554,20 @@ Author:			Star Travel
 					margin-bottom: 10px;
 				}
 }
+
+@media (max-width: 768px) {
+	.interchange-icon {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		text-align: center;
+		margin-top: 0rem;
+	}
+
+	.interchange-icon img {
+		margin: 0 auto;
+	}
+		.Flight-info p{
+			margin-left: 1.5rem;
+		}
+}

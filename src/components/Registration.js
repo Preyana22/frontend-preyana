@@ -70,7 +70,7 @@ const Registration = (props) => {
       };
       const configuration = {
         method: "post",
-        url: "http://3.128.255.176:3000/authentication/register",
+        url: "http://192.168.1.92:3000/authentication/register",
         data: {
           email: formData.email,
           userName: formData.username,
@@ -115,7 +115,7 @@ const Registration = (props) => {
                     <h3>Register</h3>
                     <form onSubmit={handleSubmit}>
                       <div className="form-group">
-                        <label class="custom-label">Username</label>
+                        <label className="custom-label">Username</label>
                         <input
                           type="text"
                           className={`form-control ${
@@ -135,7 +135,7 @@ const Registration = (props) => {
                       </div>
 
                       <div className="form-group">
-                        <label class="custom-label">Email</label>
+                        <label className="custom-label">Email</label>
                         <input
                           type="email"
                           className={`form-control ${
@@ -152,7 +152,7 @@ const Registration = (props) => {
                       </div>
 
                       <div className="form-group">
-                        <label class="custom-label">Password</label>
+                        <label className="custom-label">Password</label>
                         <input
                           type={hidePassword ? "password" : "text"}
                           className={`form-control ${
@@ -182,7 +182,7 @@ const Registration = (props) => {
                       </div>
 
                       <div className="form-group">
-                        <label class="custom-label">Confirm Password</label>
+                        <label className="custom-label">Confirm Password</label>
                         <input
                           type={hideConfirmPassword ? "password" : "text"}
                           className={`form-control ${
@@ -217,7 +217,7 @@ const Registration = (props) => {
                     <div className="other-links">
                       <p className="link-line">
                         Already Have An Account ?{" "}
-                        <Link class="link-text" to="/login">
+                        <Link className="link-text" to="/login">
                           {" "}
                           Sign In
                         </Link>

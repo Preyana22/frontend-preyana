@@ -19,30 +19,6 @@ import { connect } from "react-redux";
 import { CountryDropdown, RegionDropdown } from "react-country-region-selector";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
 
-const formatDate = (timestamp) => {
-  const date = new Date(timestamp);
-  console.log(timestamp);
-  console.log(date);
-
-  // Extract UTC date components
-  const day = String(date.getUTCDate()).padStart(2, "0");
-  const month = String(date.getUTCMonth() + 1).padStart(2, "0"); // Months are zero-indexed
-  const year = date.getUTCFullYear();
-
-  // Extract UTC time components
-  let hours = date.getUTCHours();
-  const minutes = String(date.getUTCMinutes()).padStart(2, "0");
-
-  // Determine AM or PM
-  const ampm = hours >= 12 ? "PM" : "AM";
-  hours = hours % 12 || 12; // Convert 24-hour to 12-hour format
-  // Construct formatted date and time
-  // `${day}-${month}-${year} ${hours}:${minutes} ${ampm}`;
-  const formattedDate = `${day}-${month}-${year}`;
-  console.log(formattedDate);
-  return formattedDate;
-};
-
 const Contacts = (props) => {
   const [selectedDay, setSelectedDay] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState([]);
@@ -218,7 +194,7 @@ const Contacts = (props) => {
     if (localStorage.getItem("userId") === null) {
       const configuration = {
         method: "post",
-        url: "http://3.128.255.176:3000/authentication/register",
+        url: "http://192.168.1.92:3000/authentication/register",
         data: {
           email: event.target["email0"].value,
           userName: event.target["email0"].value,
@@ -260,7 +236,7 @@ const Contacts = (props) => {
 
     try {
       const response = await axios.post(
-        "http://3.128.255.176:3000/airlines/book",
+        "http://192.168.1.92:3000/airlines/book",
         test,
         {
           headers: {

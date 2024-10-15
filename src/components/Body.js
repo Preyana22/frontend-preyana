@@ -80,7 +80,7 @@ export const Body = (props) => {
     // const getAirports = async () => {
     //   try {
     //     const { data } = await axios.get(
-    //       `http://3.128.255.176:3000/airlines/airports`
+    //       `http://192.168.1.92:3000/airlines/airports`
     //     );
     //     console.log(data);
     //     setAirports(data);
@@ -336,7 +336,7 @@ export const Body = (props) => {
 
       // Perform the fetch request
       const response = await fetch(
-        "http://3.128.255.176:3000/airlines/test",
+        "http://192.168.1.92:3000/airlines/test",
         requestOptions
       );
       if (!response.ok) {
