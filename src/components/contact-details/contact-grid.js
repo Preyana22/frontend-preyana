@@ -172,6 +172,9 @@ const Contacts = (props) => {
         family_name: event.target[familyname1].value,
         given_name: event.target[given_name1].value,
         email: event.target[email1].value,
+        loginEmail: localStorage.getItem("email")
+          ? localStorage.getItem("email")
+          : event.target["email0"].value,
         phone_number: "+" + phone.trim(),
         gender: genderdetails.state.text.charAt(0).toLowerCase(),
         born_on: dateOfBirth,
@@ -194,7 +197,7 @@ const Contacts = (props) => {
     if (localStorage.getItem("userId") === null) {
       const configuration = {
         method: "post",
-        url: "http://192.168.1.92:3000/authentication/register",
+        url: "http://3.128.255.176:3000/authentication/register",
         data: {
           email: event.target["email0"].value,
           userName: event.target["email0"].value,
@@ -236,7 +239,7 @@ const Contacts = (props) => {
 
     try {
       const response = await axios.post(
-        "http://192.168.1.92:3000/airlines/book",
+        "http://3.128.255.176:3000/airlines/book",
         test,
         {
           headers: {
@@ -346,6 +349,11 @@ const Contacts = (props) => {
 
     navigate("/results");
   };
+  const flightsdata = location.state.flight;
+  const navigateToFareOption = () => {
+    console.log(flightsdata);
+    navigate("/fareoption", { state: { flightsdata } });
+  };
 
   return (
     <section className="innerpage-wrapper">
@@ -366,6 +374,18 @@ const Contacts = (props) => {
                         onClick={onSearchResultClick}
                       >
                         Search Result
+                      </span>
+                    </li>
+                    <li className="breadcrumb-item">
+                      <span
+                        style={{
+                          color: "blue",
+                          cursor: "pointer",
+                          textDecoration: "underline",
+                        }}
+                        onClick={navigateToFareOption}
+                      >
+                        Fare Option
                       </span>
                     </li>
                     <li className="breadcrumb-item">

@@ -59,7 +59,7 @@ const MyComponent = (props) => {
     };
 
     const { data, errors } = await (
-      await fetch("http://192.168.1.92:3000/airlines/confirm", {
+      await fetch("http://3.128.255.176:3000/airlines/confirm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(test),
@@ -70,51 +70,78 @@ const MyComponent = (props) => {
   };
 
   const saveBooking = async () => {
-    // console.log(
-    //   "location.state.data.orderResponse.data",
-    //   location.state.data.orderResponse
-    // );
-    // console.log("location.state.contactdetails", location.state.contactDetails);
-    const configuration = {
-      method: "post",
-      url: "http://192.168.1.92:3000/booking/createbooking",
-      data: {
-        email: location.state.data.orderResponse.data.passengers[0].email,
-        name:
-          location.state.data.orderResponse.data.passengers[0].given_name +
-          " " +
-          location.state.data.orderResponse.data.passengers[0].family_name,
-        booking_reference:
-          location.state.data.orderResponse.data.booking_reference,
-        offer_id: location.state.data.orderResponse.data.offer_id,
-        status:
-          location.state.data.orderResponse.data.payment_status
-            .awaiting_payment === true
-            ? "pending"
-            : "success",
-        booking_id: location.state.data.orderResponse.data.id,
-        address1: location.state.contactDetails[0].address1,
-        address2: location.state.contactDetails[0].address2,
-        city: location.state.contactDetails[0].city,
-        region: location.state.contactDetails[0].region,
-        postal: location.state.contactDetails[0].postal,
-        country: location.state.contactDetails[0].country,
-      },
-    };
-    await axios(configuration)
-      .then((result) => {
-        console.log("response", result);
+    try {
+      const configuration = {
+        method: "post",
+        url: "http://3.128.255.176:3000/booking/createbooking",
+        data: {
+          email: location.state.data.orderResponse.data.passengers[0].email,
+          loginEmail: localStorage.getItem("email")
+            ? localStorage.getItem("email")
+            : location.state.data.orderResponse.data.passengers[0].email,
+          name:
+            location.state.data.orderResponse.data.passengers[0].given_name +
+            " " +
+            location.state.data.orderResponse.data.passengers[0].family_name,
+          booking_reference:
+            location.state.data.orderResponse.data.booking_reference,
+          offer_id: location.state.data.orderResponse.data.offer_id,
+          status:
+            location.state.data.orderResponse.data.payment_status
+              .awaiting_payment === true
+              ? "pending"
+              : "success",
+          booking_id: location.state.data.orderResponse.data.id,
+          address1: location.state.contactDetails[0].address1,
+          address2: location.state.contactDetails[0].address2,
+          city: location.state.contactDetails[0].city,
+          region: location.state.contactDetails[0].region,
+          postal: location.state.contactDetails[0].postal,
+          country: location.state.contactDetails[0].country,
+        },
+      };
+      console.log("configuration createbooking", configuration);
 
-        if (result) {
-          confirmPayment();
+      // Make the API request
+      const result = await axios(configuration);
+      console.log("response", result);
 
-          navigate("/success");
-        }
-      })
-      .catch((error) => {
-        error = new Error();
-      });
+      if (result.status === 201 || result.status === 200) {
+        // Successfully created booking
+        confirmPayment();
+        navigate("/success");
+      } else {
+        // Handle unexpected status code
+        console.error(`Unexpected response status: ${result.status}`);
+        alert("There was an issue processing your booking. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error creating booking:", error);
+
+      // Check if error is an Axios error and handle accordingly
+      if (error.response) {
+        // Server responded with a status code outside of the 2xx range
+        console.error("Response data:", error.response.data);
+        console.error("Response status:", error.response.status);
+        alert(
+          `Failed to create booking. Server responded with status code ${
+            error.response.status
+          }: ${error.response.data.message || "Unknown error"}.`
+        );
+      } else if (error.request) {
+        // No response received from the server
+        console.error("No response received:", error.request);
+        alert("Failed to create booking. No response from the server.");
+      } else {
+        // Other errors (network issues, configuration errors, etc.)
+        console.error("Error message:", error.message);
+        alert(
+          "An error occurred while creating the booking. Please try again."
+        );
+      }
+    }
   };
+
   const convertToString = (input) => {
     // Check if the input is an object and not null
     if (typeof input === "object" && input !== null) {

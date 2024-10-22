@@ -35,11 +35,11 @@ const FlightsGrid = (props) => {
           <SearchFlight />
 
           <div className="flights-info-container row">
-            <div className="col col-md-3">
+            <div className="col-12 col-md-4 col-lg-4 col-xl-3 col-xs-12 col-sm-12">
               <Filters />
             </div>
 
-            <div className="col col-md-9">
+            <div className="col-12 col-md-8 col-lg-8 col-xl-9 col-xs-12 col-sm-12">
               {props.criteria && (
                 <FlightSearchInfo
                   criteria={props.criteria}

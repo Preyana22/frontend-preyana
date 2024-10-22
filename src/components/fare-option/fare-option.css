@@ -1,0 +1,24 @@
+.card.selected {
+    border: 2px solid #007bff;
+    /* Highlight color */
+}
+
+/* fare-option.css */
+.card {
+    cursor: pointer;
+    /* Change cursor to pointer */
+    transition: transform 0.2s;
+    /* Smooth transition */
+}
+
+.card:hover {
+    transform: scale(1.02);
+    /* Slightly enlarge card on hover */
+}
+
+.selected-fare {
+    border: 1px solid #9e7ce8;
+    /* Add a border to indicate selection */
+        box-shadow: 0 0 5px rgba(158, 124, 232, 1);
+    /* Optional shadow effect */
+}

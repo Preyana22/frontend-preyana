@@ -107,65 +107,55 @@
   color: black;
 }
 
-.arrow-down::after {
-  content: '⌄';
-  margin-left: 12.5rem;
-  color: #0047b1;
-  font-size: 20px;
-  position: absolute;
-  top: 1.5rem;
+.select-container {
+  position: relative;
 }
 
-.arrow-up::after {
-  content: '⌃';
-  margin-left: 12.5rem;
-  color: #0047b1;
-  font-size: 20px;
+.cabin-arrow {
   position: absolute;
-  top: 2.2rem;
-}
-
-.optionarrow-down::after {
-  content: '⌄';
-  margin-left: 12.5rem;
+  right: 10px;
+  /* Adjust as needed to align perfectly */
+  top: 50%;
+  transform: translateY(-50%);
   color: #0047b1;
-  font-size: 20px;
-  position: absolute;
-}
-
-.optionarrow-up::after {
-  content: '⌃';
-  margin-left: 12.5rem;
-  color: #0047b1;
-  font-size: 20px;
-  position: absolute;
-top: 2.2rem;
-}
-
-.dropdown-menu {
-  width: auto !important;
-}
-
-
-.cabinarrow-down::after {
-  content: '⌄';
-  margin-left: 13rem;
-  color: #0047b1;
-  font-size: 20px;
-  position: absolute;
-  top: 2rem;
-}
-
-.cabinarrow-up::after {
-  content: '⌃';
-  margin-left: 13rem;
-  color: #0047b1;
-  font-size: 20px;
-  position: absolute;
-  top: 2.2rem;
+  pointer-events: none;
+  /* Prevent clicking on the icon */
 }
 .form-label{
   font-size: 0.8rem;
   font-weight: bold;
 }
 
+.headerSearchTripText{
+    position: relative;
+    display: inline-block;
+    padding-right: 25px;
+    /* Space for the arrow */
+  }
+.headerSearchText {
+  position: relative;
+  display: inline-block;
+  padding-right: 60px;
+  /* Space for the arrow */
+}
+
+.trip-arrow{
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #0047b1;
+    pointer-events: none;
+    /* Prevent clicking on the icon */
+    font-size: 15px;
+  }
+.passenger-arrow {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #0047b1;
+  pointer-events: none;
+  /* Prevent clicking on the icon */
+  font-size: 15px;
+}

@@ -80,7 +80,7 @@ export const Body = (props) => {
     // const getAirports = async () => {
     //   try {
     //     const { data } = await axios.get(
-    //       `http://192.168.1.92:3000/airlines/airports`
+    //       `http://3.128.255.176:3000/airlines/airports`
     //     );
     //     console.log(data);
     //     setAirports(data);
@@ -121,14 +121,14 @@ export const Body = (props) => {
     "HKG",
   ];
   const airports = data1 ? dummyairports : dummyairports;
-  console.log("airports" + airports);
+  // console.log("airports" + airports);
   const navigate = useNavigate();
   let origin, destination, cabinclass;
   let criteria;
 
   const [isReturn, setFlightType] = useState(false);
   const [status, setFormValid] = useState({ isValid: false });
-  console.log(status);
+  // console.log(status);
   let invalidFields = {};
   const handleSubmit1 = (event) => {
     event.preventDefault(); // Prevent default form submission
@@ -141,8 +141,8 @@ export const Body = (props) => {
     const childData = { type: "child" };
     const infantData = { type: "infant_without_seat" };
 
-    console.log(options); // Log options for debugging
-    console.log(options.adult);
+    // console.log(options); // Log options for debugging
+    // console.log(options.adult);
 
     // Populate the Adults array based on the number of each passenger type
     for (let i = 0; i < options.adult; i++) {
@@ -155,7 +155,7 @@ export const Body = (props) => {
       Adults.push(infantData);
     }
 
-    console.log(Adults); // Log the populated Adults array for debugging
+    // console.log(Adults); // Log the populated Adults array for debugging
 
     // Define origin and destination cities
     const origin_city = "LHR"; // Example origin city
@@ -185,7 +185,7 @@ export const Body = (props) => {
     localStorage.setItem("cabinclass", JSON.stringify(cabinclassArray));
     localStorage.setItem("dateOfDeparture", JSON.stringify(formattedDate));
 
-    console.log(criteria); // Log criteria for debugging
+    // console.log(criteria); // Log criteria for debugging
 
     // Call the findFlights function with the gathered criteria
     props.findFlights({ flights, criteria });
@@ -218,7 +218,7 @@ export const Body = (props) => {
         cabin_class: cabinclass.state.text,
       };
     }
-    console.log(criteria);
+    // console.log(criteria);
     /* if (event.target.flightType[1].checked ) {
         criteria.returnDate = event.target.dateOfReturn.value;
         if (!isDate(event.target.dateOfReturn.value)) {
@@ -332,11 +332,11 @@ export const Body = (props) => {
       };
 
       // Log the requestOptions for debugging
-      console.log("Request Options:", requestOptions);
+      // console.log("Request Options:", requestOptions);
 
       // Perform the fetch request
       const response = await fetch(
-        "http://192.168.1.92:3000/airlines/test",
+        "http://3.128.255.176:3000/airlines/test",
         requestOptions
       );
       if (!response.ok) {
@@ -346,7 +346,7 @@ export const Body = (props) => {
       const flightsdata = await response.json();
 
       // Log the response data for debugging
-      console.log("Flights Data:", flightsdata[1][0].slices[0].duration);
+      // console.log("Flights Data:", flightsdata[1][0].slices[0].duration);
 
       setFlightsData(flightsdata[1]); // Set the fetched data to state
     } catch (error) {

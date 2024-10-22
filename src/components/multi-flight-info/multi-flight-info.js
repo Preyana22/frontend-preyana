@@ -19,7 +19,6 @@ const LayoverInfo = (props) => {
 };
 
 export const MultiFlightInfo = (props) => {
-  console.log("props.datass" + props.data);
   // const arrTime = props.data.slices[0].segments[0].arriving_at;
   // const depTime = props.data.slices[0].segments[0].departing_at;
   // const arrivalTime = new Date(arrTime).toLocaleTimeString([], {

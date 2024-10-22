@@ -14,6 +14,7 @@ const Success = () => {
       navigate("/mybookings");
     } else {
       alert("Please login to see your bookings");
+      navigate("/login");
     }
   };
 

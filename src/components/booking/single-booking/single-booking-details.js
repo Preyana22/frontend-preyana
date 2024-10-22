@@ -33,20 +33,23 @@ const SingleBookingDetails = (props) => {
   const userId = localStorage.getItem("userId");
 
   useEffect(() => {
-    if (location.state != null && location.state.booking_id != undefined) {
-      getSingleBooking(location.state.booking_id);
+    if (
+      location.state != null &&
+      location.state.order_booking_id != undefined
+    ) {
+      getSingleBooking(location.state.order_booking_id);
     } else {
       console.error("No booking ID found in state.");
       navigate("/mybookings"); // Redirect to a safe page or show an error message
     }
   }, [location.state]);
 
-  const getSingleBooking = async (bookingId) => {
-    console.log("Booking ID:", bookingId);
+  const getSingleBooking = async (orderBookingId) => {
+    console.log("Booking ID:", orderBookingId);
 
     const configuration = {
       method: "get",
-      url: `http://192.168.1.92:3000/booking/singleorder/${bookingId}`,
+      url: `http://3.128.255.176:3000/booking/singleorder/${orderBookingId}`,
       headers: { "Content-Type": "application/json" },
     };
     try {
@@ -134,7 +137,16 @@ const SingleBookingDetails = (props) => {
   const cancelBooking = async (bookingId) => {
     console.log("Booking ID:", bookingId);
 
-    const baseURL = "http://192.168.1.92:3000/booking";
+    // Show confirmation dialog
+    const userConfirmed = window.confirm(
+      "Are you sure you want to cancel this booking?"
+    );
+    if (!userConfirmed) {
+      // If user cancels the confirmation dialog, abort the process
+      return;
+    }
+
+    const baseURL = "http://3.128.255.176:3000/booking";
     const headers = { "Content-Type": "application/json" };
 
     // Fetch cancellation details
@@ -163,7 +175,8 @@ const SingleBookingDetails = (props) => {
 
   // Confirm cancellation
   const confirmCancellation = async (cancelId) => {
-    const baseURL = "http://192.168.1.92:3000/booking";
+    console.log("cancelId" + cancelId);
+    const baseURL = "http://3.128.255.176:3000/booking";
     const headers = { "Content-Type": "application/json" };
 
     try {
@@ -190,18 +203,18 @@ const SingleBookingDetails = (props) => {
 
   // Update booking status
   const updateBookingStatus = async () => {
-    const baseURL = "http://192.168.1.92:3000/booking";
+    const baseURL = "http://3.128.255.176:3000/booking";
     const headers = { "Content-Type": "application/json" };
 
-    if (location.state && location.state.pkId !== undefined) {
+    if (location.state && location.state.pk_booking_Id !== undefined) {
       const test = {
-        user_id: userId,
+        booking_id: location.state.order_booking_id,
         status: "cancelled",
       };
-
+      console.log("update booking status", test);
       try {
         const updateResult = await axios.put(
-          `${baseURL}/updatebookingstatus/${location.state.pkId}`,
+          `${baseURL}/updatebookingstatus/${location.state.pk_booking_Id}`,
           JSON.stringify(test),
           { headers }
         );

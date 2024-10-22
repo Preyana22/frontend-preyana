@@ -18,7 +18,7 @@ import locationimage from "../../assets/images/locationimage.svg";
 import calendarimage from "../../assets/images/calendarimage.svg";
 import destination_1 from "../../assets/images/destination_1.jpg";
 import destination_2 from "../../assets/images/destination_2.jpg";
-import { Carousel } from "react-bootstrap";
+import { Alert, Carousel } from "react-bootstrap";
 const isDate = (date) => {
   return new Date(date) !== "Invalid Date" && !isNaN(new Date(date));
 };
@@ -416,7 +416,7 @@ export const SearchFlight = (props) => {
     }
     try {
       const { data } = await axios.get(
-        `http://192.168.1.92:3000/airlines/airports/` + search
+        `http://3.128.255.176:3000/airlines/airports/` + search
       );
 
       if (data.data) {
@@ -450,55 +450,45 @@ export const SearchFlight = (props) => {
     const cabinClassValue = cabinClassElement ? cabinClassElement.value : "";
     return cabinClassValue;
   };
+
   const handleSubmit1 = (event) => {
     let cabinValue;
     const cabinClassValue = getCabinClassValue();
 
-    if (cabinClassValue == "Premium Economy") {
+    if (cabinClassValue === "Premium Economy") {
       cabinValue = "premium_economy";
     } else {
       cabinValue = cabinClassValue;
     }
-    // console.log(isReturn);
+
     event.preventDefault();
     const { flights } = props;
     invalidFields = {};
     let Adults = [];
-    let adultsData = {
-      type: "adult",
-    };
-    let childData = {
-      type: "child",
-    };
+    let adultsData = { type: "adult" };
+    let childData = { type: "child" };
+    let infantData = { type: "infant_without_seat" };
 
-    let infantData = {
-      type: "infant_without_seat",
-    };
-    // console.log(options);
-    console.log(options.adult);
     for (var i = 1; i <= options.adult; i++) {
-      // console.log(adultsData);
       Adults.push(adultsData);
     }
     for (var i = 1; i <= options.children; i++) {
-      // console.log(childData);
       Adults.push(childData);
     }
     for (var i = 1; i <= options.infant; i++) {
-      // console.log(infantData);
       Adults.push(infantData);
     }
-    // console.log(Adults);
 
     const originStateText = origin.state.text;
-    const originCode = originStateText.match(/\(([^)]+)\)/)[1]; // Extracts the code within parentheses
-    console.log(originCode); // Output: IND
+    const originCode = originStateText
+      ? originStateText.match(/\(([^)]+)\)/)[1]
+      : "";
     const origin_city = originCode;
 
     const destinationStateText = destination.state.text;
-    const destinationCode = destinationStateText.match(/\(([^)]+)\)/)[1]; // Extracts the code within parentheses
-    console.log(destinationCode); // Output: IND
-
+    const destinationCode = destinationStateText
+      ? destinationStateText.match(/\(([^)]+)\)/)[1]
+      : "";
     const destination_city = destinationCode;
 
     if (isReturn === false) {
@@ -506,8 +496,6 @@ export const SearchFlight = (props) => {
         origin: origin_city,
         destination: destination_city,
         departureDate: event.target.dateOfDep.value,
-
-        //numOfPassengers: event.target.passengers.value,
         numOfPassengers: Adults,
         cabin_class: cabinValue,
       };
@@ -517,32 +505,52 @@ export const SearchFlight = (props) => {
         destination: destination_city,
         departureDate: event.target.dateOfDep.value,
         returnDate: event.target.returnDate.value,
-        //numOfPassengers: event.target.passengers.value,
         numOfPassengers: Adults,
         cabin_class: cabinValue,
       };
     }
-    // console.log(criteria);
 
     if (!cabin_details.includes(cabinClassValue)) {
       invalidFields.cabinclass = true;
     }
 
-    if (!isDate(criteria.departureDate)) {
-      invalidFields.departureDate = true;
+    if (!criteria.departureDate || !isDate(criteria.departureDate)) {
+      invalidFields.dateOfDep = true;
+    } else {
+      invalidFields.dateOfDep = false;
     }
-    if (!isDate(criteria.departureDate)) {
-      invalidFields.departureDate = true;
+
+    // Check if departure date is selected first
+    if (isReturn) {
+      if (!criteria.departureDate) {
+        // Show validation if departure date is not selected
+        invalidFields.dateOfDep =
+          "Please select a departure date before the return date.";
+      } else if (!criteria.returnDate || !isDate(criteria.returnDate)) {
+        // Show validation if return date is invalid or not selected
+        invalidFields.returnDate = "Please select a valid return date.";
+      } else {
+        // Clear validation if both dates are selected correctly
+        invalidFields.dateOfDep = false;
+        invalidFields.returnDate = false;
+      }
+    } else {
+      // If it's a one-way trip, no need for return date validation
+      invalidFields.returnDate = false;
     }
 
     if (!criteria.destination) {
       invalidFields.destination = true;
-    }
-    if (!criteria.origin) {
-      invalidFields.origin = true;
+    } else {
+      invalidFields.destination = false;
     }
 
-    // Check if origin and destination are the same
+    if (!criteria.origin) {
+      invalidFields.origin = true;
+    } else {
+      invalidFields.origin = false;
+    }
+
     if (
       criteria.origin &&
       criteria.destination &&
@@ -551,7 +559,12 @@ export const SearchFlight = (props) => {
       invalidFields.destination = true;
     }
 
-    if (Object.keys(invalidFields).length > 0) {
+    // Only consider fields where the value is true
+    const hasInvalidFields = Object.values(invalidFields).some(
+      (value) => value
+    );
+
+    if (hasInvalidFields) {
       setFormValid({ isValid: false, ...invalidFields });
       return;
     }
@@ -559,99 +572,12 @@ export const SearchFlight = (props) => {
     setFormValid({ isValid: true });
 
     props.findFlights({ flights, criteria });
-    console.log("flights", flights);
-    console.log("criteria", criteria);
     navigate("/results");
   };
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const { flights } = props;
-    invalidFields = {};
 
-    if (isReturn === false) {
-      criteria = {
-        origin: origin.state.text,
-        destination: destination.state.text,
-        departureDate: event.target.dateOfDep.value,
-
-        numOfPassengers: event.target.numOfPassengers.value,
-        cabin_class: selectedCabinClass,
-      };
-    } else {
-      criteria = {
-        origin: origin.state.text,
-        destination: destination.state.text,
-        departureDate: event.target.dateOfDep.value,
-        returnDate: event.target.dateOfReturn.value,
-        numOfPassengers: event.target.numOfPassengers.value,
-        cabin_class: selectedCabinClass,
-      };
-    }
-    // console.log(criteria);
-    /* if (event.target.flightType[1].checked ) {
-        criteria.returnDate = event.target.dateOfReturn.value;
-        if (!isDate(event.target.dateOfReturn.value)) {
-          invalidFields.returnDate = true;
-        }
-      }*/
-
-    if (!airportsData.includes(criteria.origin)) {
-      invalidFields.origin = true;
-    }
-    if (
-      !airportsData.includes(criteria.destination) ||
-      criteria.origin === criteria.destination
-    ) {
-      invalidFields.destination = true;
-    }
-    if (!isDate(criteria.departureDate)) {
-      invalidFields.departureDate = true;
-    }
-    if (!isDate(criteria.departureDate)) {
-      invalidFields.departureDate = true;
-    }
-    if (Object.keys(invalidFields).length > 0) {
-      setFormValid({ isValid: false, ...invalidFields });
-      return;
-    }
-
-    setFormValid({ isValid: true });
-    props.findFlights({ flights, criteria });
-
-    navigate("/results");
-  };
-  const mystyle = {
-    background:
-      "linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)) 0% 0% / cover, url(../assets/images/homepage-slider.jpg) 50% 0%",
-    height: "100%",
-    width: "1510px",
-    marginRight: "0px",
-    float: "left",
-    display: "block",
-  };
-
-  /* const airports = [
-        'LHR',
-        'CDG',
-        'BCN',
-        'LAX',
-        'MEL',
-        'SYD',
-        'AKL',
-        'DEL',
-        'SIN',
-        'HKG'
-       
-      ];*/
-
-  // Set the first option as selected when cabin_details changes
   useEffect(() => {
     getAirports(keyword);
-    // if (cabin_details.length > 0) {
-    //   const cabinclass = [cabin_details[0]];
-    //   setSelectedCabinClass(cabinclass);
-    //   localStorage.setItem("cabinclass", JSON.stringify(cabinclass));
-    // }
+
     localStorage.setItem("options", JSON.stringify(options));
     localStorage.setItem("isReturn", JSON.stringify(isReturn)); // Store isReturn
   }, [cabin_details, openOptions, options, isReturn]);
@@ -682,7 +608,7 @@ export const SearchFlight = (props) => {
         <div className="search-tabs" id="search-tabs-1">
           <div className="container">
             <div className="row">
-              <div className="col-md-12">
+              <div className="col-md-12 p-0">
                 <ul className="nav nav-tabs justify-content-left">
                   <li className="nav-item">
                     <a
@@ -723,7 +649,7 @@ export const SearchFlight = (props) => {
                       <Form onSubmit={handleSubmit1}>
                         <div className="row mt-3">
                           {/* Trip Type Selection */}
-                          <div className="col-12 col-md-6 col-lg-3 col-xl-3">
+                          <div className="col-12 col-md-6 col-lg-4 col-xl-3 col-sm-12 col-xs-12">
                             <div className="form-group">
                               <label htmlFor="tripType" className="form-label">
                                 Trip Type
@@ -732,6 +658,7 @@ export const SearchFlight = (props) => {
                                 className="headerSearchTripItem"
                                 ref={dropdownRef}
                               >
+                                {/* Trip Options Arrow */}
                                 <span
                                   onClick={() => setTripOptions(!tripOptions)}
                                   className={`headerSearchTripText ${
@@ -739,7 +666,16 @@ export const SearchFlight = (props) => {
                                   }`}
                                 >
                                   {isReturn ? "Round Trip" : "One Way"}
+                                  <i
+                                    className={`trip-arrow ${
+                                      tripOptions
+                                        ? "fa fa-chevron-up"
+                                        : "fa fa-chevron-down"
+                                    }`}
+                                    aria-hidden="true"
+                                  ></i>
                                 </span>
+
                                 {tripOptions && (
                                   <div className="tripoptions">
                                     <div className="tripoptionItem">
@@ -783,7 +719,7 @@ export const SearchFlight = (props) => {
                           </div>
 
                           {/* Cabin Class Selection */}
-                          <div className="col-12 col-md-6 col-lg-3 col-xl-3">
+                          <div className="col-12 col-md-6 col-lg-4 col-xl-3 col-sm-12 col-xs-12">
                             <Form.Group controlId="cabinclass">
                               <label
                                 htmlFor="cabinclass"
@@ -806,13 +742,14 @@ export const SearchFlight = (props) => {
                                     </option>
                                   ))}
                                 </Form.Control>
-                                <span
-                                  className={`arrow ${
+                                <i
+                                  className={`cabin-arrow ${
                                     isDropdownOpen
-                                      ? "cabinarrow-up"
-                                      : "cabinarrow-down"
+                                      ? "fa fa-chevron-up"
+                                      : "fa fa-chevron-down"
                                   }`}
-                                ></span>
+                                  aria-hidden="true"
+                                ></i>
                               </div>
                               {status.cabinclass && (
                                 <ErrorLabel message="Please select cabin class" />
@@ -821,7 +758,7 @@ export const SearchFlight = (props) => {
                           </div>
 
                           {/* Passengers Options */}
-                          <div className="col-12 col-md-6 col-lg-3 col-xl-3">
+                          <div className="col-12 col-md-6 col-lg-4 col-xl-3 col-sm-12 col-xs-12">
                             <div className="form-group">
                               <label
                                 htmlFor="passengers"
@@ -833,6 +770,7 @@ export const SearchFlight = (props) => {
                                 className="headerSearchItem"
                                 ref={dropdownSearchRef}
                               >
+                                {/* Passengers Options Arrow */}
                                 <span
                                   onClick={() => setOpenOptions(!openOptions)}
                                   className={`headerSearchText ${
@@ -842,6 +780,14 @@ export const SearchFlight = (props) => {
                                   }`}
                                 >
                                   {`${options.adult} adult · ${options.children} children · ${options.infant} infant`}
+                                  <i
+                                    className={`passenger-arrow ${
+                                      openOptions
+                                        ? "fa fa-chevron-up"
+                                        : "fa fa-chevron-down"
+                                    }`}
+                                    aria-hidden="true"
+                                  ></i>
                                 </span>
                                 {openOptions && (
                                   <div className="options">
@@ -951,7 +897,7 @@ export const SearchFlight = (props) => {
                             >
                               <div className="pg-search-form">
                                 <div className="row">
-                                  <div className="col-12 col-md-6 col-lg-3 col-xl-3">
+                                  <div className="col-12 col-md-6 col-lg-3 col-xl-3 col-sm-12 col-xs-12">
                                     <div className="form-group left-icon">
                                       <Form.Group controlId="origin">
                                         <Form.Label>Origin</Form.Label>
@@ -976,12 +922,12 @@ export const SearchFlight = (props) => {
                                   </div>
                                   {/* Swap Button */}
                                   <div
-                                    className="col-12 col-md-1 col-lg-1 col-xl-1 interchange-icon"
+                                    className="col-12 col-md-1 col-lg-1 col-xl-1 col-sm-12 col-xs-12 interchange-icon"
                                     onClick={handleSwap}
                                   >
                                     <img src={inoutimage} alt="swap icon" />
                                   </div>
-                                  <div className="col-12 col-md-6 col-lg-3 col-xl-3">
+                                  <div className="col-12 col-md-6 col-lg-3 col-xl-3 col-sm-12 col-xs-12">
                                     <div className="form-group left-icon">
                                       <Form.Group controlId="destination">
                                         <Form.Label>Destination</Form.Label>
@@ -1008,9 +954,9 @@ export const SearchFlight = (props) => {
                                     </div>
                                   </div>
 
-                                  <div className="col-12 col-md-12 col-lg-4 col-xl-4">
+                                  <div className="col-12 col-md-12 col-lg-5 col-xl-5 col-sm-12 col-xs-12">
                                     <div className="row">
-                                      <div className="col-6 col-md-6">
+                                      <div className="col-12 col-md-6 col-lg-6 col-xl-6 col-sm-12 col-xs-12">
                                         <div className="form-group">
                                           <Form.Group controlId="formGriddateOfDep">
                                             <Form.Label>
@@ -1021,13 +967,13 @@ export const SearchFlight = (props) => {
                                               className="form-control dpd1"
                                               name="dateOfDep"
                                               placeholder="Departure Date"
-                                              required
+                                              // required
                                               min={today} // Set the minimum date to today
                                               value={selectedDateOfDep} // Bind the input value to the state
                                               onChange={handleDateOfDepChange}
                                             />
                                             {status.dateOfDep && (
-                                              <ErrorLabel message="Please enter a valid return date"></ErrorLabel>
+                                              <ErrorLabel message="Please enter a valid depature date"></ErrorLabel>
                                             )}
                                             <img
                                               src={calendarimage}
@@ -1038,7 +984,7 @@ export const SearchFlight = (props) => {
                                         </div>
                                       </div>
 
-                                      <div className="col-6 col-md-6">
+                                      <div className="col-12 col-md-6 col-lg-6 col-xl-6 col-sm-12 col-xs-12">
                                         <div className="form-group">
                                           <Form.Group controlId="formGriddateOfReturn">
                                             <Form.Label>Return Date</Form.Label>
@@ -1046,7 +992,7 @@ export const SearchFlight = (props) => {
                                               type="date"
                                               className="form-control dpd1"
                                               name="returnDate"
-                                              required
+                                              // required
                                               placeholder="Return Date"
                                               min={selectedDateOfDep} // Set the minimum date to the selected departure date
                                               value={selectedDateOfRet} // Bind the input value to the state
@@ -1065,7 +1011,7 @@ export const SearchFlight = (props) => {
                                       </div>
                                     </div>
                                   </div>
-                                  <div className="col-12 col-md-12 col-lg-1 col-xl-1">
+                                  <div className="col-12 col-md-12 col-lg-12 col-xl-12">
                                     <button className="btn btn-orange searchbtn">
                                       Search
                                     </button>
@@ -1081,7 +1027,7 @@ export const SearchFlight = (props) => {
                             >
                               <div className="pg-search-form">
                                 <div className="row">
-                                  <div className="col-12 col-md-6 col-lg-3 col-xl-3">
+                                  <div className="col-12 col-md-6 col-lg-3 col-xl-3 col-sm-12 col-xs-12">
                                     <div className="form-group left-icon">
                                       <Form.Group controlId="origin">
                                         <Form.Label>Origin</Form.Label>
@@ -1110,12 +1056,12 @@ export const SearchFlight = (props) => {
                                   </div>
                                   {/* Swap Button */}
                                   <div
-                                    className="col-12 col-md-1 col-lg-1 col-xl-1 interchange-icon"
+                                    className="col-12 col-md-1 col-lg-1 col-xl-1 col-sm-12 col-xs-12 interchange-icon"
                                     onClick={handleSwap}
                                   >
                                     <img src={inoutimage} alt="swap icon" />
                                   </div>
-                                  <div className="col-12 col-md-6 col-lg-3 col-xl-3">
+                                  <div className="col-12 col-md-6 col-lg-3 col-xl-3 col-sm-12 col-xs-12">
                                     <div className="form-group">
                                       <Form.Group controlId="destination">
                                         <Form.Label>Destination</Form.Label>
@@ -1146,7 +1092,7 @@ export const SearchFlight = (props) => {
                                     </div>
                                   </div>
 
-                                  <div className="col-12 col-md-6 col-lg-3 col-xl-3">
+                                  <div className="col-12 col-md-6 col-lg-3 col-xl-3 col-sm-12 col-xs-12">
                                     <div className="form-group">
                                       <Form.Group controlId="formGriddateOfDep">
                                         <Form.Label>Departure Date</Form.Label>
@@ -1155,13 +1101,13 @@ export const SearchFlight = (props) => {
                                           className="form-control dpd1"
                                           name="dateOfDep"
                                           placeholder="Departure Date"
-                                          required
+                                          // required
                                           min={today} // Set the minimum date to today
                                           value={selectedDateOfDep} // Bind the input value to the state
                                           onChange={handleDateOfDepChange}
                                         />
                                         {status.dateOfDep && (
-                                          <ErrorLabel message="Please enter a valid return date"></ErrorLabel>
+                                          <ErrorLabel message="Please enter a valid depature date"></ErrorLabel>
                                         )}
                                         <img
                                           src={calendarimage}

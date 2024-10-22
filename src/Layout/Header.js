@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Navbar, Nav, Button, Container } from "react-bootstrap";
 import headerlogoimage from "../assets/images/Preyana_Logo.svg";
@@ -6,6 +6,7 @@ import userimage from "../assets/images/user.svg";
 
 const Header = () => {
   const email = localStorage.getItem("email");
+  const userId = localStorage.getItem("userId");
   const navigate = useNavigate();
   const location = useLocation(); // To get the current path
 
@@ -29,17 +30,13 @@ const Header = () => {
   };
 
   useEffect(() => {
-    if (!email) {
+    if (!email || !userId) {
       navigate("/");
     }
-  }, [email]);
+  }, [email, userId]);
 
   return (
-    <Navbar
-      expand="lg"
-      sticky="top"
-      className="navbar-custom p-1  border-bottom border-6 border-primary"
-    >
+    <Navbar expand="lg" sticky="top" className="navbar-custom p-1">
       <Container>
         <Navbar.Brand as={Link} to="/">
           <img

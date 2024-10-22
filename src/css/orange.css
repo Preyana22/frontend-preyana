@@ -1286,7 +1286,7 @@ nav.navbar#mynavbar-3 .navbar-brand .fa
 }
 
 .search-tabs .tab-content .tab-pane .form-group .fa{
-	color:#faa61a;
+	color:#2264bf;
 }
 
 .search-tabs .tab-content .tab-pane input,
@@ -4509,4 +4509,5 @@ background: transparent;
 }
 .interchange-icon{
 	margin-top: 2rem;
+	text-align: center;
 }

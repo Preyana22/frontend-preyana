@@ -63,6 +63,7 @@ import AdChoices from "./components/ad-choices";
 import MyBookings from "./components/booking/my-bookings/my-bookings";
 import SingleBookingDetails from "./components/booking/single-booking/single-booking-details";
 import Success from "./components/success";
+import FareOption from "./components/fare-option/fare-option";
 
 function App(props) {
   useEffect(() => {
@@ -384,6 +385,16 @@ function App(props) {
             <Fragment>
               <InnerHeader />
               <Success />
+              <Footer />
+            </Fragment>
+          }
+        />
+        <Route
+          path="/fareoption"
+          element={
+            <Fragment>
+              <InnerHeader />
+              <FareOption />
               <Footer />
             </Fragment>
           }

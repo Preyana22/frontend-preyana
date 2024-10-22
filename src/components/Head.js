@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 function Header() {
   return (
-    <div className="wrapper wrapper-border">
+    <div className="wrapper">
       <nav
         className="navbar navbar-expand-xl sticky-top navbar-custom main-navbar p-1"
         id="mynavbar-1"

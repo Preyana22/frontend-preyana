@@ -304,11 +304,6 @@ Author:			Star Travel
 	}
 }
 
-@media(max-width:1199px){
-	
-
-}
-
 @media(min-width:768px) and (max-width:1199px){
 
 	#mynavbar{
@@ -1236,7 +1231,7 @@ Author:			Star Travel
 	}
 	
 	.search-tabs .tab-content .tab-pane{
-		padding:35px 30px;
+		/* padding:35px 30px; */
 	}
 }
 
@@ -4570,4 +4565,50 @@ Author:			Star Travel
 		.Flight-info p{
 			margin-left: 1.5rem;
 		}
+}
+
+
+@media (max-width: 768px) and (orientation: landscape) {
+.clear-all {
+		font-size: 12px;
+	}
+}
+
+@media (min-width: 340px) and (max-width: 410px) {
+	.headerSearchText {
+		padding-right: 8rem !important;
+	}
+}
+
+@media (min-width: 414px) and (max-width: 459px) {
+	.headerSearchText {
+		padding-right: 12rem !important;
+	}
+}
+
+
+@media (min-width: 460px) and (max-width: 524px){
+	.headerSearchText {
+			padding-right: 13rem !important;
+		}
+}
+
+@media (min-width: 525px) and (max-width: 768px) {
+	.headerSearchText {
+		padding-right: 17rem !important;
+	}
+}
+
+
+@media (min-width: 530px) and (max-width: 768px) {
+	.headerSearchText {
+		padding-right: 17rem !important;
+	}
+}
+
+
+@media (min-width: 769px) and (max-width: 991px) {
+	.headerSearchText {
+		padding-right: 8rem !important;
+	}
 }

@@ -19,6 +19,9 @@
   background-color: lightgray;
 }
 
+.flights-info-container{
+  margin-top: -3rem;
+}
 @media screen and (max-width: 640px) {
   .Flight-info .detail-label:nth-child(2) {
     flex: 5 1 80%;

@@ -18,6 +18,7 @@ const FlightLogo = (props) => {
 export const FlightInfo = (props) => {
   const navigate = useNavigate();
   const flight = props.data;
+  const flightsdata = props.data;
   //console.log(JSON.stringify(props.data)+"props.data");
   const name = props.data.slices[0].segments[0].operating_carrier["name"];
   const flightNo =
@@ -32,10 +33,8 @@ export const FlightInfo = (props) => {
   const isMultiMode = props.isMultiMode;
   const timeDiff = new Date(`${date} ${arrivalTime}`) - new Date(`${date}`);
 
-  const navigateToContacts = () => {
-    // 👇️ navigate to /contacts
-
-    navigate("/contacts", { state: { flight } });
+  const navigateToFareOption = () => {
+    navigate("/fareoption", { state: { flightsdata } });
   };
   return (
     <Card>
@@ -57,7 +56,7 @@ export const FlightInfo = (props) => {
         <DetailLabel mainText="Duration" subText={time}></DetailLabel> */}
           {isMultiMode ? null : <PriceInfo amount={price} />}
           {isMultiMode ? null : (
-            <Button className="btn btn-orange" onClick={navigateToContacts}>
+            <Button className="btn btn-orange" onClick={navigateToFareOption}>
               Book Now
             </Button>
           )}
