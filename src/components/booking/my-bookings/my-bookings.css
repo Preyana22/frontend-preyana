@@ -1,0 +1,49 @@
+.nav-tabs .nav-item .nav-link {
+    border: none;
+    font-weight: bold;
+}
+
+.nav-tabs .nav-item .nav-link.active {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-bottom-color: transparent;
+    color: #007bff;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f8f9fa;
+}
+
+.table {
+    margin-top: 15px;
+}
+
+
+.table td,
+.table th{
+border-bottom: 1px solid #dee2e6 !important;
+    border-top: 1px solid #dee2e6 !important;
+    border-right: none !important;
+    border-left: none !important;
+}
+
+.search-input {
+    padding: 10px 40px 10px 10px;
+    /* Adjust padding for icon */
+    position: relative;
+}
+
+.search-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #003988;
+    /* Prevent click events on the icon */
+}
+
+
+.btn {
+    border-radius: 0 !important;
+}

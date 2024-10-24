@@ -60,35 +60,36 @@ const Contacts = (props) => {
   };
 
   const location = useLocation();
-  console.log("location.state.flight", location.state.flight);
+  console.log("location.state.flights", location.state.flights);
   // const name =
-  //   location.state.flight.slices[0].segments[0].operating_carrier["name"];
+  //   location.state.flights.slices[0].segments[0].operating_carrier["name"];
   // const flightNo =
-  //   location.state.flight.slices[0].segments[0].marketing_carrier_flight_number;
-  // const arrivalTime = location.state.flight.slices[0].segments[0].arriving_at;
-  const origin = location.state.flight.slices[0].origin.iata_code;
-  const destination = location.state.flight.slices[0].destination.iata_code;
-  const origincity = location.state.flight.slices[0].origin.city_name;
-  const destinationcity = location.state.flight.slices[0].destination.city_name;
-  const price = location.state.flight.total_amount;
-  const base_amount = location.state.flight.base_amount;
-  const tax_amount = location.state.flight.tax_amount;
-  const date = location.state.flight.slices[0].segments[0].departing_at;
+  //   location.state.flights.slices[0].segments[0].marketing_carrier_flight_number;
+  // const arrivalTime = location.state.flights.slices[0].segments[0].arriving_at;
+  const origin = location.state.flights.slices[0].origin.iata_code;
+  const destination = location.state.flights.slices[0].destination.iata_code;
+  const origincity = location.state.flights.slices[0].origin.city_name;
+  const destinationcity =
+    location.state.flights.slices[0].destination.city_name;
+  const price = location.state.flights.total_amount;
+  const base_amount = location.state.flights.base_amount;
+  const tax_amount = location.state.flights.tax_amount;
+  const date = location.state.flights.slices[0].segments[0].departing_at;
   const formattedDate = moment(date).format("ddd D MM, YYYY, hh:mm A");
-  const arrivaldate = location.state.flight.slices[0].segments[0].arriving_at;
+  const arrivaldate = location.state.flights.slices[0].segments[0].arriving_at;
   const formattedArrivalDate = moment(arrivaldate).format("D MM YYYY, hh:mm A");
-  const time = location.state.flight.slices[0].segments[0].duration;
-  const stops = location.state.flight.slices[0].segments[0].stops;
-  const aircraftName = location.state.flight.slices[0].segments[0].aircraft
-    ? location.state.flight.slices[0].segments[0].aircraft.name
+  const time = location.state.flights.slices[0].segments[0].duration;
+  const stops = location.state.flights.slices[0].segments[0].stops;
+  const aircraftName = location.state.flights.slices[0].segments[0].aircraft
+    ? location.state.flights.slices[0].segments[0].aircraft.name
     : null;
 
   const operating_carrier_flight_number =
-    location.state.flight.slices[0].segments[0].operating_carrier.iata_code &&
-    location.state.flight.slices[0].segments[0].operating_carrier_flight_number
-      ? location.state.flight.slices[0].segments[0].operating_carrier
+    location.state.flights.slices[0].segments[0].operating_carrier.iata_code &&
+    location.state.flights.slices[0].segments[0].operating_carrier_flight_number
+      ? location.state.flights.slices[0].segments[0].operating_carrier
           .iata_code +
-        location.state.flight.slices[0].segments[0]
+        location.state.flights.slices[0].segments[0]
           .operating_carrier_flight_number
       : null;
   // Parse the duration using moment.js
@@ -99,7 +100,7 @@ const Contacts = (props) => {
   const hours = momentDuration.hours();
   const minutes = momentDuration.minutes();
   const cabin =
-    location.state.flight.slices[0].segments[0].passengers[0]
+    location.state.flights.slices[0].segments[0].passengers[0]
       .cabin_class_marketing_name;
   const [isFetching, setIsFetching] = useState(false);
   const navigate = useNavigate();
@@ -108,14 +109,14 @@ const Contacts = (props) => {
 
   const title = ["Mr", "Mrs", "Miss", "Doctor"];
   const paymenttype =
-    location.state.flight.payment_requirements.requires_instant_payment;
+    location.state.flights.payment_requirements.requires_instant_payment;
   const gender = ["Female", "Male"];
   console.log("paymenttype" + paymenttype);
   const flights = props.flights || {};
   flights.nonStopFlights = props.flights;
   const flightsCount = flights.length;
   let arr = [];
-  arr = location.state.flight.passengers;
+  arr = location.state.flights.passengers;
   const handleSubmit = async (event) => {
     event.preventDefault();
     const { flights } = props;
@@ -167,8 +168,8 @@ const Contacts = (props) => {
 
       contactDetails.push({
         title: titles.state.text,
-        offer_id: location.state.flight.id,
-        id: location.state.flight.passengers[index].id,
+        offer_id: location.state.flights.id,
+        id: location.state.flights.passengers[index].id,
         family_name: event.target[familyname1].value,
         given_name: event.target[given_name1].value,
         email: event.target[email1].value,
@@ -197,7 +198,7 @@ const Contacts = (props) => {
     if (localStorage.getItem("userId") === null) {
       const configuration = {
         method: "post",
-        url: "http://3.128.255.176:3000/authentication/register",
+        url: "http://192.168.1.92:3000/authentication/register",
         data: {
           email: event.target["email0"].value,
           userName: event.target["email0"].value,
@@ -225,8 +226,8 @@ const Contacts = (props) => {
 
     setIsFetching(true);
 
-    const amount = location.state.flight.total_amount;
-    const currency = location.state.flight.total_currency;
+    const amount = location.state.flights.total_amount;
+    const currency = location.state.flights.total_currency;
     const type = "balance";
 
     const payments = { type: type, amount: amount, currency: currency };
@@ -239,7 +240,7 @@ const Contacts = (props) => {
 
     try {
       const response = await axios.post(
-        "http://3.128.255.176:3000/airlines/book",
+        "http://192.168.1.92:3000/airlines/book",
         test,
         {
           headers: {
@@ -349,7 +350,7 @@ const Contacts = (props) => {
 
     navigate("/results");
   };
-  const flightsdata = location.state.flight;
+  const flightsdata = location.state.flights;
   const navigateToFareOption = () => {
     console.log(flightsdata);
     navigate("/fareoption", { state: { flightsdata } });
@@ -367,9 +368,9 @@ const Contacts = (props) => {
                     <li className="breadcrumb-item">
                       <span
                         style={{
-                          color: "blue",
+                          color: "#003988",
                           cursor: "pointer",
-                          textDecoration: "underline",
+                          textDecoration: "none",
                         }}
                         onClick={onSearchResultClick}
                       >
@@ -379,9 +380,9 @@ const Contacts = (props) => {
                     <li className="breadcrumb-item">
                       <span
                         style={{
-                          color: "blue",
+                          color: "#003988",
                           cursor: "pointer",
-                          textDecoration: "underline",
+                          textDecoration: "none",
                         }}
                         onClick={navigateToFareOption}
                       >
@@ -786,7 +787,7 @@ const Contacts = (props) => {
                         </h5>
                         <p className="card-text text-muted">
                           {operating_carrier_flight_number},{" "}
-                          {location.state.flight.slices.length === 1
+                          {location.state.flights.slices.length === 1
                             ? "One Way Flight"
                             : "Round Trip Flight"}
                         </p>

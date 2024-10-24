@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import sideimage from "../assets/images/flight-1.jpg";
 import destination_1 from "../assets/images/destination_1.jpg";
 import destination_2 from "../assets/images/destination_2.jpg";
@@ -10,6 +10,7 @@ import axios from "axios";
 import { Carousel } from "react-bootstrap";
 
 const ForgotPassword = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     password: "",
     newpassword: "",
@@ -65,7 +66,7 @@ const ForgotPassword = () => {
         console.log("Form data:", formData);
         const configuration = {
           method: "post",
-          url: "http://3.128.255.176:3000/authentication/change-password",
+          url: "http://192.168.1.92:3000/authentication/change-password",
           data: {
             userId: localStorage.getItem("userId"),
             currentPassword: formData.password,
@@ -76,6 +77,7 @@ const ForgotPassword = () => {
         const result = await axios(configuration);
 
         alert(result.data.message);
+        navigate("/");
       } catch (error) {
         // console.error("Login error:", error);
         if (error.response) {
@@ -191,7 +193,7 @@ const ForgotPassword = () => {
                           </div>
                         )}
                       </div>
-                      <button className="btn btn-orange btn-block">Send</button>
+                      <button className="btn btn-orange btn-block">Save</button>
                     </form>
                   </div>
 

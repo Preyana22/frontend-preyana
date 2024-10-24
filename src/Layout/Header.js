@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Navbar, Nav, Button, Container } from "react-bootstrap";
+import { Navbar, Nav, Button, Container, Dropdown } from "react-bootstrap";
 import headerlogoimage from "../assets/images/Preyana_Logo.svg";
 import userimage from "../assets/images/user.svg";
 
 const Header = () => {
   const email = localStorage.getItem("email");
   const userId = localStorage.getItem("userId");
+  const userName = localStorage.getItem("userName");
   const navigate = useNavigate();
   const location = useLocation(); // To get the current path
 
@@ -29,11 +30,15 @@ const Header = () => {
     navigate("/change");
   };
 
+  const openProfile = () => {
+    navigate("/profile");
+  };
+
   useEffect(() => {
     if (!email || !userId) {
       navigate("/");
     }
-  }, [email, userId]);
+  }, [email, userId, userName]);
 
   return (
     <Navbar expand="lg" sticky="top" className="navbar-custom p-1">
@@ -49,38 +54,40 @@ const Header = () => {
           <i className="fa fa-bars"></i>
         </Navbar.Toggle>
         <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="ml-auto">
+          <Nav className="ml-auto align-items-center">
             {email ? (
               <>
-                <Nav.Item>
+                <Nav.Item className="nav-item-border">
                   <Button
                     variant="link"
-                    className={`nav-btn text-left ${
-                      location.pathname === "/mybookings" ? "active" : ""
-                    }`}
-                    onClick={bookings}
+                    className="nav-btn text-left text-decoration-none"
                   >
-                    My Bookings
+                    <i className="fa fa-user-circle"></i> Hello {userName}
                   </Button>
                 </Nav.Item>
-                <Nav.Item>
-                  <Button
-                    variant="link"
-                    className={`nav-btn text-left ${
-                      location.pathname === "/change" ? "active" : ""
-                    }`}
-                    onClick={changepassword}
-                  >
-                    Change Password
-                  </Button>
-                </Nav.Item>
+                <Dropdown className="nav-item-border">
+                  <Dropdown.Toggle variant="link" className="nav-link">
+                    My Account
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu>
+                    <Dropdown.Item as={Button} onClick={bookings}>
+                      Your Trips
+                    </Dropdown.Item>
+                    <Dropdown.Item as={Button} onClick={openProfile}>
+                      Profile
+                    </Dropdown.Item>
+                    <Dropdown.Item as={Button} onClick={changepassword}>
+                      Change Password
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
                 <Nav.Item>
                   <Button
                     variant="link"
                     className="nav-btn text-left"
                     onClick={logout}
                   >
-                    <i className="fa fa-power-off"></i> Logout
+                    <i className="fa fa-power-off"></i> Log Out
                   </Button>
                 </Nav.Item>
               </>

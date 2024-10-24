@@ -64,6 +64,7 @@ import MyBookings from "./components/booking/my-bookings/my-bookings";
 import SingleBookingDetails from "./components/booking/single-booking/single-booking-details";
 import Success from "./components/success";
 import FareOption from "./components/fare-option/fare-option";
+import Profile from "./components/profile";
 
 function App(props) {
   useEffect(() => {
@@ -395,6 +396,16 @@ function App(props) {
             <Fragment>
               <InnerHeader />
               <FareOption />
+              <Footer />
+            </Fragment>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <Fragment>
+              <InnerHeader />
+              <Profile />
               <Footer />
             </Fragment>
           }

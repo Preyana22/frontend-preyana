@@ -3882,7 +3882,7 @@ nav.navbar .container.padding {
 .hide-show-label{
 	position: absolute;
     top: 33px;
-    right: 15px;
+    right: 30px;
     font-size: 14px;
 }
 
@@ -6422,4 +6422,73 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .searchbtn{
 	margin-top: 2rem;
+}
+/* Custom Navbar Styling */
+.navbar-custom {
+	background-color: #f8f9fa;
+	border-bottom: 1px solid #e9ecef;
+}
+
+.nav-btn {
+	color: #007bff;
+	cursor: pointer;
+}
+
+.nav-btn:hover {
+	color: #0056b3;
+	text-decoration: underline;
+}
+
+.nav-link {
+	color: #007bff;
+	font-weight: bold;
+}
+
+.nav-link:hover {
+	color: #0056b3;
+	text-decoration: none;
+}
+
+.dropdown-toggle::after {
+	display: none;
+}
+
+/* User Image Styling */
+.user-img {
+	width: 20px;
+		height: 40px;
+	border-radius: 50%;
+	margin-right: 5px;
+}
+
+.sign-in-label {
+	color: #007bff;
+}
+
+.sign-in-label:hover {
+	color: #0056b3;
+}
+
+/* Add right border to navigation items */
+.nav-item-border {
+	border-right: 1px solid #ccc;
+	padding-right: 10px;
+	/* Adjust padding to space out the border */
+	margin-right: 10px;
+	/* Adjust margin to space out between items */
+}
+
+.nav-item-border:last-child {
+	border-right: none;
+	/* Remove the border from the last item */
+}
+
+/* Add spacing between sections */
+.card {
+	border: none;
+	box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+	background-color: #f8f9fa;
 }

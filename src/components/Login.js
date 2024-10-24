@@ -48,7 +48,7 @@ const Login = (props) => {
         console.log("Form data:", formData);
         const configuration = {
           method: "post",
-          url: "http://3.128.255.176:3000/authentication/log-in",
+          url: "http://192.168.1.92:3000/authentication/log-in",
           data: {
             email: formData.username,
             password: formData.password,

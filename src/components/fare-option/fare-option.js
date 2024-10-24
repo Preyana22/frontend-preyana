@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../fare-option/fare-option.css"; // Create this file to add custom styles
 import { useLocation, useNavigate } from "react-router-dom"; // Import useNavigate
 import moment from "moment"; // Import Moment.js
@@ -7,15 +7,15 @@ import { findFlights } from "../../actions";
 
 const FareOption = (props) => {
   const location = useLocation();
-  const flight = location.state.flightsdata;
+  const flights = location.state.flightsdata;
   const navigate = useNavigate(); // Use useNavigate for navigation
   const [selectedFares, setSelectedFares] = useState({
     slice1: null,
     slice2: null,
   });
-  console.log("flights", flight);
+  console.log("flights", flights);
   const navigateToContacts = () => {
-    navigate("/contacts", { state: { flight, selectedFares } }); // Pass selected fares to the next route
+    navigate("/contacts", { state: { flights, selectedFares } }); // Pass selected fares to the next route
   };
 
   const handleFareSelect = (sliceIndex, fareType) => {
@@ -92,13 +92,16 @@ const FareOption = (props) => {
   const onSearchResultClick = () => {
     let criteria = {}; // Change to 'let' so it can be reassigned
     const originStateText = localStorage.getItem("origin");
-    const originCode = originStateText.match(/\(([^)]+)\)/)[1]; // Extracts the code within parentheses
-    console.log(originCode); // Output: IND
+    const originCode = originStateText
+      ? originStateText.match(/\(([^)]+)\)/)[1]
+      : ""; // Extracts the code within parentheses
+
     const savedOrigin = originCode;
 
     const destinationStateText = localStorage.getItem("destination");
-    const destinationCode = destinationStateText.match(/\(([^)]+)\)/)[1]; // Extracts the code within parentheses
-    console.log(destinationCode); // Output: IND
+    const destinationCode = destinationStateText
+      ? destinationStateText.match(/\(([^)]+)\)/)[1]
+      : ""; // Extracts the code within parentheses
 
     const savedDestination = destinationCode;
 
@@ -109,7 +112,6 @@ const FareOption = (props) => {
       JSON.parse(localStorage.getItem("options"))
     );
     const storedTripType = localStorage.getItem("isReturn");
-    const flights = props.flights;
 
     if (storedTripType === "false") {
       criteria = {
@@ -130,16 +132,90 @@ const FareOption = (props) => {
       };
     }
 
-    // console.log("flights", flights);
-    // console.log("criteria", criteria);
+    console.log("fareoption flights", flights);
+    console.log("fareoption criteria", criteria);
     props.findFlights({ flights, criteria });
 
     navigate("/results");
   };
-  const flightsdata = location.state.flight;
-  const navigateToFareOption = () => {
-    console.log(flightsdata);
-    navigate("/fareoption", { state: { flightsdata } });
+  useEffect(() => {
+    getFlights();
+  }, []);
+
+  const getFlights = async () => {
+    let criteria = {}; // Change to 'let' so it can be reassigned
+    try {
+      const originStateText = localStorage.getItem("origin");
+      const originCode = originStateText
+        ? originStateText.match(/\(([^)]+)\)/)[1]
+        : ""; // Extracts the code within parentheses
+
+      const savedOrigin = originCode;
+
+      const destinationStateText = localStorage.getItem("destination");
+      const destinationCode = destinationStateText
+        ? destinationStateText.match(/\(([^)]+)\)/)[1]
+        : ""; // Extracts the code within parentheses
+
+      const savedDestination = destinationCode;
+
+      const savedCabinClass = String("premium_economy");
+      const savedDateOfDep = JSON.parse(
+        localStorage.getItem("dateOfDeparture")
+      );
+      const savedDateOfRet = JSON.parse(localStorage.getItem("dateOfReturn"));
+      const storedOptions = transformPassengerData(
+        JSON.parse(localStorage.getItem("options"))
+      );
+      const storedTripType = localStorage.getItem("isReturn");
+      const flights = props.flights;
+
+      if (storedTripType === "false") {
+        criteria = {
+          origin: savedOrigin,
+          destination: savedDestination,
+          departureDate: savedDateOfDep,
+          numOfPassengers: storedOptions,
+          cabin_class: savedCabinClass,
+        };
+      } else {
+        criteria = {
+          origin: savedOrigin,
+          destination: savedDestination,
+          departureDate: savedDateOfDep,
+          returnDate: savedDateOfRet,
+          numOfPassengers: storedOptions,
+          cabin_class: savedCabinClass,
+        };
+      }
+
+      // Request options for the fetch API
+      const requestOptions = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(criteria),
+      };
+
+      // Log the requestOptions for debugging
+      // console.log("Request Options:", requestOptions);
+
+      // Perform the fetch request
+      const response = await fetch(
+        "http://192.168.1.92:3000/airlines/test",
+        requestOptions
+      );
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status} - ${response.statusText}`);
+      }
+
+      const flightsdata = await response.json();
+
+      // // Log the response data for debugging
+      // console.log("Flights Data:", flightsdata[1]);
+    } catch (error) {
+      // Log the error if the fetch request fails
+      console.error("Error during fetch:", error);
+    }
   };
 
   return (
@@ -151,9 +227,9 @@ const FareOption = (props) => {
               <li className="breadcrumb-item">
                 <span
                   style={{
-                    color: "blue",
+                    color: "#003988",
                     cursor: "pointer",
-                    textDecoration: "underline",
+                    textDecoration: "none",
                   }}
                   onClick={onSearchResultClick}
                 >
@@ -170,103 +246,169 @@ const FareOption = (props) => {
       </div>
       <div className="row">
         <div className="col-md-8">
-          {flight.slices.map((slice, sliceIndex) => (
+          {flights.slices.map((slice, sliceIndex) => (
             <div key={sliceIndex}>
               <h4>
                 <strong>Flight to {slice.destination.city_name}</strong>{" "}
                 {convertDate(slice.segments[0].departing_at)}
               </h4>
               {slice.segments.map((segment, segmentIndex) => (
-                <div
-                  key={segmentIndex}
-                  className="d-flex align-items-center mb-3"
-                >
-                  <div className="mr-3">
-                    <img
-                      src={segment.operating_carrier.logo_symbol_url}
-                      width={30}
-                      height={30}
-                      alt="Carrier Logo"
-                    />
-                  </div>
-                  <div className="d-flex justify-content-between w-100">
-                    <div>
+                <>
+                  <div className="row text-center">
+                    <div className="col">
+                      <img
+                        src={segment.operating_carrier.logo_symbol_url}
+                        width={30}
+                        height={30}
+                        alt="Carrier Logo"
+                        className="mr-3"
+                      />
                       <span className="flight-time">
                         {convertToTime(segment.departing_at)}
-                      </span>{" "}
-                      {segment.origin.iata_city_code}
+                      </span>
                     </div>
-                    <div>
+                    <div className="col">
                       <span>{formatDuration(segment.duration)}</span>
+                    </div>
+                    <div className="col">
+                      <span className="flight-time">
+                        {convertToTime(segment.arriving_at)}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="row text-center">
+                    <div className="col d-flex justify-content-center align-items-center">
+                      <div
+                        className="d-flex align-items-center"
+                        style={{ width: "25%" }}
+                      >
+                        <hr
+                          style={{
+                            flexGrow: 1,
+                            border: "none",
+                            borderTop: "1px solid #e0dbdb",
+                            margin: "0",
+                          }}
+                        />
+                        <i
+                          className="fa fa-fighter-jet"
+                          style={{
+                            color: "#c2c2c2",
+                            fontSize: "20px",
+                            marginLeft: "10px",
+                          }}
+                        ></i>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row text-center">
+                    <div className="col">
+                      <span>{segment.origin.iata_city_code}</span>
+                    </div>
+                    <div className="col">
                       <span className="mx-2">
                         {segment.stops ? segment.stops : ""}
                       </span>
                     </div>
-                    <div>
-                      <span className="flight-time">
-                        {convertToTime(segment.arriving_at)}
-                      </span>{" "}
-                      {segment.destination.iata_city_code}
+                    <div className="col">
+                      <span>{segment.destination.iata_city_code}</span>
                     </div>
                   </div>
-                </div>
+                </>
               ))}
 
               {/* Render fare options */}
+              {/* Render fare options */}
               <div className="row my-4">
-                {/* Economy Option */}
-                {["Economy", "Premium Economy", "Business"].map((fareType) => (
-                  <div className="col-md-4" key={fareType}>
-                    <div
-                      className={`card ${
-                        selectedFares[`slice${sliceIndex + 1}`] === fareType
-                          ? "selected-fare"
-                          : ""
-                      }`}
-                      onClick={() => handleFareSelect(sliceIndex, fareType)}
-                    >
-                      {selectedFares[`slice${sliceIndex + 1}`] === fareType && (
-                        <i
-                          className="fa fa-check-circle position-absolute"
-                          style={{
-                            top: "10px",
-                            right: "10px",
-                            color: "#9e7ce8",
-                          }}
-                        />
-                      )}
-                      <div className="card-body">
-                        <h5 className="card-title">{fareType}</h5>
-                        <h6 className="card-subtitle mb-2 font-weight-bold">
-                          {fareType === "Economy"
-                            ? "Basic"
-                            : fareType === "Premium Economy"
-                            ? "Comfort"
-                            : "Premium"}
-                        </h6>
-                        <ul className="list-unstyled">
-                          <li>✗ Not changeable</li>
-                          <li>
-                            {fareType === "Premium Economy"
-                              ? "✔ Refundable (£20.00 fee)"
-                              : "✗ Not refundable"}
-                          </li>
-                          <li>✔ Hold price & space</li>
-                          <li>✔ Includes carry-on bags</li>
-                          <li>✔ Includes checked bags</li>
-                        </ul>
-                        <div className="total-price">
-                          <p>total amount from</p>
-                          <h3>
-                            <strong>
-                              {flight.total_currency + "" + flight.total_amount}
-                            </strong>
-                          </h3>
-                        </div>
-                      </div>
+                <div
+                  className={`card ${
+                    selectedFares[`slice${sliceIndex + 1}`] ===
+                    slice.segments[0].passengers[0].cabin_class_marketing_name
+                      ? "selected"
+                      : ""
+                  }`}
+                  onClick={() =>
+                    handleFareSelect(
+                      sliceIndex,
+                      slice.segments[0].passengers[0].cabin_class_marketing_name
+                    )
+                  } // Set the selected fare type
+                  style={{ cursor: "pointer" }}
+                >
+                  <i
+                    className="fa fa-check-circle position-absolute"
+                    style={{
+                      top: "10px",
+                      right: "10px",
+                      color:
+                        selectedFares[`slice${sliceIndex + 1}`] ===
+                        slice.segments[0].passengers[0]
+                          .cabin_class_marketing_name
+                          ? "#003988"
+                          : "gray",
+                    }}
+                  />
+                  <div className="card-body">
+                    <h5>
+                      {
+                        slice.segments[0].passengers[0]
+                          .cabin_class_marketing_name
+                      }
+                    </h5>
+                    <h6 className="card-subtitle mb-2 font-weight-bold">
+                      {slice.segments[0].passengers[0].cabin_class}
+                    </h6>
+                    <ul className="list-unstyled">
+                      <li>
+                        {slice.conditions?.change_before_departure?.allowed ===
+                        true
+                          ? "✔ changeable"
+                          : "✗ Not changeable"}
+                      </li>
+                      <li>
+                        {slice.conditions?.refund_before_departure?.allowed}
+                        {slice.conditions?.refund_before_departure?.allowed ===
+                        true
+                          ? `✔ Refundable ${
+                              slice.conditions.refund_before_departure
+                                .penalty_currency +
+                              " " +
+                              slice.conditions.refund_before_departure
+                                .penalty_amount
+                            }`
+                          : "✗ Not refundable"}
+                      </li>
+                      <li>
+                        {flights.payment_requirements
+                          ?.requires_instant_payment === false
+                          ? "✔ Hold"
+                          : "✔ Instant"}
+                      </li>
+                      <li>
+                        {slice.segments[0].passengers[0]?.baggages?.some(
+                          (bag) => bag.type === "carry_on"
+                        )
+                          ? "✔ Includes carry-on bags"
+                          : "✗ Excludes carry-on bags"}
+                      </li>
+                      <li>
+                        {slice.segments[0].passengers[0]?.baggages?.some(
+                          (bag) => bag.type === "checked"
+                        )
+                          ? "✔ Includes checked bags"
+                          : "✗ Excludes checked bags"}
+                      </li>
+                    </ul>
+                    <div className="total-price">
+                      <p>total amount from</p>
+                      <h3>
+                        <strong>
+                          {flights.total_currency + "" + flights.total_amount}
+                        </strong>
+                      </h3>
                     </div>
                   </div>
-                ))}
+                </div>
               </div>
             </div>
           ))}
@@ -278,14 +420,14 @@ const FareOption = (props) => {
             <div className="card-body">
               <h5 className="card-title">Summary</h5>
               <p className="card-text">
-                Sold by {flight.slices[0].segments[0].operating_carrier.name}
+                Sold by {flights.slices[0].segments[0].operating_carrier.name}
               </p>
               <h6>Selected Fares:</h6>
-              <p>{selectedFares.slice1 || "None selected"}</p>
-              <p>{selectedFares.slice2 || "None selected"}</p>
+              <p>{selectedFares.slice1 || ""}</p>
+              <p>{selectedFares.slice2 || ""}</p>
               <p className="card-text">
                 <i className="fa fa-cloud"> </i>
-                {" " + flight.total_emissions_kg + " KG"}
+                {" " + flights.total_emissions_kg + " KG"}
               </p>
               <button
                 className={`btn ${

@@ -11,6 +11,7 @@ import "../body.css";
 import axios from "axios";
 import flightimage from "../../assets/images/flightimage.svg";
 import sideimage from "../../assets/images/banner.svg";
+import hotelimage from "../../assets/images/coming-soon.png";
 import planeIcon from "../../assets/images/planeIcon.svg";
 import hotelIcon from "../../assets/images/hotel.svg";
 import inoutimage from "../../assets/images/inoutimage.svg";
@@ -416,7 +417,7 @@ export const SearchFlight = (props) => {
     }
     try {
       const { data } = await axios.get(
-        `http://3.128.255.176:3000/airlines/airports/` + search
+        `http://192.168.1.92:3000/airlines/airports/` + search
       );
 
       if (data.data) {
@@ -1131,8 +1132,8 @@ export const SearchFlight = (props) => {
                     </div>
                   </div>
                   <div id="hotels" className="tab-pane in border-0">
-                    <div className="m-4">
-                      <div className="col-12 col-md-12 col-lg-12 col-xl-12 mb-5">
+                    <div className="m-0">
+                      {/* <div className="col-12 col-md-12 col-lg-12 col-xl-12 mb-5">
                         <h4>
                           <strong>Coming Soon!!!!</strong>
                         </h4>
@@ -1140,45 +1141,14 @@ export const SearchFlight = (props) => {
                           Stay tuned to discover and book the perfect
                           accommodations for your next adventure.
                         </span>
-                      </div>
+                      </div> */}
                       <div className="col-12 col-md-12 col-lg-12 col-xl-12">
-                        <div className="flex-content-img p-0">
-                          <Carousel
-                            controls={false}
-                            indicators={false}
-                            interval={1500}
-                          >
-                            <Carousel.Item>
-                              <img
-                                style={{ height: "500px", width: "1000px" }}
-                                className="d-block w-100"
-                                src={sideimage}
-                                alt="First slide"
-                              />
-                            </Carousel.Item>
-                            <Carousel.Item>
-                              <img
-                                style={{ height: "500px", width: "1000px" }}
-                                className="d-block"
-                                src={destination_1}
-                                alt="Second slide"
-                              />
-                            </Carousel.Item>
-                            <Carousel.Item>
-                              <img
-                                style={{ height: "500px", width: "1000px" }}
-                                className="d-block"
-                                src={destination_2}
-                                alt="Third slide"
-                              />
-                            </Carousel.Item>
-                          </Carousel>
-
-                          {/* <img
-                      src={sideimage}
-                      className="img-fluid custom-form-img"
-                      alt="registration-img"
-                    /> */}
+                        <div className="p-0">
+                          <img
+                            src={hotelimage}
+                            className="img-fluid custom-form-img w-100"
+                            alt="registration-img"
+                          />
                         </div>
                       </div>
                     </div>

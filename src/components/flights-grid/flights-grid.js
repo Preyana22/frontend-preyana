@@ -10,6 +10,17 @@ const FlightsGrid = (props) => {
   const [isLoading, setIsLoading] = useState(true);
   const [flightsCount, setFlightsCount] = useState(0);
 
+  // Function you want to call when the page is refreshed
+  const handlePageRefresh = () => {
+    console.log("Page was manually refreshed or component mounted");
+    // Your custom logic here
+  };
+
+  // useEffect with an empty dependency array
+  useEffect(() => {
+    handlePageRefresh();
+  }, []);
+
   useEffect(() => {
     console.log("Props flights:", props.flights); // Log flights data for debugging
     if (props.flights && props.flights[1]) {
