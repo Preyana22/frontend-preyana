@@ -93,7 +93,7 @@ const Profile = () => {
   const getUserDetails = async (userId) => {
     try {
       const response = await axios.get(
-        "http://192.168.1.92:3000/authentication/profile/" + userId,
+        "http://3.128.255.176:3000/authentication/profile/" + userId,
         {
           headers: {
             "Content-Type": "application/json",
@@ -173,7 +173,7 @@ const Profile = () => {
 
     const configuration = {
       method: "put",
-      url: `http://192.168.1.92:3000/authentication/profileUpdate/${user_id}`,
+      url: `http://3.128.255.176:3000/authentication/profileUpdate/${user_id}`,
       data: {
         ...formData, // Spread the form data
       },

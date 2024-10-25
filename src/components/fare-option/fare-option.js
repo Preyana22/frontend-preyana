@@ -201,7 +201,7 @@ const FareOption = (props) => {
 
       // Perform the fetch request
       const response = await fetch(
-        "http://192.168.1.92:3000/airlines/test",
+        "http://3.128.255.176:3000/airlines/test",
         requestOptions
       );
       if (!response.ok) {

@@ -22,7 +22,7 @@ const MyBookings = (props) => {
   const getBookings = async (email, keyword, upcoming) => {
     const configuration = {
       method: "get",
-      url: `http://192.168.1.92:3000/booking/bookings`, // Ensure this endpoint supports filtering
+      url: `http://3.128.255.176:3000/booking/bookings`, // Ensure this endpoint supports filtering
       params: {
         email: email.trim() || undefined,
         keyword: keyword.trim() || undefined,
@@ -31,6 +31,7 @@ const MyBookings = (props) => {
     };
     try {
       const result = await axios(configuration);
+      // console.log("result.data", result.data);
       setBookings(result.data); // Store the data in state
     } catch (error) {
       console.error("Error fetching bookings:", error);
@@ -64,9 +65,9 @@ const MyBookings = (props) => {
             <button
               type="button"
               className={`${
-                upcoming == true
-                  ? "btn btn-outline-primary border rounded border-primary"
-                  : "btn btn-light  text-secondary"
+                upcoming === true
+                  ? "trips_btn btn btn-outline-primary border rounded border-primary"
+                  : "trips_btn btn btn-light text-secondary"
               }`}
               onClick={() => handleTrips(true)}
             >
@@ -75,9 +76,9 @@ const MyBookings = (props) => {
             <button
               type="button"
               className={`${
-                upcoming == false
-                  ? "btn btn-outline-primary border rounded border-primary"
-                  : "btn btn-light text-secondary"
+                upcoming === false
+                  ? "trips_btn btn btn-outline-primary border rounded border-primary"
+                  : "trips_btn btn btn-light text-secondary"
               }`}
               onClick={() => handleTrips(false)}
             >
@@ -94,7 +95,7 @@ const MyBookings = (props) => {
                 className="search-input"
               />
               <span className="search-icon">
-                <i className="fa fa-search"></i>{" "}
+                <i className="fa fa-search"></i>
               </span>
             </Form.Group>
           </div>
@@ -103,41 +104,54 @@ const MyBookings = (props) => {
           <Table striped bordered hover>
             <thead>
               <tr>
-                <th>#</th>
-                <th>Booking Reference</th>
-                <th>Guest Name</th>
-                <th>Email</th>
-                <th>Status</th>
-                <th>Created On</th>
-                <th>Time Ago</th>
+                <th>Airlines</th>
+                <th>Travel Date</th>
+                <th>Depart Airport/Time</th>
+                <th>Arrival Airport/Time</th>
+                <th>Flight Duration</th>
+                <th>Stops</th>
+                <th>Itinerary</th>
               </tr>
             </thead>
             <tbody>
               {bookings.length > 0 ? (
                 bookings.map((booking, index) => (
-                  <tr key={booking._id}>
-                    <td>{index + 1}</td>
-                    <td>
-                      <a
-                        href="#"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          getSingleBooking(booking.booking_id, booking._id);
-                        }}
-                      >
-                        {booking.booking_reference}
-                      </a>
-                    </td>
-                    <td>{booking.name}</td>
-                    <td>{booking.email}</td>
-                    <td>{booking.status}</td>
-                    <td>{moment(booking.createdOn).format("DD-MM-YYYY")}</td>
-                    <td>{moment(booking.createdOn).fromNow()}</td>
-                  </tr>
+                  <React.Fragment key={booking._id}>
+                    {booking.slices.map((slice, sliceIndex) => (
+                      <tr key={slice._id}>
+                        <td>{booking.airlines}</td>
+
+                        <td>{moment(slice.travelDate).format("DD-MM-YYYY")}</td>
+                        <td>
+                          {slice.departCityName +
+                            "  " +
+                            slice.departAirport +
+                            " | " +
+                            moment(slice.departTime).format("hh:mm A")}
+                        </td>
+                        <td>
+                          {slice.arrivalCityName +
+                            "  " +
+                            slice.arrivalAirport +
+                            " | " +
+                            moment(slice.arrivalTime).format("hh:mm A")}
+                        </td>
+                        <td>{slice.flightDuration}</td>
+                        <td>{slice.stops == null ? 0 : slice.stops}</td>
+                        {sliceIndex === 0 && (
+                          <td rowSpan={booking.slices.length}>
+                            <a href="#">
+                              <i className="fa fa-arrow-down"></i> Download
+                            </a>
+                          </td>
+                        )}
+                      </tr>
+                    ))}
+                  </React.Fragment>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="7" className="text-center">
+                  <td colSpan="8" className="text-center">
                     No bookings found.
                   </td>
                 </tr>

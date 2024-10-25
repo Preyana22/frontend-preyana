@@ -11,6 +11,10 @@ const MyComponent = (props) => {
   const navigate = useNavigate();
   const location = useLocation();
   useEffect(() => {
+    console.log(
+      "location.state.data.orderResponse",
+      location.state.data.orderResponse
+    );
     const errors = location.state?.data?.orderResponse?.errors;
     if (errors && errors.length > 0) {
       console.log("Errors:", errors[0].message);
@@ -59,7 +63,7 @@ const MyComponent = (props) => {
     };
 
     const { data, errors } = await (
-      await fetch("http://192.168.1.92:3000/airlines/confirm", {
+      await fetch("http://3.128.255.176:3000/airlines/confirm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(test),
@@ -69,36 +73,91 @@ const MyComponent = (props) => {
     console.log("Response Errors:", errors);
   };
 
+  function formatDuration(duration) {
+    // Regex pattern to extract days, hours, minutes, and seconds from ISO 8601 duration
+    const regex = /P(?:(\d+)D)?T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/;
+    const matches = duration.match(regex);
+
+    if (!matches) {
+      return "Invalid duration format";
+    }
+
+    // Extract days, hours, minutes, and seconds (set to 0 if not available)
+    const days = parseInt(matches[1] || 0, 10);
+    const hours = parseInt(matches[2] || 0, 10);
+    const minutes = parseInt(matches[3] || 0, 10);
+    const seconds = parseInt(matches[4] || 0, 10);
+
+    // Build the formatted result
+    const formattedParts = [];
+
+    if (days > 0) {
+      formattedParts.push(`${days} ${days === 1 ? "day" : "days"}`);
+    }
+    if (hours > 0) {
+      formattedParts.push(`${hours} ${hours === 1 ? "hour" : "hours"}`);
+    }
+    if (minutes > 0) {
+      formattedParts.push(`${minutes} ${minutes === 1 ? "min" : "mins"}`);
+    }
+    if (seconds > 0) {
+      formattedParts.push(`${seconds} ${seconds === 1 ? "second" : "seconds"}`);
+    }
+
+    // Join parts with a space separator
+    return formattedParts.join(" ");
+  }
+
   const saveBooking = async () => {
+    const bookingData = {
+      email: location.state.data.orderResponse.data.passengers[0].email,
+      loginEmail: localStorage.getItem("email")
+        ? localStorage.getItem("email")
+        : location.state.data.orderResponse.data.passengers[0].email,
+      name: `${location.state.data.orderResponse.data.passengers[0].given_name} ${location.state.data.orderResponse.data.passengers[0].family_name}`,
+      booking_reference:
+        location.state.data.orderResponse.data.booking_reference,
+      offer_id: location.state.data.orderResponse.data.offer_id,
+      status: location.state.data.orderResponse.data.payment_status
+        .awaiting_payment
+        ? "pending"
+        : "success",
+      booking_id: location.state.data.orderResponse.data.id,
+      address1: location.state.contactDetails[0].address1,
+      address2: location.state.contactDetails[0].address2,
+      city: location.state.contactDetails[0].city,
+      region: location.state.contactDetails[0].region,
+      postal: location.state.contactDetails[0].postal,
+      country: location.state.contactDetails[0].country,
+      airlines: location.state.data.orderResponse.data.owner.name,
+      slices: [], // Initialize an empty array for slices
+    };
+
+    // Iterate through each slice and extract relevant data
+    location.state.data.orderResponse.data.slices.forEach((slice) => {
+      const segment = slice.segments[0]; // Assuming you want the first segment
+
+      bookingData.slices.push({
+        travelDate: segment.departing_at,
+        departTime: segment.departing_at,
+        arrivalTime: segment.arriving_at,
+        flightDuration: formatDuration(slice.duration),
+        stops: segment.stops.length === 0 ? null : segment.stops,
+        departAirport: slice.destination.iata_code,
+        arrivalAirport: slice.origin.iata_code,
+        departCityName: slice.destination.city_name,
+        arrivalCityName: slice.origin.city_name,
+      });
+    });
+
+    // Now, bookingData contains all the relevant information, including slices
+    console.log(bookingData);
+
     try {
       const configuration = {
         method: "post",
-        url: "http://192.168.1.92:3000/booking/createbooking",
-        data: {
-          email: location.state.data.orderResponse.data.passengers[0].email,
-          loginEmail: localStorage.getItem("email")
-            ? localStorage.getItem("email")
-            : location.state.data.orderResponse.data.passengers[0].email,
-          name:
-            location.state.data.orderResponse.data.passengers[0].given_name +
-            " " +
-            location.state.data.orderResponse.data.passengers[0].family_name,
-          booking_reference:
-            location.state.data.orderResponse.data.booking_reference,
-          offer_id: location.state.data.orderResponse.data.offer_id,
-          status:
-            location.state.data.orderResponse.data.payment_status
-              .awaiting_payment === true
-              ? "pending"
-              : "success",
-          booking_id: location.state.data.orderResponse.data.id,
-          address1: location.state.contactDetails[0].address1,
-          address2: location.state.contactDetails[0].address2,
-          city: location.state.contactDetails[0].city,
-          region: location.state.contactDetails[0].region,
-          postal: location.state.contactDetails[0].postal,
-          country: location.state.contactDetails[0].country,
-        },
+        url: "http://3.128.255.176:3000/booking/createbooking",
+        data: bookingData,
       };
       console.log("configuration createbooking", configuration);
 

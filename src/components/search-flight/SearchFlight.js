@@ -417,7 +417,7 @@ export const SearchFlight = (props) => {
     }
     try {
       const { data } = await axios.get(
-        `http://192.168.1.92:3000/airlines/airports/` + search
+        `http://3.128.255.176:3000/airlines/airports/` + search
       );
 
       if (data.data) {
