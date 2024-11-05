@@ -20,6 +20,8 @@ import calendarimage from "../../assets/images/calendarimage.svg";
 import destination_1 from "../../assets/images/destination_1.jpg";
 import destination_2 from "../../assets/images/destination_2.jpg";
 import { Alert, Carousel } from "react-bootstrap";
+import "./search-flight.css";
+
 const isDate = (date) => {
   return new Date(date) !== "Invalid Date" && !isNaN(new Date(date));
 };
@@ -222,7 +224,7 @@ const countryCodeMapping = {
   ZW: "Zimbabwe",
 };
 
-export const SearchFlight = (props) => {
+const SearchFlight = ({ onSearch, ...props }) => {
   const [airportsData, setAirports] = useState([]);
   const [openOptions, setOpenOptions] = useState(false);
   const [tripOptions, setTripOptions] = useState(false);
@@ -240,6 +242,19 @@ export const SearchFlight = (props) => {
   const [selectedDateOfDep, setSelectedDateOfDep] = useState("");
   const [selectedDateOfRet, setSelectedDateOfRet] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isRotated, setIsRotated] = useState(false);
+
+  const handleSearch = async () => {
+    if (typeof onSearch === "function") {
+      onSearch(); // Call the search function to initiate loading
+
+      // Simulate a delay to mimic fetching data
+      await new Promise((resolve) => setTimeout(resolve, 1200));
+      // You would replace this with actual API call and handle results
+    } else {
+      console.error("onSearch is not a function", onSearch);
+    }
+  };
 
   // Toggle dropdown open/close
   const toggleDropdown = (isOpen) => {
@@ -251,6 +266,9 @@ export const SearchFlight = (props) => {
     const originTemp = selectedOrigin;
     setSelectedOrigin(selectedDestination);
     setSelectedDestination(originTemp);
+
+    // Toggle rotation state
+    setIsRotated(!isRotated);
   };
 
   // Clear localStorage when navigating to the home page
@@ -266,6 +284,8 @@ export const SearchFlight = (props) => {
       localStorage.removeItem("dateOfReturn");
       localStorage.removeItem("options");
       localStorage.removeItem("isReturn");
+      localStorage.removeItem("flightsData");
+      localStorage.removeItem("searchCriteria");
     }
 
     const savedCabinClass = localStorage.getItem("cabinclass");
@@ -417,7 +437,7 @@ export const SearchFlight = (props) => {
     }
     try {
       const { data } = await axios.get(
-        `http://3.128.255.176:3000/airlines/airports/` + search
+        `http://192.168.1.92:3000/airlines/airports/` + search
       );
 
       if (data.data) {
@@ -578,7 +598,6 @@ export const SearchFlight = (props) => {
 
   useEffect(() => {
     getAirports(keyword);
-
     localStorage.setItem("options", JSON.stringify(options));
     localStorage.setItem("isReturn", JSON.stringify(isReturn)); // Store isReturn
   }, [cabin_details, openOptions, options, isReturn]);
@@ -826,6 +845,8 @@ export const SearchFlight = (props) => {
                                     <div className="optionItem">
                                       <span className="optionText">
                                         Children
+                                        <br />
+                                        <small>(Ages 2 to 17)</small>
                                       </span>
                                       <div className="optionCounter">
                                         <button
@@ -856,7 +877,10 @@ export const SearchFlight = (props) => {
 
                                     {/* Infant Counter */}
                                     <div className="optionItem">
-                                      <span className="optionText">Infant</span>
+                                      <span className="optionText">
+                                        Infant <br />
+                                        <small>(under 2 years)</small>
+                                      </span>
                                       <div className="optionCounter">
                                         <button
                                           type="button"
@@ -926,7 +950,11 @@ export const SearchFlight = (props) => {
                                     className="col-12 col-md-1 col-lg-1 col-xl-1 col-sm-12 col-xs-12 interchange-icon"
                                     onClick={handleSwap}
                                   >
-                                    <img src={inoutimage} alt="swap icon" />
+                                    <img
+                                      src={inoutimage}
+                                      alt="swap icon"
+                                      className={isRotated ? "rotated" : ""}
+                                    />
                                   </div>
                                   <div className="col-12 col-md-6 col-lg-3 col-xl-3 col-sm-12 col-xs-12">
                                     <div className="form-group left-icon">
@@ -1013,7 +1041,10 @@ export const SearchFlight = (props) => {
                                     </div>
                                   </div>
                                   <div className="col-12 col-md-12 col-lg-12 col-xl-12">
-                                    <button className="btn btn-orange searchbtn">
+                                    <button
+                                      className="btn btn-orange searchbtn"
+                                      onClick={handleSearch}
+                                    >
                                       Search
                                     </button>
                                   </div>
@@ -1060,7 +1091,12 @@ export const SearchFlight = (props) => {
                                     className="col-12 col-md-1 col-lg-1 col-xl-1 col-sm-12 col-xs-12 interchange-icon"
                                     onClick={handleSwap}
                                   >
-                                    <img src={inoutimage} alt="swap icon" />
+                                    <img
+                                      src={inoutimage}
+                                      alt="swap icon"
+                                      title="swap icon"
+                                      className={isRotated ? "rotated" : ""}
+                                    />
                                   </div>
                                   <div className="col-12 col-md-6 col-lg-3 col-xl-3 col-sm-12 col-xs-12">
                                     <div className="form-group">
@@ -1119,7 +1155,10 @@ export const SearchFlight = (props) => {
                                     </div>
                                   </div>
                                   <div className="col-12 col-md-12 col-lg-1 col-xl-1">
-                                    <button className="btn btn-orange searchbtn">
+                                    <button
+                                      className="btn btn-orange searchbtn"
+                                      onClick={handleSearch}
+                                    >
                                       Search
                                     </button>
                                   </div>

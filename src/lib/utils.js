@@ -1,5 +1,5 @@
 export const transformFlightDates = (flights) => {
-  console.log(flights);
+  // console.log(flights);
   return flights.map((flight) => {
     // console.log(flight.slices[0].segments[0].arriving_at);
     return {

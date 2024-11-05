@@ -198,7 +198,7 @@ const Contacts = (props) => {
     if (localStorage.getItem("userId") === null) {
       const configuration = {
         method: "post",
-        url: "http://3.128.255.176:3000/authentication/register",
+        url: "http://192.168.1.92:3000/authentication/register",
         data: {
           email: event.target["email0"].value,
           userName: event.target["email0"].value,
@@ -240,7 +240,7 @@ const Contacts = (props) => {
 
     try {
       const response = await axios.post(
-        "http://3.128.255.176:3000/airlines/book",
+        "http://192.168.1.92:3000/airlines/book",
         test,
         {
           headers: {

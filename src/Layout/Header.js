@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Navbar, Nav, Button, Container, Dropdown } from "react-bootstrap";
 import headerlogoimage from "../assets/images/Preyana_Logo.svg";
 import userimage from "../assets/images/user.svg";
 
-const Header = () => {
+const Header = ({ onBrandClick }) => {
   const email = localStorage.getItem("email");
   const userId = localStorage.getItem("userId");
   const userName = localStorage.getItem("userName");
@@ -34,39 +34,42 @@ const Header = () => {
     navigate("/profile");
   };
 
+  const navigateToHome = () => {
+    window.location.href = "/";
+  };
+
   useEffect(() => {
-    if (!email || !userId) {
-      navigate("/");
-    }
+    // if (!email || !userId) {
+    //   navigate("/");
+    // }
   }, [email, userId, userName]);
 
   return (
     <Navbar expand="lg" sticky="top" className="navbar-custom p-1">
       <Container>
-        <Navbar.Brand as={Link} to="/">
+        <Navbar.Brand onClick={navigateToHome}>
           <img
-            style={{ width: "150px", height: "auto" }}
+            style={{ width: "150px", height: "auto", cursor: "pointer" }}
             src={headerlogoimage}
             alt="header logo"
           />
         </Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav">
+        <Navbar.Toggle aria-controls="basic-navbar-nav" onClick={onBrandClick}>
           <i className="fa fa-bars"></i>
         </Navbar.Toggle>
         <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="ml-auto align-items-center">
+          <Nav className="ml-auto align-items-center text-left text-md-center">
             {email ? (
               <>
                 <Nav.Item className="nav-item-border">
-                  <Button
-                    variant="link"
-                    className="nav-btn text-left text-decoration-none"
-                  >
-                    <i className="fa fa-user-circle"></i> Hello {userName}
-                  </Button>
+                  <Nav.Item className="nav-item-border">
+                    <span className="nav-text">
+                      <i className="fa fa-user-circle"></i> Hello {userName}
+                    </span>
+                  </Nav.Item>
                 </Nav.Item>
                 <Dropdown className="nav-item-border">
-                  <Dropdown.Toggle variant="link" className="nav-link">
+                  <Dropdown.Toggle variant="link" className="nav-btn">
                     My Account
                   </Dropdown.Toggle>
                   <Dropdown.Menu>

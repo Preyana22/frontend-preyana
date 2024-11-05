@@ -1,11 +1,7 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import sideimage from "../assets/images/flight-1.jpg";
-import destination_1 from "../assets/images/destination_1.jpg";
-import destination_2 from "../assets/images/destination_2.jpg";
 
-import googleimage from "../assets/images/google.png";
-import facebookimage from "../assets/images/facebook.png";
 import axios from "axios";
 import { Carousel } from "react-bootstrap";
 
@@ -66,7 +62,7 @@ const ForgotPassword = () => {
         console.log("Form data:", formData);
         const configuration = {
           method: "post",
-          url: "http://3.128.255.176:3000/authentication/change-password",
+          url: "http://192.168.1.92:3000/authentication/change-password",
           data: {
             userId: localStorage.getItem("userId"),
             currentPassword: formData.password,
@@ -101,13 +97,15 @@ const ForgotPassword = () => {
   return (
     <>
       <section className="innerpage-wrapper">
-        <div id="forgot-password" className="innerpage-section-padding">
+        <div id="forgot-password" className="">
           <div className="container">
             <div className="row">
               <div className="col-md-12">
                 <div className="flex-content">
                   <div className="custom-form custom-form-fields">
-                    <h3>Change Password</h3>
+                    <h3 className="font-weight-bold text-black">
+                      Change Password
+                    </h3>
                     <form onSubmit={handleSubmit}>
                       <div className="form-group">
                         <label className="custom-label">Password</label>
@@ -210,22 +208,6 @@ const ForgotPassword = () => {
                             className="d-block w-100"
                             src={sideimage}
                             alt="First slide"
-                          />
-                        </Carousel.Item>
-                        <Carousel.Item>
-                          <img
-                            style={{ height: "500px" }}
-                            className="d-block w-100"
-                            src={destination_1}
-                            alt="Second slide"
-                          />
-                        </Carousel.Item>
-                        <Carousel.Item>
-                          <img
-                            style={{ height: "500px" }}
-                            className="d-block w-100"
-                            src={destination_2}
-                            alt="Third slide"
                           />
                         </Carousel.Item>
                       </Carousel>

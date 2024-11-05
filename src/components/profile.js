@@ -77,12 +77,15 @@ const Profile = () => {
 
   // Helper function to format date from ISO to yyyy-mm-dd for the input field
   const formatDateForInput = (isoDate) => {
-    if (!isoDate) return ""; // Handle empty or invalid dates
-    const date = new Date(isoDate);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Month is 0-based
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`; // Format to yyyy-mm-dd
+    console.log("isoDate", isoDate);
+    if (isoDate != null) {
+      // Handle empty or invalid dates
+      const date = new Date(isoDate);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0"); // Month is 0-based
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`; // Format to yyyy-mm-dd
+    }
   };
 
   // Function to toggle edit mode
@@ -93,7 +96,7 @@ const Profile = () => {
   const getUserDetails = async (userId) => {
     try {
       const response = await axios.get(
-        "http://3.128.255.176:3000/authentication/profile/" + userId,
+        "http://192.168.1.92:3000/authentication/profile/" + userId,
         {
           headers: {
             "Content-Type": "application/json",
@@ -173,7 +176,7 @@ const Profile = () => {
 
     const configuration = {
       method: "put",
-      url: `http://3.128.255.176:3000/authentication/profileUpdate/${user_id}`,
+      url: `http://192.168.1.92:3000/authentication/profileUpdate/${user_id}`,
       data: {
         ...formData, // Spread the form data
       },
@@ -203,7 +206,7 @@ const Profile = () => {
   };
 
   return (
-    <Container className="mt-4">
+    <Container className="mt-4" id="profile-container">
       {/* Profile Title */}
       <h2 className="mb-4">Profile</h2>
 
@@ -218,7 +221,7 @@ const Profile = () => {
               <Col className="text-right">
                 <Button
                   variant="link"
-                  className="p-0"
+                  className="p-0 edit-link"
                   onClick={() => toggleEditMode("contact")}
                 >
                   {editMode.contact ? "Cancel" : "Edit"}
@@ -258,9 +261,11 @@ const Profile = () => {
                   <Col md={4}>
                     <strong>Gender</strong>
                     <br />
-                    {userData.gender == "F" || userData.gender == "f"
-                      ? "Female"
-                      : "Male"}
+                    {userData.gender
+                      ? userData.gender === "F" || userData.gender === "f"
+                        ? "Female"
+                        : "Male"
+                      : ""}
                   </Col>
 
                   <Col md={4}>
@@ -307,6 +312,7 @@ const Profile = () => {
                     value={formData.gender}
                     onChange={handleInputChange}
                   >
+                    <option value="">Select</option>
                     <option value="M">Male</option>
                     <option value="F">Female</option>
                   </Form.Control>
@@ -364,7 +370,7 @@ const Profile = () => {
               <Col className="text-right">
                 <Button
                   variant="link"
-                  className="p-0"
+                  className="p-0 edit-link"
                   onClick={() => toggleEditMode("address")}
                 >
                   {editMode.address ? "Cancel" : "Edit"}
@@ -406,7 +412,7 @@ const Profile = () => {
               <Col className="text-right">
                 <Button
                   variant="link"
-                  className="p-0"
+                  className="p-0 edit-link"
                   onClick={() => toggleEditMode("payment")}
                 >
                   {editMode.payment ? "Cancel" : "Edit"}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import "./flight-grid.css";
 import { FlightSearchInfo } from "./../flight-search-info/flight-search-info";
 import { FlightInfo } from "./../flight-info/flight-info";
@@ -6,77 +6,119 @@ import { FlightNotFound } from "./../flight-search-info/flight-not-found";
 import Filters from "../filters/filters";
 import SearchFlight from "../search-flight/SearchFlight";
 
-const FlightsGrid = (props) => {
+const FlightsGrid = ({ flights, criteria }) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [flightsCount, setFlightsCount] = useState(0);
+  const [searchInitiated, setSearchInitiated] = useState(false);
 
-  // Function you want to call when the page is refreshed
-  const handlePageRefresh = () => {
-    console.log("Page was manually refreshed or component mounted");
-    // Your custom logic here
+  const [flightsData, setFlightsData] = useState(() => {
+    const savedFlights = localStorage.getItem("flightsData");
+    return savedFlights ? JSON.parse(savedFlights) : flights?.[1] || {};
+  });
+
+  const [searchCriteria, setSearchCriteria] = useState(() => {
+    const savedCriteria = localStorage.getItem("searchCriteria");
+    return savedCriteria ? JSON.parse(savedCriteria) : criteria || {};
+  });
+
+  const flightsCount = useMemo(
+    () =>
+      Array.isArray(flightsData)
+        ? flightsData.length
+        : Object.keys(flightsData).length,
+    [flightsData]
+  );
+
+  useEffect(() => {
+    if (searchInitiated) {
+      setIsLoading(true);
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+        setSearchInitiated(false);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else {
+      if (flightsCount > 0) {
+        setIsLoading(false);
+      }
+    }
+
+    if (
+      searchCriteria &&
+      !searchCriteria.origin &&
+      !searchCriteria.destination
+    ) {
+      setIsLoading(false);
+      setSearchInitiated(false);
+    }
+  }, [searchInitiated, flightsCount, searchCriteria]);
+
+  useEffect(() => {
+    if (flightsData) {
+      localStorage.setItem("flightsData", JSON.stringify(flightsData));
+    }
+  }, [flightsData]);
+
+  useEffect(() => {
+    if (searchCriteria && Object.keys(searchCriteria).length > 0) {
+      console.log("Saving search criteria to localStorage:", searchCriteria);
+      localStorage.setItem("searchCriteria", JSON.stringify(searchCriteria));
+    }
+  }, [searchCriteria]);
+
+  useEffect(() => {
+    if (flights?.[1]) {
+      setFlightsData(flights[1]);
+    }
+    if (
+      criteria &&
+      Object.keys(criteria).length > 0 &&
+      !Object.keys(searchCriteria).length &&
+      searchInitiated
+    ) {
+      setSearchCriteria(criteria);
+    }
+  }, [flights, criteria]);
+
+  const handleSearch = () => {
+    if (criteria && Object.keys(criteria).length > 0) {
+      setSearchCriteria(criteria);
+      setSearchInitiated(true);
+      localStorage.setItem("searchCriteria", JSON.stringify(criteria));
+    }
   };
 
-  // useEffect with an empty dependency array
-  useEffect(() => {
-    handlePageRefresh();
-  }, []);
-
-  useEffect(() => {
-    console.log("Props flights:", props.flights); // Log flights data for debugging
-    if (props.flights && props.flights[1]) {
-      setFlightsCount(Object.entries(flights).length);
-      setIsLoading(false); // Set loading to false once flights are fetched
-    } else {
-      setFlightsCount(0);
-      // setIsLoading(false); // Even if no flights, set loading to false
-    }
-  }, [props.flights]);
-
-  const flights = props.flights ? props.flights[1] : {};
-
-  const flightsCounts = Array.isArray(flights)
-    ? flights.length
-    : Object.keys(flights).length;
-  console.log("flightsCount", flightsCount);
-
   return (
-    <>
-      <section className="innerpage-wrapper">
-        <div className="container">
-          <SearchFlight />
+    <section className="innerpage-wrapper">
+      <div className="container">
+        <SearchFlight onSearch={handleSearch} />
 
-          <div className="flights-info-container row">
-            <div className="col-12 col-md-4 col-lg-4 col-xl-3 col-xs-12 col-sm-12">
-              <Filters />
-            </div>
+        <div className="flights-info-container row">
+          <div className="col-12 col-md-4 col-lg-4 col-xl-3 col-xs-12 col-sm-12">
+            <Filters />
+          </div>
 
-            <div className="col-12 col-md-8 col-lg-8 col-xl-9 col-xs-12 col-sm-12">
-              {props.criteria && (
-                <FlightSearchInfo
-                  criteria={props.criteria}
-                  count={flightsCounts}
-                  isLoading={isLoading}
-                />
-              )}
+          <div className="col-12 col-md-8 col-lg-8 col-xl-9 col-xs-12 col-sm-12 mt-3">
+            {searchCriteria && (
+              <FlightSearchInfo
+                criteria={searchCriteria}
+                count={flightsCount}
+                isLoading={isLoading}
+              />
+            )}
 
-              {/* Show loader if still loading */}
-              {
-                // Check if no flights were found
-                Object.entries(flights).length === 0 && !isLoading ? (
-                  <FlightNotFound />
-                ) : (
-                  // Map through the flights if available
-                  flights &&
-                  Object.entries(flights).map(([key, flight]) => (
-                    <FlightInfo key={key} data={flight} />
-                  ))
-                )
-              }
-            </div>
+            {isLoading ? (
+              <div className="loader"></div>
+            ) : flightsCount === 0 ? (
+              <FlightNotFound />
+            ) : (
+              Object.entries(flightsData).map(([key, flight]) => (
+                <FlightInfo key={key} data={flight} />
+              ))
+            )}
           </div>
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 };
 

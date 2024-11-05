@@ -1,5 +1,5 @@
-import React, { useEffect, Fragment } from "react";
-import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import React, { useEffect, Fragment, useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./App.css";
 // import "./css/atomic.css";
 // import "./css/blue-violet.css";
@@ -54,7 +54,6 @@ import HotelOwners from "./components/hotel-owners";
 import Partners from "./components/partners";
 import AdvertiseWithUs from "./components/advertise-with-us";
 import AirlineFees from "./components/airline-fees";
-import Airlines from "./components/airlines";
 import LowFareTips from "./components/low-fare-tips";
 import BadgesAndCertificates from "./components/badges-and-certificates";
 import Privacy from "./components/privacy";
@@ -67,6 +66,7 @@ import FareOption from "./components/fare-option/fare-option";
 import Profile from "./components/profile";
 
 function App(props) {
+  const [marginToggled, setMarginToggled] = useState(false);
   useEffect(() => {
     props.getFlights();
   }, [(props.flights || []).legnth]);
@@ -74,6 +74,11 @@ function App(props) {
   const flights = props.flights;
   const { origin, destination, departureDate, returnDate } =
     props.filters || {};
+
+  const handleBrandClick = () => {
+    setMarginToggled((prev) => !prev);
+  };
+
   return (
     <BrowserRouter className="App" basename="/">
       <Routes>
@@ -81,8 +86,10 @@ function App(props) {
           path="/"
           element={
             <Fragment>
-              <InnerHeader />
-              <Body />
+              <InnerHeader onBrandClick={handleBrandClick} />
+              <div className={marginToggled ? "responsive-margin" : ""}>
+                <Body />
+              </div>
               <Footer />
             </Fragment>
           }
@@ -101,8 +108,10 @@ function App(props) {
           path="/search"
           element={
             <Fragment>
-              <InnerHeader />
-              <Body />
+              <InnerHeader onBrandClick={handleBrandClick} />
+              <div className={marginToggled ? "responsive-margin" : ""}>
+                <Body />
+              </div>
               <Footer />
             </Fragment>
           }
@@ -111,11 +120,13 @@ function App(props) {
           path="/results"
           element={
             <Fragment>
-              <InnerHeader />
-              <FlightsGrid
-                flights={props.flights}
-                criteria={{ origin, destination, date: departureDate }}
-              ></FlightsGrid>
+              <InnerHeader onBrandClick={handleBrandClick} />
+              <div className={marginToggled ? "responsive-margin" : ""}>
+                <FlightsGrid
+                  flights={props.flights}
+                  criteria={{ origin, destination, date: departureDate }}
+                ></FlightsGrid>
+              </div>
               <Footer />
             </Fragment>
           }
@@ -134,8 +145,10 @@ function App(props) {
           path="/booking"
           element={
             <Fragment>
-              <InnerHeader />
-              <MyComponent flights={props.flights}></MyComponent>
+              <InnerHeader onBrandClick={handleBrandClick} />
+              <div className={marginToggled ? "responsive-margin" : ""}>
+                <MyComponent flights={props.flights}></MyComponent>
+              </div>
               <Footer />
             </Fragment>
           }
@@ -144,8 +157,10 @@ function App(props) {
           path="/contacts"
           element={
             <Fragment>
-              <InnerHeader />
-              <Contacts flights={props.flights}></Contacts>
+              <InnerHeader onBrandClick={handleBrandClick} />
+              <div className={marginToggled ? "responsive-margin" : ""}>
+                <Contacts flights={props.flights}></Contacts>
+              </div>
               <Footer />
             </Fragment>
           }
@@ -164,8 +179,10 @@ function App(props) {
           path="/change"
           element={
             <Fragment>
-              <InnerHeader />
-              <ChangePassword />
+              <InnerHeader onBrandClick={handleBrandClick} />
+              <div className={marginToggled ? "responsive-margin" : ""}>
+                <ChangePassword />
+              </div>
               <Footer />
             </Fragment>
           }
@@ -364,8 +381,10 @@ function App(props) {
           path="/mybookings"
           element={
             <Fragment>
-              <InnerHeader />
-              <MyBookings />
+              <InnerHeader onBrandClick={handleBrandClick} />
+              <div className={marginToggled ? "responsive-margin" : ""}>
+                <MyBookings />
+              </div>
               <Footer />
             </Fragment>
           }
@@ -374,8 +393,11 @@ function App(props) {
           path="/singlebooking"
           element={
             <Fragment>
-              <InnerHeader />
-              <SingleBookingDetails />
+              <InnerHeader onBrandClick={handleBrandClick} />
+
+              <div className={marginToggled ? "responsive-margin" : ""}>
+                <SingleBookingDetails />
+              </div>
               <Footer />
             </Fragment>
           }
@@ -384,8 +406,10 @@ function App(props) {
           path="/success"
           element={
             <Fragment>
-              <InnerHeader />
-              <Success />
+              <InnerHeader onBrandClick={handleBrandClick} />
+              <div className={marginToggled ? "responsive-margin" : ""}>
+                <Success />
+              </div>
               <Footer />
             </Fragment>
           }
@@ -394,8 +418,10 @@ function App(props) {
           path="/fareoption"
           element={
             <Fragment>
-              <InnerHeader />
-              <FareOption />
+              <InnerHeader onBrandClick={handleBrandClick} />
+              <div className={marginToggled ? "responsive-margin" : ""}>
+                <FareOption />
+              </div>
               <Footer />
             </Fragment>
           }
@@ -404,8 +430,10 @@ function App(props) {
           path="/profile"
           element={
             <Fragment>
-              <InnerHeader />
-              <Profile />
+              <InnerHeader onBrandClick={handleBrandClick} />
+              <div className={marginToggled ? "responsive-margin" : ""}>
+                <Profile />
+              </div>
               <Footer />
             </Fragment>
           }

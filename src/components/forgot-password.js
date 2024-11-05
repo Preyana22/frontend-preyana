@@ -37,7 +37,7 @@ const ForgotPassword = () => {
         console.log("Form data:", formData);
         const configuration = {
           method: "post",
-          url: "http://3.128.255.176:3000/authentication/forgot-password",
+          url: "http://192.168.1.92:3000/authentication/forgot-password",
           data: {
             email: formData.email,
           },
@@ -145,22 +145,6 @@ const ForgotPassword = () => {
                             className="d-block w-100"
                             src={sideimage}
                             alt="First slide"
-                          />
-                        </Carousel.Item>
-                        <Carousel.Item>
-                          <img
-                            style={{ height: "500px" }}
-                            className="d-block w-100"
-                            src={destination_1}
-                            alt="Second slide"
-                          />
-                        </Carousel.Item>
-                        <Carousel.Item>
-                          <img
-                            style={{ height: "500px" }}
-                            className="d-block w-100"
-                            src={destination_2}
-                            alt="Third slide"
                           />
                         </Carousel.Item>
                       </Carousel>

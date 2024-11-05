@@ -11,8 +11,8 @@
     /* Smooth transition */
 }
 
-.card:hover {
-    transform: scale(1.02);
+#fare-container .card:hover {
+    /* transform: scale(1.02); */
     /* Slightly enlarge card on hover */
 }
 
@@ -21,4 +21,31 @@
     /* Add a border to indicate selection */
         box-shadow: 0 0 5px rgba(0, 57, 136, 1);
     /* Optional shadow effect */
+}
+
+.active-checkout{
+    background-color: #003988;
+    color: #fff;
+}
+
+.active-checkout:hover {
+    background-color: #003988;
+    color: #fff;
+}
+
+.card.w-100 {
+    width: 100%;
+    /* Full width card */
+}
+
+.features-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    /* Divides list into 3 equal columns */
+    gap: 10px;
+    /* Adds space between items */
+}
+
+.total-price {
+    text-align: center;
 }

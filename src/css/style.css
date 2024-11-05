@@ -56,10 +56,11 @@ html,body{
 	height:100%;
 	position:relative;
 	scroll-behavior: smooth;
+	font-family: 'Lato';
 }
 
 p,ul,a,.btn,span,input,select,textarea,label, table, .meta h2, blockquote, small, .newsletter h2, .cruise-offer-text h3, .package h2, .welcome-message h2, #hot-tour h3, #hot-tour h2, #message-banner h2, .member-name h3, #error-text h2, .company-name, #coming-soon-text h2, .booking-form-block .selected-price, #dashboard h2, #dashboard h3, #dashboard h4, #web-name, .tvl-insurance-info .innerpage-heading h1, .big-heading h2, .traveler-info h3, .list-group-heading,.page-search-form h2, .member-info-2 h4, #faq-page .content-side .card-title, .service-intro-text h4, .popup-ad-text h4{
-	font-family: 'Lato', sans-serif;
+	font-family: 'Lato';
 }
 
 p,ul{
@@ -6311,7 +6312,7 @@ nav.navbar .container.padding {
 
 .sub-title-text
 {
-	font-family: 'Lato', sans-serif;
+	font-family: 'Lato';
 }
 .container-bg
 {
@@ -6425,7 +6426,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 /* Custom Navbar Styling */
 .navbar-custom {
-	background-color: #f8f9fa;
+	background-color: #ffffff;
 	border-bottom: 1px solid #e9ecef;
 }
 
@@ -6491,4 +6492,16 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .card-header {
 	background-color: #f8f9fa;
+}
+
+.nav-text {
+	font-weight: bold;
+	color: black;
+	cursor: default;
+	/* Removes hand pointer */
+}
+
+.nav-text:hover {
+	color: #0047b1;
+	/* Change this color to your desired hover color */
 }

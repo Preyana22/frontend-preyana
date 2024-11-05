@@ -4612,3 +4612,21 @@ Author:			Star Travel
 		padding-right: 8rem !important;
 	}
 }
+
+@media (min-width: 250px) and (max-width: 991px) {
+	.responsive-margin {
+		margin-top: 7rem;
+		/* Adjust the margin as needed */
+	}
+	.nav-item-border {
+		border-right: none !important;
+	}
+
+	#basic-navbar-nav div:first-child {
+		align-items: start !important;
+	}
+
+	#basic-navbar-nav div:first-child .dropdown{
+		margin-left: 10px !important;
+	}
+}

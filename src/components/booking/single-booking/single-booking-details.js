@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import "./single-booking-details.css";
-import Table from "react-bootstrap/Table";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import moment from "moment"; // Import Moment.js
 import flightimage from "../../../assets/images/flightimage.svg";
 
-const SingleBookingDetails = (props) => {
+const SingleBookingDetails = () => {
   const location = useLocation();
   const navigate = useNavigate(); // Use navigate for redirecting
   const [bookingData, setBookingData] = useState({
@@ -30,12 +29,10 @@ const SingleBookingDetails = (props) => {
     // Other necessary defaults
   });
   const [sliceLength, setSliceLength] = useState();
-  const userId = localStorage.getItem("userId");
 
   useEffect(() => {
     if (
-      location.state != null &&
-      location.state.order_booking_id != undefined
+      (location.state = null && location.state.order_booking_id !== undefined)
     ) {
       getSingleBooking(location.state.order_booking_id);
     } else {
@@ -49,14 +46,14 @@ const SingleBookingDetails = (props) => {
 
     const configuration = {
       method: "get",
-      url: `http://3.128.255.176:3000/booking/singleorder/${orderBookingId}`,
+      url: `http://192.168.1.92:3000/booking/singleorder/${orderBookingId}`,
       headers: { "Content-Type": "application/json" },
     };
     try {
       const result = await axios(configuration);
       console.log("Single order data:", result.data.data); // Store the data in state
 
-      if (result.data.data != undefined) {
+      if (result.data.data !== undefined) {
         // Assuming slices is an array and you want the first element
         const { slices } = result.data.data;
         setSliceLength(slices.length);
@@ -146,7 +143,7 @@ const SingleBookingDetails = (props) => {
       return;
     }
 
-    const baseURL = "http://3.128.255.176:3000/booking";
+    const baseURL = "http://192.168.1.92:3000/booking";
     const headers = { "Content-Type": "application/json" };
 
     // Fetch cancellation details
@@ -176,7 +173,7 @@ const SingleBookingDetails = (props) => {
   // Confirm cancellation
   const confirmCancellation = async (cancelId) => {
     console.log("cancelId" + cancelId);
-    const baseURL = "http://3.128.255.176:3000/booking";
+    const baseURL = "http://192.168.1.92:3000/booking";
     const headers = { "Content-Type": "application/json" };
 
     try {
@@ -203,7 +200,7 @@ const SingleBookingDetails = (props) => {
 
   // Update booking status
   const updateBookingStatus = async () => {
-    const baseURL = "http://3.128.255.176:3000/booking";
+    const baseURL = "http://192.168.1.92:3000/booking";
     const headers = { "Content-Type": "application/json" };
 
     if (location.state && location.state.pk_booking_Id !== undefined) {

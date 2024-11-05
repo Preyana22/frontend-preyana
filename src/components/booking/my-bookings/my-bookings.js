@@ -7,7 +7,6 @@ import moment from "moment"; // Import Moment.js
 import { Form } from "react-bootstrap";
 
 const MyBookings = (props) => {
-  const location = useLocation();
   const navigate = useNavigate();
   const [bookings, setBookings] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -22,7 +21,7 @@ const MyBookings = (props) => {
   const getBookings = async (email, keyword, upcoming) => {
     const configuration = {
       method: "get",
-      url: `http://3.128.255.176:3000/booking/bookings`, // Ensure this endpoint supports filtering
+      url: `http://192.168.1.92:3000/booking/bookings`, // Ensure this endpoint supports filtering
       params: {
         email: email.trim() || undefined,
         keyword: keyword.trim() || undefined,
@@ -35,14 +34,6 @@ const MyBookings = (props) => {
       setBookings(result.data); // Store the data in state
     } catch (error) {
       console.error("Error fetching bookings:", error);
-    }
-  };
-
-  const getSingleBooking = async (bookingId, pkId) => {
-    if (bookingId) {
-      navigate("/singlebooking", {
-        state: { order_booking_id: bookingId, pk_booking_Id: pkId },
-      });
     }
   };
 

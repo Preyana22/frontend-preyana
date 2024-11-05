@@ -70,7 +70,7 @@ const Registration = (props) => {
       };
       const configuration = {
         method: "post",
-        url: "http://3.128.255.176:3000/authentication/register",
+        url: "http://192.168.1.92:3000/authentication/register",
         data: {
           email: formData.email,
           userName: formData.username,
@@ -82,6 +82,7 @@ const Registration = (props) => {
           console.log("response", result.data);
           setRegister(true);
           alert(result.data.message);
+          navigate("/login");
         })
         .catch((error) => {
           setRegister(false);
@@ -247,29 +248,13 @@ const Registration = (props) => {
               </div>
               <div className="col-12 col-md-7 col-lg-7 col-xl-7 my-auto">
                 <div className="flex-content-img ">
-                  <Carousel controls={false} indicators={false} interval={1500}>
+                  <Carousel controls={false} indicators={false}>
                     <Carousel.Item>
                       <img
                         style={{ height: "500px" }}
                         className="d-block w-100"
                         src={sideimage}
                         alt="First slide"
-                      />
-                    </Carousel.Item>
-                    <Carousel.Item>
-                      <img
-                        style={{ height: "500px" }}
-                        className="d-block w-100"
-                        src={destination_1}
-                        alt="Second slide"
-                      />
-                    </Carousel.Item>
-                    <Carousel.Item>
-                      <img
-                        style={{ height: "500px" }}
-                        className="d-block w-100"
-                        src={destination_2}
-                        alt="Third slide"
                       />
                     </Carousel.Item>
                   </Carousel>

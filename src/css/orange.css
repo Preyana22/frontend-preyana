@@ -350,7 +350,7 @@ nav.navbar .navbar-collapse .navbar-nav li.dropdown ul.dropdown-menu li.dropdown
 
 .dropdown-item {
 	background: unset;
-	font-size: 0.8rem;
+	font-size: 0.9rem;
 }
 
 nav.navbar#mynavbar-1 li.dropdown-submenu:hover .dropdown-toggle {

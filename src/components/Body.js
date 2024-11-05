@@ -80,7 +80,7 @@ export const Body = (props) => {
     // const getAirports = async () => {
     //   try {
     //     const { data } = await axios.get(
-    //       `http://3.128.255.176:3000/airlines/airports`
+    //       `http://192.168.1.92:3000/airlines/airports`
     //     );
     //     console.log(data);
     //     setAirports(data);
@@ -90,6 +90,7 @@ export const Body = (props) => {
     //   }
     // };
     // getAirports();
+
     getFlights();
   }, []);
 
@@ -176,8 +177,8 @@ export const Body = (props) => {
     };
 
     // Wrap the origin city in an array
-    const originArray = [origin_city];
-    const destinationArray = [destination_city]; // Example destination city
+    const originArray = ["Heathrow Airport, London (LHR), United Kingdom"];
+    const destinationArray = ["Sydney Airport, Sydney (SYD), Australia"]; // Example destination city
     const cabinclassArray = [cabinclass]; // Example destination city
     // Store the array in local storage as a JSON string
     localStorage.setItem("origin", JSON.stringify(originArray));
@@ -336,7 +337,7 @@ export const Body = (props) => {
 
       // Perform the fetch request
       const response = await fetch(
-        "http://3.128.255.176:3000/airlines/test",
+        "http://192.168.1.92:3000/airlines/test",
         requestOptions
       );
       if (!response.ok) {

@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import destination_1 from "../assets/images/destination_1.jpg";
-import destination_2 from "../assets/images/destination_2.jpg";
 import destination_3 from "../assets/images/destination_3.jpg";
 
 import { Link, useNavigate } from "react-router-dom";
@@ -48,7 +46,7 @@ const Login = (props) => {
         console.log("Form data:", formData);
         const configuration = {
           method: "post",
-          url: "http://3.128.255.176:3000/authentication/log-in",
+          url: "http://192.168.1.92:3000/authentication/log-in",
           data: {
             email: formData.username,
             password: formData.password,
@@ -215,33 +213,13 @@ const Login = (props) => {
                   </div>
 
                   <div className="flex-content-img custom-form-img">
-                    <Carousel
-                      controls={false}
-                      indicators={false}
-                      interval={1500}
-                    >
+                    <Carousel controls={false} indicators={false}>
                       <Carousel.Item>
                         <img
                           className="d-block w-100"
                           style={{ height: "400px" }}
                           src={destination_3}
                           alt="First slide"
-                        />
-                      </Carousel.Item>
-                      <Carousel.Item>
-                        <img
-                          className="d-block w-100"
-                          style={{ height: "400px" }}
-                          src={destination_1}
-                          alt="Second slide"
-                        />
-                      </Carousel.Item>
-                      <Carousel.Item>
-                        <img
-                          className="d-block w-100"
-                          style={{ height: "400px" }}
-                          src={destination_2}
-                          alt="Third slide"
                         />
                       </Carousel.Item>
                     </Carousel>
