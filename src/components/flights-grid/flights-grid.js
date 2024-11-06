@@ -69,10 +69,13 @@ const FlightsGrid = ({ flights, criteria }) => {
     if (flights?.[1]) {
       setFlightsData(flights[1]);
     }
+
     if (
       criteria &&
-      Object.keys(criteria).length > 0 &&
-      !Object.keys(searchCriteria).length &&
+      !Object.keys(criteria).origin &&
+      !Object.keys(criteria).destination &&
+      !Object.keys(searchCriteria).origin &&
+      !Object.keys(searchCriteria).destination &&
       searchInitiated
     ) {
       setSearchCriteria(criteria);
@@ -80,7 +83,7 @@ const FlightsGrid = ({ flights, criteria }) => {
   }, [flights, criteria]);
 
   const handleSearch = () => {
-    if (criteria && Object.keys(criteria).length > 0) {
+    if (criteria) {
       setSearchCriteria(criteria);
       setSearchInitiated(true);
       localStorage.setItem("searchCriteria", JSON.stringify(criteria));
