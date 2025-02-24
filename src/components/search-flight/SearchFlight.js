@@ -19,8 +19,11 @@ import locationimage from "../../assets/images/locationimage.svg";
 import calendarimage from "../../assets/images/calendarimage.svg";
 import destination_1 from "../../assets/images/destination_1.jpg";
 import destination_2 from "../../assets/images/destination_2.jpg";
+import coming_soon from "../../assets/images/coming_soon.jpg";
 import { Alert, Carousel } from "react-bootstrap";
 import "./search-flight.css";
+import { debounce } from "lodash";
+const apiUrl = process.env.REACT_APP_API_BASE_URL;
 
 const isDate = (date) => {
   return new Date(date) !== "Invalid Date" && !isNaN(new Date(date));
@@ -249,7 +252,10 @@ const SearchFlight = ({ onSearch, ...props }) => {
       onSearch(); // Call the search function to initiate loading
 
       // Simulate a delay to mimic fetching data
-      await new Promise((resolve) => setTimeout(resolve, 1200));
+      await new Promise((resolve) => {
+        // alert();
+        setTimeout(resolve, 4000);
+      });
       // You would replace this with actual API call and handle results
     } else {
       console.error("onSearch is not a function", onSearch);
@@ -430,46 +436,72 @@ const SearchFlight = ({ onSearch, ...props }) => {
     });
   };
 
-  const getAirports = async (search) => {
+  const [originAirports, setOriginAirports] = useState([]);
+  const [destinationAirports, setDestinationAirports] = useState([]);
+
+  const getAirports = debounce(async (search, type) => {
     if (!search) {
-      // If search is blank, null, or undefined, do not proceed
+      // Clear previous results if search is blank
+      type === "origin" ? setOriginAirports([]) : setDestinationAirports([]);
       return;
     }
-    try {
-      const { data } = await axios.get(
-        `http://192.168.1.92:3000/airlines/airports/` + search
-      );
 
-      if (data.data) {
-        setAirports(
-          data.data.map((t) => {
+    try {
+      const { data } = await axios.get(apiUrl + `/airlines/airports/` + search);
+
+      const airports = data.data
+        ? data.data.map((t) => {
             const countryName =
               countryCodeMapping[t.iata_country_code] || "Unknown Country";
-            const cityName = t.city_name ? t.city_name : ""; // Use blank space if city_name is null
+            const cityName = t.city_name || "";
             return t.iata_city_code == null
               ? "abc"
               : `${t.name}, ${cityName} (${t.iata_code}), ${countryName}`;
           })
-        );
-      }
+        : [];
+
+      // Set results for origin or destination based on the type parameter
+      type === "origin"
+        ? setOriginAirports(airports)
+        : setDestinationAirports(airports);
     } catch (error) {
       console.log(error);
     }
-  };
+  }, 300);
 
   const navigate = useNavigate();
   let origin, destination, cabinclass;
   let criteria;
 
-  const [isReturn, setIsReturn] = useState(false);
+  const [isReturn, setIsReturn] = useState(true);
   const [status, setFormValid] = useState({ isValid: false });
-  // console.log(status);
+
   let invalidFields = {};
 
   const getCabinClassValue = () => {
     const cabinClassElement = document.getElementById("cabinclass");
     const cabinClassValue = cabinClassElement ? cabinClassElement.value : "";
     return cabinClassValue;
+  };
+
+  // Function to extract the second part (after splitting and trimming)
+  const getSecondPart = (stateText) => {
+    const parts = stateText.split(","); // Split by commas
+    let secondPart = parts[1]
+      ? parts[1].replace(/\s*\(.*\)/, "").trim() // Remove "(IND)" if present
+      : "";
+
+    // If secondPart is empty, check for value inside brackets
+    if (!secondPart) {
+      const match = parts[1] ? parts[1].match(/\(([^)]+)\)/) : null;
+      if (match && match[1]) {
+        secondPart = match[1].trim(); // Get the matched value inside parentheses
+      } else {
+        console.log("No match found for second part");
+      }
+    }
+
+    return secondPart;
   };
 
   const handleSubmit1 = (event) => {
@@ -512,6 +544,12 @@ const SearchFlight = ({ onSearch, ...props }) => {
       : "";
     const destination_city = destinationCode;
 
+    const originparts = originStateText.split(","); // Split by commas
+
+    // Get the second part for origin and destination
+    const originSecondPart = getSecondPart(originStateText);
+    const destinationSecondPart = getSecondPart(destinationStateText);
+
     if (isReturn === false) {
       criteria = {
         origin: origin_city,
@@ -519,6 +557,8 @@ const SearchFlight = ({ onSearch, ...props }) => {
         departureDate: event.target.dateOfDep.value,
         numOfPassengers: Adults,
         cabin_class: cabinValue,
+        origin_city_name: originSecondPart,
+        destination_city_name: destinationSecondPart,
       };
     } else {
       criteria = {
@@ -528,6 +568,8 @@ const SearchFlight = ({ onSearch, ...props }) => {
         returnDate: event.target.returnDate.value,
         numOfPassengers: Adults,
         cabin_class: cabinValue,
+        origin_city_name: originSecondPart,
+        destination_city_name: destinationSecondPart,
       };
     }
 
@@ -591,22 +633,25 @@ const SearchFlight = ({ onSearch, ...props }) => {
     }
 
     setFormValid({ isValid: true });
-
     props.findFlights({ flights, criteria });
+
     navigate("/results");
   };
 
   useEffect(() => {
-    getAirports(keyword);
+    const type = "origin";
+    getAirports(keyword, type);
     localStorage.setItem("options", JSON.stringify(options));
     localStorage.setItem("isReturn", JSON.stringify(isReturn)); // Store isReturn
+    setSelectedCabinClass(cabin_details[0]);
+    localStorage.setItem("cabinclass", JSON.stringify([cabin_details[0]]));
   }, [cabin_details, openOptions, options, isReturn]);
 
   return (
     <>
       <div className="row pb-5">
-        <div className="col-12 col-md-5 col-lg-5 col-xl-5 my-auto">
-          <h2 style={{ fontFamily: "Lato" }} className="font-weight-bold">
+        <div className="col-12 col-md-12 col-lg-5 col-xl-5 my-auto">
+          <h2 className="font-weight-bold">
             Plan hassle-free travels to <br></br>your dream destinations
           </h2>
           <h4 className="font-weight-light sub-title-text">
@@ -614,7 +659,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
             connections and authentic experiences.
           </h4>
         </div>
-        <div className="col-12 col-md- col-lg-7 col-xl-7" id="banner-sec">
+        <div className="col-12 col-md-12 col-lg-7 col-xl-7" id="banner-sec">
           <img
             src={sideimage}
             className="img-fluid banner-image"
@@ -667,13 +712,13 @@ const SearchFlight = ({ onSearch, ...props }) => {
                   <div id="flights" className="tab-pane in active">
                     <div className="page-search-form">
                       <Form onSubmit={handleSubmit1}>
-                        <div className="row mt-3">
+                        <div className="row mt-0">
                           {/* Trip Type Selection */}
                           <div className="col-12 col-md-6 col-lg-4 col-xl-3 col-sm-12 col-xs-12">
                             <div className="form-group">
-                              <label htmlFor="tripType" className="form-label">
+                              {/* <label htmlFor="tripType" className="form-label">
                                 Trip Type
-                              </label>
+                              </label> */}
                               <div
                                 className="headerSearchTripItem"
                                 ref={dropdownRef}
@@ -741,12 +786,12 @@ const SearchFlight = ({ onSearch, ...props }) => {
                           {/* Cabin Class Selection */}
                           <div className="col-12 col-md-6 col-lg-4 col-xl-3 col-sm-12 col-xs-12">
                             <Form.Group controlId="cabinclass">
-                              <label
+                              {/* <label
                                 htmlFor="cabinclass"
                                 className="form-label"
                               >
                                 Cabin Class
-                              </label>
+                              </label> */}
                               <div className="select-container">
                                 <Form.Control
                                   as="select"
@@ -780,12 +825,12 @@ const SearchFlight = ({ onSearch, ...props }) => {
                           {/* Passengers Options */}
                           <div className="col-12 col-md-6 col-lg-4 col-xl-3 col-sm-12 col-xs-12">
                             <div className="form-group">
-                              <label
+                              {/* <label
                                 htmlFor="passengers"
                                 className="form-label"
                               >
                                 Passengers
-                              </label>
+                              </label> */}
                               <div
                                 className="headerSearchItem"
                                 ref={dropdownSearchRef}
@@ -799,7 +844,21 @@ const SearchFlight = ({ onSearch, ...props }) => {
                                       : "optionarrow-down"
                                   }`}
                                 >
-                                  {`${options.adult} adult · ${options.children} children · ${options.infant} infant`}
+                                  <i className="fa fa-user"></i>{" "}
+                                  {options.adult +
+                                    options.children +
+                                    options.infant ===
+                                  1
+                                    ? ` ${
+                                        options.adult +
+                                        options.children +
+                                        options.infant
+                                      } Traveler`
+                                    : ` ${
+                                        options.adult +
+                                        options.children +
+                                        options.infant
+                                      } Travelers`}
                                   <i
                                     className={`passenger-arrow ${
                                       openOptions
@@ -925,14 +984,18 @@ const SearchFlight = ({ onSearch, ...props }) => {
                                   <div className="col-12 col-md-6 col-lg-3 col-xl-3 col-sm-12 col-xs-12">
                                     <div className="form-group left-icon">
                                       <Form.Group controlId="origin">
-                                        <Form.Label>Origin</Form.Label>
+                                        {/* <Form.Label>Origin</Form.Label> */}
                                         <Typeahead
                                           labelKey="origin"
-                                          options={airportsData}
+                                          options={originAirports}
                                           placeholder="From"
                                           ref={(ref) => (origin = ref)}
                                           selected={selectedOrigin}
                                           onChange={handleOriginChange}
+                                          onInputChange={(input) => {
+                                            getAirports(input, "origin");
+                                          }} // Calls getAirports when typing
+                                          emptyLabel="Search by city or airport" // Custom message when no matches are found
                                         />
                                         {status.origin && (
                                           <ErrorLabel message="Please enter a valid airport"></ErrorLabel>
@@ -947,7 +1010,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
                                   </div>
                                   {/* Swap Button */}
                                   <div
-                                    className="col-12 col-md-1 col-lg-1 col-xl-1 col-sm-12 col-xs-12 interchange-icon"
+                                    className="col-12 col-md-1 col-lg-1 col-xl-1 col-sm-12 col-xs-12 interchange-icon mb-3"
                                     onClick={handleSwap}
                                   >
                                     <img
@@ -959,17 +1022,18 @@ const SearchFlight = ({ onSearch, ...props }) => {
                                   <div className="col-12 col-md-6 col-lg-3 col-xl-3 col-sm-12 col-xs-12">
                                     <div className="form-group left-icon">
                                       <Form.Group controlId="destination">
-                                        <Form.Label>Destination</Form.Label>
+                                        {/* <Form.Label>Destination</Form.Label> */}
                                         <Typeahead
                                           labelKey="destination"
-                                          options={airportsData}
+                                          options={destinationAirports}
                                           placeholder="To"
                                           ref={(ref) => (destination = ref)}
                                           selected={selectedDestination}
                                           onChange={handleDestinationChange}
                                           onInputChange={(input) => {
-                                            getAirports(input);
+                                            getAirports(input, "destination");
                                           }} // Calls getAirports when typing
+                                          emptyLabel="Search by city or airport" // Custom message when no matches are found
                                         />
                                         {status.destination && (
                                           <ErrorLabel message="Please enter a valid airport"></ErrorLabel>
@@ -988,9 +1052,9 @@ const SearchFlight = ({ onSearch, ...props }) => {
                                       <div className="col-12 col-md-6 col-lg-6 col-xl-6 col-sm-12 col-xs-12">
                                         <div className="form-group">
                                           <Form.Group controlId="formGriddateOfDep">
-                                            <Form.Label>
+                                            {/* <Form.Label>
                                               Departure Date
-                                            </Form.Label>
+                                            </Form.Label> */}
                                             <Form.Control
                                               type="date"
                                               className="form-control dpd1"
@@ -1016,7 +1080,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
                                       <div className="col-12 col-md-6 col-lg-6 col-xl-6 col-sm-12 col-xs-12">
                                         <div className="form-group">
                                           <Form.Group controlId="formGriddateOfReturn">
-                                            <Form.Label>Return Date</Form.Label>
+                                            {/* <Form.Label>Return Date</Form.Label> */}
                                             <Form.Control
                                               type="date"
                                               className="form-control dpd1"
@@ -1062,18 +1126,18 @@ const SearchFlight = ({ onSearch, ...props }) => {
                                   <div className="col-12 col-md-6 col-lg-3 col-xl-3 col-sm-12 col-xs-12">
                                     <div className="form-group left-icon">
                                       <Form.Group controlId="origin">
-                                        <Form.Label>Origin</Form.Label>
+                                        {/* <Form.Label>Origin</Form.Label> */}
                                         <Typeahead
                                           labelKey="origin"
-                                          options={airportsData}
-                                          id="origin"
+                                          options={originAirports}
                                           placeholder="From"
                                           ref={(ref) => (origin = ref)}
                                           selected={selectedOrigin} // Find the airport object based on selected IATA code
                                           onChange={handleOriginChange}
                                           onInputChange={(input) => {
-                                            getAirports(input);
+                                            getAirports(input, "origin");
                                           }} // Calls getAirports when typing
+                                          emptyLabel="Search by city or airport" // Custom message when no matches are found
                                         />
                                         {status.origin && (
                                           <ErrorLabel message="Please enter a valid airport"></ErrorLabel>
@@ -1088,7 +1152,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
                                   </div>
                                   {/* Swap Button */}
                                   <div
-                                    className="col-12 col-md-1 col-lg-1 col-xl-1 col-sm-12 col-xs-12 interchange-icon"
+                                    className="col-12 col-md-1 col-lg-1 col-xl-1 col-sm-12 col-xs-12 interchange-icon mb-3"
                                     onClick={handleSwap}
                                   >
                                     <img
@@ -1101,18 +1165,18 @@ const SearchFlight = ({ onSearch, ...props }) => {
                                   <div className="col-12 col-md-6 col-lg-3 col-xl-3 col-sm-12 col-xs-12">
                                     <div className="form-group">
                                       <Form.Group controlId="destination">
-                                        <Form.Label>Destination</Form.Label>
+                                        {/* <Form.Label>Destination</Form.Label> */}
                                         <Typeahead
                                           labelKey="destination"
-                                          id="destination"
-                                          options={airportsData}
+                                          options={destinationAirports}
                                           placeholder="To"
                                           ref={(ref) => (destination = ref)}
                                           selected={selectedDestination}
                                           onChange={handleDestinationChange}
                                           onInputChange={(input) => {
-                                            getAirports(input);
+                                            getAirports(input, "destination");
                                           }} // Calls getAirports when typing
+                                          emptyLabel="Search by city or airport" // Custom message when no matches are found
                                         />
                                         {status.destination && (
                                           <ErrorLabel message="Please enter a valid airport"></ErrorLabel>
@@ -1132,7 +1196,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
                                   <div className="col-12 col-md-6 col-lg-3 col-xl-3 col-sm-12 col-xs-12">
                                     <div className="form-group">
                                       <Form.Group controlId="formGriddateOfDep">
-                                        <Form.Label>Departure Date</Form.Label>
+                                        {/* <Form.Label>Departure Date</Form.Label> */}
                                         <Form.Control
                                           type="date"
                                           className="form-control dpd1"
@@ -1158,6 +1222,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
                                     <button
                                       className="btn btn-orange searchbtn"
                                       onClick={handleSearch}
+                                      style={{ marginTop: "-0.2rem" }}
                                     >
                                       Search
                                     </button>
@@ -1171,8 +1236,8 @@ const SearchFlight = ({ onSearch, ...props }) => {
                     </div>
                   </div>
                   <div id="hotels" className="tab-pane in border-0">
-                    <div className="m-0">
-                      {/* <div className="col-12 col-md-12 col-lg-12 col-xl-12 mb-5">
+                    <div className="m-4">
+                      <div className="col-12 col-md-12 col-lg-12 col-xl-12 mb-3">
                         <h4>
                           <strong>Coming Soon!!!!</strong>
                         </h4>
@@ -1180,14 +1245,45 @@ const SearchFlight = ({ onSearch, ...props }) => {
                           Stay tuned to discover and book the perfect
                           accommodations for your next adventure.
                         </span>
-                      </div> */}
+                      </div>
                       <div className="col-12 col-md-12 col-lg-12 col-xl-12">
-                        <div className="p-0">
-                          <img
-                            src={hotelimage}
-                            className="img-fluid custom-form-img w-100"
-                            alt="registration-img"
-                          />
+                        <div className="flex-content-img p-0">
+                          <Carousel
+                            controls={false}
+                            indicators={false}
+                            interval={1500}
+                          >
+                            <Carousel.Item>
+                              <img
+                                style={{ height: "500px", width: "1000px" }}
+                                className="d-block w-100"
+                                src={coming_soon}
+                                alt="First slide"
+                              />
+                            </Carousel.Item>
+                            {/* <Carousel.Item>
+                              <img
+                                style={{ height: "500px", width: "1000px" }}
+                                className="d-block"
+                                src={destination_1}
+                                alt="Second slide"
+                              />
+                            </Carousel.Item>
+                            <Carousel.Item>
+                              <img
+                                style={{ height: "500px", width: "1000px" }}
+                                className="d-block"
+                                src={destination_2}
+                                alt="Third slide"
+                              />
+                            </Carousel.Item> */}
+                          </Carousel>
+
+                          {/* <img
+                      src={sideimage}
+                      className="img-fluid custom-form-img"
+                      alt="registration-img"
+                    /> */}
                         </div>
                       </div>
                     </div>

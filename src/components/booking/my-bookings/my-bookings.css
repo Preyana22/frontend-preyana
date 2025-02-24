@@ -5,9 +5,7 @@
 
 .nav-tabs .nav-item .nav-link.active {
     background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
-    border-bottom-color: transparent;
-    color: #007bff;
+    color: #005085;
 }
 
 .table-striped tbody tr:nth-of-type(odd) {
@@ -21,8 +19,8 @@
 
 .table td,
 .table th{
-border-bottom: 1px solid #dee2e6 !important;
-    border-top: 1px solid #dee2e6 !important;
+border-bottom: 1px solid #c4c4c4 !important;
+    border-top: 1px solid #c4c4c4 !important;
     border-right: none !important;
     border-left: none !important;
 }
@@ -46,11 +44,60 @@ border-bottom: 1px solid #dee2e6 !important;
 
 .trips_btn {
     border-radius: 0 !important;
+    font-size: 16px;
+    border-color: #005085;
+    color: #005085;
+}
+
+.trips_btn.btn-outline-primary:hover {
+  
+    background: #005085;
+    color: #ffffff;
 }
 
 .table-bordered td {
-    font-size: 13px !important;
+    font-size: 16px !important;
 }
 .table-bordered th{
-    font-size: 15px;
+    font-size: 18px;
+}
+
+#trips_table_container .table-hover tbody tr:hover{
+background-color: transparent;
+}
+
+
+#trips_table_container table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#trips_table_container table th,
+#trips_table_container table td {
+    padding: 8px;
+    /* border: 1px solid #ddd; */
+    text-align: left;
+}
+
+#trips_table_container table tr td .download-cell {
+    display: block;
+    align-items: center;
+    justify-content: center;
+    /* Optional if you want it centered horizontally too */
+}
+
+#trips_table_container .download-link {
+    text-decoration: none;
+    color: #005085;
+    /* Customize as needed */
+}
+#trips_table_container .download-link:hover{
+    background-color: transparent;
+}
+
+#itinerary_download{
+    
+}
+.disable-border td:not(:last-child) {
+    border-bottom-color: #fdfeff !important;
 }

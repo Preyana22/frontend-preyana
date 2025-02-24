@@ -29,7 +29,7 @@ const Footer = () => {
                     <Link to="/blog">Blog </Link>
                   </li>
                   <li>
-                    <Link to="/howweworks">How we works </Link>
+                    <Link to="/howweworks">How we work </Link>
                   </li>
                 </ul>
               </div>
@@ -44,7 +44,7 @@ const Footer = () => {
                     <Link to="/press">Press </Link>
                   </li>
                   <li>
-                    <Link to="/affilates">Affilates </Link>
+                    <Link to="/affilates">Affiliates </Link>
                   </li>
                   <li>
                     <Link to="/hotelowners">Hotel owners </Link>

@@ -3,6 +3,7 @@ import { Container, Row, Col, Card, Button, Form } from "react-bootstrap";
 import axios from "axios";
 import moment from "moment"; // Import Moment.js
 import { useNavigate } from "react-router-dom";
+const apiUrl = process.env.REACT_APP_API_BASE_URL;
 
 const Profile = () => {
   const user_id = localStorage.getItem("userId");
@@ -42,13 +43,18 @@ const Profile = () => {
     payment: false,
   });
   const [formData, setFormData] = useState({
-    name: "",
+    firstName: "",
+    middleName: "",
+    lastName: "",
     userName: "",
     email: "",
     gender: "",
     birthDate: "",
     address: "",
+    state: "",
+    zip: "",
     nameOnCard: "",
+    cardNumber: "",
     billingAddress: "",
     expirationDate: "",
     phoneNo: "",
@@ -60,15 +66,21 @@ const Profile = () => {
 
   useEffect(() => {
     if (userData) {
+      console.log(userData);
       setFormData({
-        name: userData.name || "",
+        firstName: userData.firstName || "",
+        middleName: userData.middleName || "",
+        lastName: userData.lastName || "",
         userName: userData.userName || "",
         email: userData.email || "",
         gender: userData.gender || "",
         phoneNo: userData.phoneNo || "",
         birthDate: formatDateForInput(userData.birthDate) || "",
         address: userData.address || "",
+        state: userData.state || "",
+        zip: userData.zip || "",
         nameOnCard: userData.nameOnCard || "",
+        cardNumber: userData.cardNumber || "",
         billingAddress: userData.billingAddress || "",
         expirationDate: formatDateForInput(userData.expirationDate) || "",
       });
@@ -96,7 +108,7 @@ const Profile = () => {
   const getUserDetails = async (userId) => {
     try {
       const response = await axios.get(
-        "http://192.168.1.92:3000/authentication/profile/" + userId,
+        apiUrl + "/authentication/profile/" + userId,
         {
           headers: {
             "Content-Type": "application/json",
@@ -128,8 +140,14 @@ const Profile = () => {
     const newErrors = {};
 
     // Add validation logic for each field
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = "First Name is required";
+    }
+    // if (!formData.middleName.trim()) {
+    //   newErrors.middleName = "Last Name is required";
+    // }
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = "Last Name is required";
     }
     if (!formData.userName.trim()) {
       newErrors.userName = "Username is required";
@@ -176,7 +194,7 @@ const Profile = () => {
 
     const configuration = {
       method: "put",
-      url: `http://192.168.1.92:3000/authentication/profileUpdate/${user_id}`,
+      url: apiUrl + `/authentication/profileUpdate/${user_id}`,
       data: {
         ...formData, // Spread the form data
       },
@@ -237,12 +255,19 @@ const Profile = () => {
                   <Col md={4}>
                     <strong>Name</strong>
                     <br />
-                    {userData.name}
+                    {[
+                      userData.firstName,
+                      userData.middleName,
+                      userData.lastName,
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
                   </Col>
+
                   <Col md={4}>
-                    <strong>User Name</strong>
+                    <strong>Date of birth</strong>
                     <br />
-                    {userData.userName}
+                    {convertDate(userData.birthDate)}
                   </Col>
                   <Col md={4}>
                     <strong>Email</strong>
@@ -269,28 +294,72 @@ const Profile = () => {
                   </Col>
 
                   <Col md={4}>
-                    <strong>Date of birth</strong>
+                    <strong>Password</strong>
                     <br />
-                    {convertDate(userData.birthDate)}
+                    <small>
+                      {" "}
+                      {userData?.password
+                        ? Array(10).fill(
+                            <i
+                              className="fa fa-circle"
+                              style={{ fontSize: "10px", padding: "2px" }}
+                            ></i>
+                          )
+                        : " "}
+                    </small>
                   </Col>
                 </Row>
               </>
             ) : (
               // Edit Mode
               <>
-                <Form.Group className="col-12">
-                  <Form.Label>Name</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    isInvalid={!!errors.name}
-                  />
-                  <Form.Control.Feedback type="invalid">
-                    {errors.name}
-                  </Form.Control.Feedback>
-                </Form.Group>
+                <Row>
+                  <Col md={4}>
+                    <Form.Group>
+                      <Form.Label>First Name</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="firstName"
+                        value={formData.firstName}
+                        onChange={handleInputChange}
+                        isInvalid={!!errors.firstName}
+                      />
+                      <Form.Control.Feedback type="invalid">
+                        {errors.firstName}
+                      </Form.Control.Feedback>
+                    </Form.Group>
+                  </Col>
+                  <Col md={4}>
+                    <Form.Group>
+                      <Form.Label>Middle Name</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="middleName"
+                        value={formData.middleName}
+                        onChange={handleInputChange}
+                        isInvalid={!!errors.middleName}
+                      />
+                      {/* <Form.Control.Feedback type="invalid">
+                        {errors.middleName}
+                      </Form.Control.Feedback> */}
+                    </Form.Group>
+                  </Col>
+                  <Col md={4}>
+                    <Form.Group>
+                      <Form.Label>Last Name</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="lastName"
+                        value={formData.lastName}
+                        onChange={handleInputChange}
+                        isInvalid={!!errors.lastName}
+                      />
+                      <Form.Control.Feedback type="invalid">
+                        {errors.lastName}
+                      </Form.Control.Feedback>
+                    </Form.Group>
+                  </Col>
+                </Row>
                 <Form.Group className="col-12">
                   <Form.Label>User Name</Form.Label>
                   <Form.Control
@@ -383,21 +452,55 @@ const Profile = () => {
               // View Mode
               <>
                 <Row>
-                  <Col>{userData.address}</Col>
+                  <Col md={4}>
+                    {
+                      userData?.address || userData?.state || userData?.zip
+                        ? `${userData?.address || ""}, ${
+                            userData?.state || ""
+                          }, ${userData?.zip || ""}`
+                        : "" // Show blank if none are available
+                    }
+                  </Col>
                 </Row>
               </>
             ) : (
               // Edit Mode
               <>
-                <Form.Group className="col-12">
-                  <Form.Label>Address</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="address"
-                    value={formData.address}
-                    onChange={handleInputChange}
-                  />
-                </Form.Group>
+                <Row>
+                  <Col md={4}>
+                    <Form.Group className="col-12">
+                      <Form.Label>Address</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="address"
+                        value={formData.address}
+                        onChange={handleInputChange}
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col md={4}>
+                    <Form.Group className="col-12">
+                      <Form.Label>State</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="state"
+                        value={formData.state}
+                        onChange={handleInputChange}
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col md={4}>
+                    <Form.Group className="col-12">
+                      <Form.Label>Zip Code</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="zip"
+                        value={formData.zip}
+                        onChange={handleInputChange}
+                      />
+                    </Form.Group>
+                  </Col>
+                </Row>
               </>
             )}
           </Card.Body>
@@ -431,10 +534,19 @@ const Profile = () => {
                     {userData.nameOnCard}
                   </Col>
                   <Col md={4}>
+                    {" "}
+                    <strong>Card Number</strong>
+                    <br />
+                    {userData.cardNumber}
+                  </Col>
+                  <Col md={4}>
                     <strong>Billing Address</strong>
                     <br />
                     {userData.billingAddress}
                   </Col>
+                </Row>
+                <br /> <br />
+                <Row>
                   <Col md={4}>
                     <strong>Expiration Date</strong>
                     <br />
@@ -451,6 +563,15 @@ const Profile = () => {
                     type="text"
                     name="nameOnCard"
                     value={formData.nameOnCard}
+                    onChange={handleInputChange}
+                  />
+                </Form.Group>
+                <Form.Group className="col-12">
+                  <Form.Label>Card Number</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="cardNumber"
+                    value={formData.cardNumber}
                     onChange={handleInputChange}
                   />
                 </Form.Group>

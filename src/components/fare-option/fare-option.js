@@ -1,22 +1,36 @@
 import React, { useEffect, useState } from "react";
-import "../fare-option/fare-option.css"; // Create this file to add custom styles
-import { useLocation, useNavigate } from "react-router-dom"; // Import useNavigate
-import moment from "moment"; // Import Moment.js
+import "../fare-option/fare-option.css";
+import { useLocation, useNavigate } from "react-router-dom";
+import moment from "moment";
 import { connect } from "react-redux";
 import { findFlights } from "../../actions";
+const apiUrl = process.env.REACT_APP_API_BASE_URL;
+var tripType = "";
 
 const FareOption = (props) => {
   const location = useLocation();
   const flights = location.state.flightsdata;
-  const navigate = useNavigate(); // Use useNavigate for navigation
+  const navigate = useNavigate();
+
   const [selectedFares, setSelectedFares] = useState({
     slice1: null,
     slice2: null,
   });
-  console.log("flights", flights);
-  const navigateToContacts = () => {
-    navigate("/contacts", { state: { flights, selectedFares } }); // Pass selected fares to the next route
-  };
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  });
+
+  useEffect(() => {
+    tripType = flights.slices.length > 1 ? "Round Trip" : "One Way Trip";
+    flights.slices.forEach((slice, index) => {
+      setSelectedFares((prevSelected) => ({
+        ...prevSelected,
+        [`slice${index + 1}`]:
+          slice.segments[0].passengers[0].cabin_class_marketing_name,
+      }));
+    });
+  }, [flights]);
 
   const handleFareSelect = (sliceIndex, fareType) => {
     setSelectedFares((prevSelected) => ({
@@ -27,6 +41,8 @@ const FareOption = (props) => {
 
   const convertDate = (dateString) => {
     const date = new Date(dateString);
+    const weekdayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const weekday = weekdayNames[date.getDay()];
     const day = String(date.getDate()).padStart(2, "0");
     const monthNames = [
       "Jan",
@@ -42,10 +58,9 @@ const FareOption = (props) => {
       "Nov",
       "Dec",
     ];
-    const month = monthNames[date.getMonth()]; // Get month name from the array
+    const month = monthNames[date.getMonth()];
     const year = date.getFullYear();
-
-    return `${day} ${month} ${year}`;
+    return `${weekday}, ${month} ${day},`;
   };
 
   const convertToTime = (dateString) => {
@@ -53,8 +68,7 @@ const FareOption = (props) => {
     let hours = date.getHours();
     const minutes = String(date.getMinutes()).padStart(2, "0");
     const ampm = hours >= 12 ? "PM" : "AM";
-    hours = hours % 12 || 12; // Convert to 12-hour format, handle midnight as 12
-
+    hours = hours % 12 || 12;
     return `${hours}:${minutes} ${ampm}`;
   };
 
@@ -63,158 +77,36 @@ const FareOption = (props) => {
     const days = momentDuration.days();
     const hours = momentDuration.hours();
     const minutes = momentDuration.minutes();
-
     return `${days > 0 ? `${days}d ` : ""}${
       hours > 0 ? `${hours}h ` : ""
     }${minutes}m`;
   };
 
-  const transformPassengerData = (passengerData) => {
-    const result = [];
-
-    for (let type in passengerData) {
-      if (type === "children") {
-        type = "child"; // Converting "children" to "child"
-      }
-
-      for (let i = 0; i < passengerData[type]; i++) {
-        if (type === "infant") {
-          result.push({ type: "infant_without_seat" });
-        } else {
-          result.push({ type });
-        }
-      }
-    }
-
-    return result;
+  const calculatePriceWithMarkup = (baseAmount, taxAmount) => {
+    const base_amount = Number(baseAmount);
+    const markup = base_amount * 0.15;
+    const baseprice = base_amount + markup;
+    const tax_amount = Number(taxAmount);
+    const price = baseprice + tax_amount;
+    return price.toFixed(2); // Formats to two decimal places
   };
 
-  const onSearchResultClick = () => {
-    let criteria = {}; // Change to 'let' so it can be reassigned
-    const originStateText = localStorage.getItem("origin");
-    const originCode = originStateText
-      ? originStateText.match(/\(([^)]+)\)/)[1]
-      : ""; // Extracts the code within parentheses
-
-    const savedOrigin = originCode;
-
-    const destinationStateText = localStorage.getItem("destination");
-    const destinationCode = destinationStateText
-      ? destinationStateText.match(/\(([^)]+)\)/)[1]
-      : ""; // Extracts the code within parentheses
-
-    const savedDestination = destinationCode;
-
-    const savedCabinClass = JSON.parse(localStorage.getItem("cabinclass"));
-    const savedDateOfDep = JSON.parse(localStorage.getItem("dateOfDeparture"));
-    const savedDateOfRet = JSON.parse(localStorage.getItem("dateOfReturn"));
-    const storedOptions = transformPassengerData(
-      JSON.parse(localStorage.getItem("options"))
-    );
-    const storedTripType = localStorage.getItem("isReturn");
-
-    if (storedTripType === "false") {
-      criteria = {
-        origin: savedOrigin,
-        destination: savedDestination,
-        departureDate: savedDateOfDep,
-        numOfPassengers: storedOptions,
-        cabin_class: savedCabinClass[0],
-      };
-    } else {
-      criteria = {
-        origin: savedOrigin,
-        destination: savedDestination,
-        departureDate: savedDateOfDep,
-        returnDate: savedDateOfRet,
-        numOfPassengers: storedOptions,
-        cabin_class: savedCabinClass[0],
-      };
-    }
-
-    props.findFlights({ flights, criteria });
-
-    navigate("/results");
+  const navigateToContacts = () => {
+    navigate("/contacts", { state: { flights, selectedFares } });
   };
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    getFlights();
-  }, []);
 
-  const getFlights = async () => {
-    let criteria = {}; // Change to 'let' so it can be reassigned
-    try {
-      const originStateText = localStorage.getItem("origin");
-      const originCode = originStateText
-        ? originStateText.match(/\(([^)]+)\)/)[1]
-        : ""; // Extracts the code within parentheses
+  const calculateLayover = (arrivalTime, departureTime) => {
+    const arrival = new Date(arrivalTime);
+    const departure = new Date(departureTime);
 
-      const savedOrigin = originCode;
+    // Calculate the layover in minutes
+    const layoverInMinutes = (departure - arrival) / (1000 * 60);
 
-      const destinationStateText = localStorage.getItem("destination");
-      const destinationCode = destinationStateText
-        ? destinationStateText.match(/\(([^)]+)\)/)[1]
-        : ""; // Extracts the code within parentheses
+    // Convert minutes to hours and minutes
+    const hours = Math.floor(layoverInMinutes / 60);
+    const minutes = layoverInMinutes % 60;
 
-      const savedDestination = destinationCode;
-
-      const savedCabinClass = String("premium_economy");
-      const savedDateOfDep = JSON.parse(
-        localStorage.getItem("dateOfDeparture")
-      );
-      const savedDateOfRet = JSON.parse(localStorage.getItem("dateOfReturn"));
-      const storedOptions = transformPassengerData(
-        JSON.parse(localStorage.getItem("options"))
-      );
-      const storedTripType = localStorage.getItem("isReturn");
-      const flights = props.flights;
-
-      if (storedTripType === "false") {
-        criteria = {
-          origin: savedOrigin,
-          destination: savedDestination,
-          departureDate: savedDateOfDep,
-          numOfPassengers: storedOptions,
-          cabin_class: savedCabinClass,
-        };
-      } else {
-        criteria = {
-          origin: savedOrigin,
-          destination: savedDestination,
-          departureDate: savedDateOfDep,
-          returnDate: savedDateOfRet,
-          numOfPassengers: storedOptions,
-          cabin_class: savedCabinClass,
-        };
-      }
-
-      // Request options for the fetch API
-      const requestOptions = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(criteria),
-      };
-
-      // Log the requestOptions for debugging
-      // console.log("Request Options:", requestOptions);
-
-      // Perform the fetch request
-      const response = await fetch(
-        "http://192.168.1.92:3000/airlines/test",
-        requestOptions
-      );
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status} - ${response.statusText}`);
-      }
-
-      // const flightsdata = await response.json();
-
-      // // Log the response data for debugging
-      // console.log("Flights Data:", flightsdata[1]);
-    } catch (error) {
-      // Log the error if the fetch request fails
-      console.error("Error during fetch:", error);
-    }
+    return `${hours}h ${minutes}m`; // Return layover in hours and minutes
   };
 
   return (
@@ -225,12 +117,8 @@ const FareOption = (props) => {
             <ol className="breadcrumb">
               <li className="breadcrumb-item">
                 <span
-                  style={{
-                    color: "#003988",
-                    cursor: "pointer",
-                    textDecoration: "none",
-                  }}
-                  onClick={onSearchResultClick}
+                  style={{ color: "#003988", cursor: "pointer" }}
+                  onClick={() => navigate("/results")}
                 >
                   Search Result
                 </span>
@@ -248,10 +136,12 @@ const FareOption = (props) => {
           {flights.slices.map((slice, sliceIndex) => (
             <div key={sliceIndex}>
               <h4 className="mb-4">
-                <strong>Flight to {slice.destination.city_name}</strong>{" "}
+                <strong>
+                  {tripType} to {slice.destination.city_name}
+                </strong>
               </h4>
               {slice.segments.map((segment, segmentIndex) => (
-                <>
+                <div key={segmentIndex}>
                   <div className="row text-center">
                     <div className="col-1">
                       <img
@@ -262,30 +152,32 @@ const FareOption = (props) => {
                         className="mr-3"
                       />
                     </div>
-                    <div className="col">
+                    <div className="col-4">
                       <span className="flight-time">
-                        {convertDate(slice.segments[0].departing_at)}{" "}
+                        {convertDate(segment.departing_at)}{" "}
                         {convertToTime(segment.departing_at)}
                       </span>
                     </div>
-                    <div className="col">
+                    <div className="col-3">
                       <span>{formatDuration(segment.duration)}</span>
                     </div>
-                    <div className="col">
+                    <div className="col-4">
                       <span className="flight-time">
-                        {convertDate(slice.segments[0].arriving_at)}{" "}
+                        {convertDate(segment.arriving_at)}{" "}
                         {convertToTime(segment.arriving_at)}
                       </span>
                     </div>
                   </div>
                   <div className="row text-center">
+                    <div className="col-1"></div>
+                    <div className="col-4"></div>
                     <div
-                      className="col d-flex justify-content-center align-items-center"
-                      style={{ left: "3rem" }}
+                      className="col-3 d-flex justify-content-center align-items-center"
+                      style={{ left: "1rem" }}
                     >
                       <div
                         className="d-flex align-items-center"
-                        style={{ width: "25%" }}
+                        style={{ width: "100%" }}
                       >
                         <hr
                           style={{
@@ -305,33 +197,65 @@ const FareOption = (props) => {
                         ></i>
                       </div>
                     </div>
+                    <div className="col-4"></div>
                   </div>
-                  <div className="row text-center  mb-4">
-                    <div className="col-1"></div>
-                    <div className="col">
+                  <div className="row text-center mb-4">
+                    <div class="col-1"></div>
+                    <div className="col-4 text-center">
                       <span>
-                        {segment.origin.city_name +
-                          " (" +
-                          segment.origin.iata_city_code +
-                          ")"}
+                        {segment.origin.city_name} (
+                        {segment.origin.iata_city_code})
                       </span>
                     </div>
-                    <div className="col">
-                      <span className="mx-2">
-                        {segment.stops ? segment.stops : ""}
-                      </span>
-                    </div>
-                    <div className="col">
+                    <div class="col-3"></div>
+                    <div className="col-4 text-center">
                       <span>
-                        {" "}
-                        {segment.destination.city_name +
-                          " (" +
-                          segment.destination.iata_city_code +
-                          ")"}
+                        {segment.destination.city_name} (
+                        {segment.destination.iata_city_code})
                       </span>
                     </div>
                   </div>
-                </>
+
+                  {/* Layover details after the first segment but not for the last segment */}
+                  {slice.segments.length > 1 &&
+                    segmentIndex < slice.segments.length - 1 && (
+                      <div className="row text-left mb-3">
+                        <div className="col">
+                          {/* Layover details */}
+                          {slice.segments.length > 1 &&
+                            slice.segments
+                              .slice(segmentIndex, segmentIndex + 1)
+                              .map((segment, index) => {
+                                const nextSegment =
+                                  slice.segments[segmentIndex + 1];
+
+                                // Calculate layover time
+                                const layoverTime = calculateLayover(
+                                  segment.arriving_at,
+                                  nextSegment.departing_at
+                                );
+
+                                return (
+                                  <div
+                                    key={segment.id}
+                                    className="fare-layover-detail d-block"
+                                  >
+                                    <p className="mb-0 text-black pl-3">
+                                      <small>
+                                        <span>{`${layoverTime} layover at `}</span>
+                                        <span className="ml-0">
+                                          {segment.destination.city_name} (
+                                          {segment.destination.iata_city_code})
+                                        </span>
+                                      </small>
+                                    </p>
+                                  </div>
+                                );
+                              })}
+                        </div>
+                      </div>
+                    )}
+                </div>
               ))}
 
               {/* Render fare options */}
@@ -366,51 +290,40 @@ const FareOption = (props) => {
                   />
                   <div className="card-body">
                     <div className="d-flex align-items-center justify-content-between mb-4">
-                      <h5 className="mb-0">
+                      <h5 className="mb-0 font-weight-bold">
                         {
                           slice.segments[0].passengers[0]
                             .cabin_class_marketing_name
                         }
                       </h5>
-                      <h6 className="mb-0 font-weight-bold mr-3">
-                        {slice.segments[0].passengers[0].cabin_class}
-                      </h6>
                     </div>
-                    <div className="row  justify-content-around">
+                    <div className="row justify-content-around">
                       <div className="col-6">
                         <ul className="list-unstyled features-list d-flex flex-wrap">
-                          <li className="">
-                            {slice.conditions?.change_before_departure
-                              ?.allowed === true
+                          <li>
+                            {slice.conditions?.change_before_departure?.allowed
                               ? "✔ Changeable"
                               : "✗ Not changeable"}
                           </li>
-                          <li className="">
-                            {slice.conditions?.refund_before_departure
-                              ?.allowed === true
-                              ? `✔ Refundable ${
-                                  slice.conditions.refund_before_departure
-                                    .penalty_currency +
-                                  " " +
-                                  slice.conditions.refund_before_departure
-                                    .penalty_amount
-                                }`
+                          <li>
+                            {slice.conditions?.refund_before_departure?.allowed
+                              ? `✔ Refundable ${slice.conditions.refund_before_departure.penalty_currency} ${slice.conditions.refund_before_departure.penalty_amount}`
                               : "✗ Not refundable"}
                           </li>
-                          <li className="">
+                          <li>
                             {flights.payment_requirements
                               ?.requires_instant_payment === false
                               ? "✔ Hold"
                               : "✔ Instant"}
                           </li>
-                          <li className="">
+                          <li>
                             {slice.segments[0].passengers[0]?.baggages?.some(
                               (bag) => bag.type === "carry_on"
                             )
                               ? "✔ Includes carry-on bags"
                               : "✗ Excludes carry-on bags"}
                           </li>
-                          <li className="">
+                          <li>
                             {slice.segments[0].passengers[0]?.baggages?.some(
                               (bag) => bag.type === "checked"
                             )
@@ -419,14 +332,16 @@ const FareOption = (props) => {
                           </li>
                         </ul>
                       </div>
-                      <div className=" text-center mr-3">
+                      <div className="text-center">
                         <div className="total-price">
                           <p>Total amount from</p>
                           <h3>
                             <strong>
-                              {flights.total_currency +
-                                " " +
-                                flights.total_amount}
+                              {flights.total_currency}{" "}
+                              {calculatePriceWithMarkup(
+                                flights.base_amount,
+                                flights.tax_amount
+                              )}
                             </strong>
                           </h3>
                         </div>

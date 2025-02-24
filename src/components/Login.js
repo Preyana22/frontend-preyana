@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import destination_3 from "../assets/images/destination_3.jpg";
 
 import { Link, useNavigate } from "react-router-dom";
@@ -6,6 +6,8 @@ import googleimage from "../assets/images/google.png";
 import facebookimage from "../assets/images/facebook.png";
 import axios from "axios";
 import { Carousel } from "react-bootstrap";
+import FacebookLogin from "react-facebook-login";
+const apiUrl = process.env.REACT_APP_API_BASE_URL;
 
 const Login = (props) => {
   const [formData, setFormData] = useState({
@@ -46,7 +48,7 @@ const Login = (props) => {
         console.log("Form data:", formData);
         const configuration = {
           method: "post",
-          url: "http://192.168.1.92:3000/authentication/log-in",
+          url: apiUrl + "/authentication/log-in",
           data: {
             email: formData.username,
             password: formData.password,
@@ -82,6 +84,103 @@ const Login = (props) => {
       }
     }
   };
+
+  useEffect(() => {
+    // Initialize the Google Sign-In button
+    window.google.accounts.id.initialize({
+      client_id:
+        "1095079319599-1vplrl2314aor4nefuvol83km1mbcqfc.apps.googleusercontent.com", // Replace with your Client ID
+      callback: handleCallbackGoogleResponse,
+    });
+
+    // Render the button
+    window.google.accounts.id.renderButton(
+      document.getElementById("googleSignInDiv"),
+      { theme: "outline", size: "large" } // Button customization
+    );
+  }, []);
+
+  const handleCallbackGoogleResponse = async (response) => {
+    console.log("Encoded JWT ID token: ", response.credential);
+
+    // Decode the JWT token or send it to your backend for verification
+    const userObject = JSON.parse(atob(response.credential.split(".")[1]));
+
+    const configuration = {
+      method: "post",
+      url: apiUrl + "/authentication/register",
+      data: {
+        email: userObject.email,
+        userName: userObject.given_name,
+        google_id: userObject.sub,
+      },
+    };
+
+    await axios(configuration)
+      .then((result) => {
+        localStorage.setItem("email", result.data.user._doc.email);
+        localStorage.setItem("userName", result.data.user._doc.userName);
+        localStorage.setItem("userId", result.data.user.$__._id);
+        console.log(result.data.message);
+        navigate("/search");
+      })
+      .catch((error) => {
+        if (error.response) {
+          // Check if the error status is 400
+          if (error.response.status === 400) {
+            console.log("Bad Request", error.response.data); // Log the error response
+            alert(`Error: ${error.response.data.message}`); // Show error message to user
+          } else {
+            // Handle other status codes
+            alert(`Error: ${error.response.status}`);
+          }
+        } else {
+          // Handle network or other errors
+          console.log("Error", error);
+          alert("Something went wrong. Please try again later.");
+        }
+      });
+  };
+
+  const handleCallbackFacebookResponse = async (response) => {
+    console.log(response); // Handle the response
+    const username = response.name.split(" ");
+    const configuration = {
+      method: "post",
+      url: apiUrl + "/authentication/register",
+      data: {
+        email: response.email,
+        userName: username[0],
+        facebook_id: response.id,
+      },
+    };
+
+    await axios(configuration)
+      .then((result) => {
+        localStorage.setItem("email", result.data.user._doc.email);
+        localStorage.setItem("userName", result.data.user._doc.userName);
+        localStorage.setItem("userId", result.data.user.$__._id);
+
+        navigate("/search");
+      })
+      .catch((error) => {
+        if (error.response) {
+          // Check if the error status is 400
+          if (error.response.status === 400) {
+            console.log("Bad Request", error.response.data); // Log the error response
+            alert(`Error: ${error.response.data.message}`); // Show error message to user
+          } else {
+            // Handle other status codes
+            alert(`Error: ${error.response.status}`);
+          }
+        } else {
+          // Handle network or other errors
+          console.log("Error", error);
+          alert("Something went wrong. Please try again later.");
+        }
+      });
+  };
+
   return (
     <>
       <section className="innerpage-wrapper">
@@ -186,29 +285,25 @@ const Login = (props) => {
                         className="link-line"
                         style={{ display: "inline-block" }}
                       >
-                        or continue with{" "}
-                        <Link to="/login">
+                        <div className="m-3">or continue with </div>
+                        <Link to="/login" id="googleSignInDiv">
                           <img
                             src={googleimage}
                             className="img-fluid plane_hotel_icon"
                             alt="plane-img"
                           />
                         </Link>
-                        <Link to="/login">
-                          <img
-                            src={facebookimage}
-                            className="img-fluid login-option-icon"
-                            alt="plane-img"
-                          />
-                        </Link>
+                        <FacebookLogin
+                          appId="394937666944847"
+                          autoLoad={false}
+                          fields="name,email,picture"
+                          callback={handleCallbackFacebookResponse}
+                          icon="fa-facebook"
+                        />
                       </p>
                       <p className="text-rimary mt-3">
                         <Link to="/forgot">Forgot Password ?</Link>
                       </p>
-                      {/* <Link className="simple-link" to="/forgot">
-                        {" "}
-                        Forgot Password ?
-                      </Link> */}
                     </div>
                   </div>
 

@@ -25,16 +25,16 @@
 }
 
 .content-side label{
-	font-size: 12px;
+	font-size: 16px;
 }
 .form-control{
-	font-size: 0.9rem;
+	font-size: 16px;
 }
 
 .custom-dropdown {
 	width: 100%;
 	padding: 8px;
-	font-size: 0.9rem;
+	font-size: 16px;
 	border-radius: 4px;
 	border: 1px solid #ccc;
 }
@@ -70,4 +70,8 @@ border: 1px solid #00000024;
 }
 .accordion>.card:first-of-type{
 		border-bottom: 1px solid #00000024;
+}
+
+.book-now{
+	background: #005085;
 }

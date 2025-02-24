@@ -72,8 +72,14 @@ function App(props) {
   }, [(props.flights || []).legnth]);
 
   const flights = props.flights;
-  const { origin, destination, departureDate, returnDate } =
-    props.filters || {};
+  const {
+    origin,
+    destination,
+    departureDate,
+    returnDate,
+    origin_city_name,
+    destination_city_name,
+  } = props.filters || {};
 
   const handleBrandClick = () => {
     setMarginToggled((prev) => !prev);
@@ -124,7 +130,14 @@ function App(props) {
               <div className={marginToggled ? "responsive-margin" : ""}>
                 <FlightsGrid
                   flights={props.flights}
-                  criteria={{ origin, destination, date: departureDate }}
+                  criteria={{
+                    origin,
+                    destination,
+                    date: departureDate,
+                    returnDate: returnDate,
+                    origin_city_name,
+                    destination_city_name,
+                  }}
                 ></FlightsGrid>
               </div>
               <Footer />

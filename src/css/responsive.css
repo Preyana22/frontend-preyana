@@ -4576,7 +4576,7 @@ Author:			Star Travel
 
 @media (min-width: 340px) and (max-width: 410px) {
 	.headerSearchText {
-		padding-right: 8rem !important;
+		padding-right: 12.5rem !important;
 	}
 }
 
@@ -4602,7 +4602,7 @@ Author:			Star Travel
 
 @media (min-width: 530px) and (max-width: 768px) {
 	.headerSearchText {
-		padding-right: 17rem !important;
+		padding-right: 23.7rem !important;
 	}
 }
 
@@ -4629,4 +4629,7 @@ Author:			Star Travel
 	#basic-navbar-nav div:first-child .dropdown{
 		margin-left: 10px !important;
 	}
+		#banner-sec {
+			display: none !important;
+		}
 }

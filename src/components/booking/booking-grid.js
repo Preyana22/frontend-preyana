@@ -5,31 +5,93 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { findFlights } from "../../actions";
 import { connect } from "react-redux";
+import flightimage from "../../assets/images/flightimage.svg";
+import moment from "moment"; // Import Moment.js
 
+const apiUrl = process.env.REACT_APP_API_BASE_URL;
+var updated = "";
+var formattedTotalAmount = "";
 const MyComponent = (props) => {
   const [isFetching, setIsFetching] = useState(false);
+  const [isAncillaries, setIsAncillaries] = useState(false);
+  const [isPayment, setIsPayment] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  useEffect(() => {
-    console.log(
-      "location.state.data.orderResponse",
-      location.state.data.orderResponse
-    );
-    const errors = location.state?.data?.orderResponse?.errors;
-    if (errors && errors.length > 0) {
-      console.log("Errors:", errors[0].message);
+  console.log("location state", location.state);
+  const origincity = location.state.selectedFlight.slices[0].origin.city_name;
+  const destinationcity =
+    location.state.selectedFlight.slices[0].destination.city_name;
 
-      setTimeout(() => {
-        alert(`Errors: ${errors[0].message}`);
-        // navigate("/");
-      }, 1000);
-    }
+  const baseAmount = Number(location.state.selectedFlight.base_amount);
+  const markup = baseAmount * 0.15;
+  const baseprice = baseAmount + markup;
+  const formattedAmount = baseprice.toFixed(2); // Rounds to "1335.37"
+  const tax_amount = Number(location.state.selectedFlight.tax_amount);
+
+  const price = baseprice + tax_amount;
+  formattedTotalAmount = (
+    price +
+    Number(location.state.extraBag) +
+    Number(location.state.seatSelection)
+  ).toFixed(2); // Rounds to "1335.37"
+
+  const extraBag = location.state.extraBag;
+
+  const seatSelection = location.state.seatSelection;
+  const date = location.state.selectedFlight.slices[0].segments[0].departing_at;
+  const formattedDate = moment(date).format("dd MMM D, YYYY, hh:mm A");
+  const arrivaldate =
+    location.state.selectedFlight.slices[0].segments[0].arriving_at;
+
+  const time = location.state.selectedFlight.slices[0].segments[0].duration;
+  const stops = location.state.selectedFlight.slices[0].segments[0].stops
+    ? ""
+    : "";
+  const aircraftName = location.state.selectedFlight.slices[0].segments[0]
+    .aircraft
+    ? location.state.selectedFlight.slices[0].segments[0].aircraft.name
+    : null;
+
+  const operating_carrier_flight_number =
+    location.state.selectedFlight.slices[0].segments[0].operating_carrier
+      .iata_code &&
+    location.state.selectedFlight.slices[0].segments[0]
+      .operating_carrier_flight_number
+      ? location.state.selectedFlight.slices[0].segments[0].operating_carrier
+          .iata_code +
+        location.state.selectedFlight.slices[0].segments[0]
+          .operating_carrier_flight_number
+      : null;
+  // Parse the duration using moment.js
+  const momentDuration = moment.duration(time);
+
+  // Extract the components
+  const timedays = momentDuration.days();
+  const hours = momentDuration.hours();
+  const minutes = momentDuration.minutes();
+  const cabin =
+    location.state.selectedFlight.slices[0].segments[0].passengers[0]
+      .cabin_class_marketing_name;
+  const airlinesName = location.state.selectedFlight.slices[0].segments[0]
+    .operating_carrier.name
+    ? location.state.selectedFlight.slices[0].segments[0].operating_carrier.name
+    : "";
+
+  useEffect(() => {
+    // const errors = location.state?.data?.orderResponse?.errors;
+    // if (errors && errors.length > 0) {
+    //   console.log("Errors:", errors[0].message);
+    //   setTimeout(() => {
+    //     alert(`Errors: ${errors[0].message}`);
+    //     // navigate("/");
+    //   }, 1000);
+    // }
   }, [location.state, navigate]);
 
   let arr = [];
   let passengers = [];
   arr = location.state.contactDetails;
-
+  let payments = [];
   arr.map((item, index) => {
     passengers.push({
       phone_number: location.state.contactDetails[index].phone_number,
@@ -52,25 +114,95 @@ const MyComponent = (props) => {
         location.state.contactDetails[index].passenger_id;
     }
   });
+
   const confirmPayment = async () => {
-    console.log(
-      "location.state.data.paymentIntentResponse.data",
-      location.state.data.paymentIntentResponse.data.id
+    // Display a confirmation dialog to the user
+    const userConfirmed = window.confirm(
+      "Are you sure you want to confirm and book this flight?"
     );
 
-    const test = {
-      paymentIntent: location.state.data.paymentIntentResponse.data.id,
+    payments = {
+      type: "balance",
+      amount: location.state.selectedFlight.total_amount,
+      currency: location.state.selectedFlight.total_currency,
     };
 
-    const { data, errors } = await (
-      await fetch("http://192.168.1.92:3000/airlines/confirm", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(test),
-      })
-    ).json();
-    console.log("Response Data:", data);
-    console.log("Response Errors:", errors);
+    console.log("payments", payments);
+    // If the user clicks "Cancel", exit the function early
+    if (!userConfirmed) {
+      console.log("User cancel the confirmation");
+      setIsPayment(false);
+    }
+
+    if (userConfirmed) {
+      try {
+        const test = {
+          paymentIntent: location.state.data.paymentIntentResponse.data.id,
+        };
+
+        const orderData = {
+          type: "instant",
+          selected_offers: [location.state.contactDetails[0].offer_id],
+          passengers: arr,
+          payments: [payments],
+          metadata: test,
+        };
+
+        // Step 1: Call /airlines/confirm API
+        const confirmResponse = await fetch(apiUrl + "/airlines/confirm", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(test),
+        });
+
+        if (!confirmResponse.ok) {
+          throw new Error(`HTTP error! Status: ${confirmResponse.status}`);
+        }
+
+        const confirmData = await confirmResponse.json();
+
+        // Step 2: If confirm call is successful, call /airlines/book API
+        if (location.state.contactDetails && confirmData.data) {
+          const bookResponse = await axios.post(
+            apiUrl + "/airlines/book",
+            orderData,
+            {
+              headers: { "Content-Type": "application/json" },
+            }
+          );
+
+          const bookData = bookResponse.data;
+          console.log("Book Response Data:", bookData);
+          if (bookData.data.orderResponse.errors) {
+            console.error(
+              "Error:",
+              bookData.data.orderResponse.errors[0].message
+            ); // Log individual error messages
+            alert(
+              `Booking error: ${bookData.data.orderResponse.errors[0].message}`
+            );
+          }
+
+          // Combine confirm and book responses into one array
+          const combinedResult = [
+            {
+              type: "confirm",
+              data: confirmData.data,
+              errors: confirmData.errors,
+            },
+            { type: "book", data: bookData.data, errors: bookData.errors },
+          ];
+
+          if (combinedResult && combinedResult[1].data.orderResponse.data) {
+            saveBooking(combinedResult);
+          }
+        } else if (confirmData.errors) {
+          console.error("Errors in Confirm API:", confirmData.errors);
+        }
+      } catch (error) {
+        console.error("Error in confirmPayment:", error);
+      }
+    }
   };
 
   function formatDuration(duration) {
@@ -108,33 +240,32 @@ const MyComponent = (props) => {
     return formattedParts.join(" ");
   }
 
-  const saveBooking = async () => {
+  const saveBooking = async (orderData) => {
     const bookingData = {
-      email: location.state.data.orderResponse.data.passengers[0].email,
+      email: orderData[1].data.orderResponse.data.passengers[0].email,
       loginEmail: localStorage.getItem("email")
         ? localStorage.getItem("email")
-        : location.state.data.orderResponse.data.passengers[0].email,
-      name: `${location.state.data.orderResponse.data.passengers[0].given_name} ${location.state.data.orderResponse.data.passengers[0].family_name}`,
-      booking_reference:
-        location.state.data.orderResponse.data.booking_reference,
-      offer_id: location.state.data.orderResponse.data.offer_id,
-      status: location.state.data.orderResponse.data.payment_status
+        : orderData[1].data.orderResponse.data.passengers[0].email,
+      name: `${orderData[1].data.orderResponse.data.passengers[0].given_name} ${orderData[1].data.orderResponse.data.passengers[0].family_name}`,
+      booking_reference: orderData[1].data.orderResponse.data.booking_reference,
+      offer_id: orderData[1].data.orderResponse.data.offer_id,
+      status: orderData[1].data.orderResponse.data.payment_status
         .awaiting_payment
         ? "pending"
         : "success",
-      booking_id: location.state.data.orderResponse.data.id,
+      booking_id: orderData[1].data.orderResponse.data.id,
       address1: location.state.contactDetails[0].address1,
       address2: location.state.contactDetails[0].address2,
       city: location.state.contactDetails[0].city,
       region: location.state.contactDetails[0].region,
       postal: location.state.contactDetails[0].postal,
       country: location.state.contactDetails[0].country,
-      airlines: location.state.data.orderResponse.data.owner.name,
+      airlines: orderData[1].data.orderResponse.data.owner.name,
       slices: [], // Initialize an empty array for slices
     };
 
     // Iterate through each slice and extract relevant data
-    location.state.data.orderResponse.data.slices.forEach((slice) => {
+    orderData[1].data.orderResponse.data.slices.forEach((slice) => {
       const segment = slice.segments[0]; // Assuming you want the first segment
 
       bookingData.slices.push({
@@ -142,11 +273,11 @@ const MyComponent = (props) => {
         departTime: segment.departing_at,
         arrivalTime: segment.arriving_at,
         flightDuration: formatDuration(slice.duration),
-        stops: segment.stops.length === 0 ? null : segment.stops,
-        departAirport: slice.destination.iata_code,
-        arrivalAirport: slice.origin.iata_code,
-        departCityName: slice.destination.city_name,
-        arrivalCityName: slice.origin.city_name,
+        stops: segment.stops.length === 0 ? null : null,
+        departAirport: slice.origin.iata_code,
+        arrivalAirport: slice.destination.iata_code,
+        departCityName: slice.origin.city_name,
+        arrivalCityName: slice.destination.city_name,
       });
     });
 
@@ -156,7 +287,7 @@ const MyComponent = (props) => {
     try {
       const configuration = {
         method: "post",
-        url: "http://192.168.1.92:3000/booking/createbooking",
+        url: apiUrl + "/booking/createbooking",
         data: bookingData,
       };
       console.log("configuration createbooking", configuration);
@@ -167,7 +298,6 @@ const MyComponent = (props) => {
 
       if (result.status === 201 || result.status === 200) {
         // Successfully created booking
-        confirmPayment();
         navigate("/success");
       } else {
         // Handle unexpected status code
@@ -210,33 +340,11 @@ const MyComponent = (props) => {
   };
 
   useEffect(() => {
-    if (props.flights) {
-      const duffelAncillariesElement =
-        document.querySelector("duffel-ancillaries");
-
-      const client_key = convertToString(props.flights[0]);
-
-      if (duffelAncillariesElement) {
-        duffelAncillariesElement.render({
-          offer_id: location.state.contactDetails[0].offer_id,
-          client_key: client_key,
-          services: ["bags", "seats"],
-          passengers: passengers,
-        });
-
-        duffelAncillariesElement.addEventListener("onPayloadReady", (event) => {
-          let final_amountdata = Number.parseFloat(
-            event.detail.data.payments[0].amount
-          ).toFixed(2);
-          event.detail.data.payments[0].amount = final_amountdata;
-          let body = JSON.stringify({ data: event.detail.data });
-          console.log("duffelAncillariesElement body");
-          console.log(body);
-        });
-      }
-
+    if (location.state.selectedFlight) {
       const duffelpaymentsElement = document.querySelector("duffel-payments");
+
       if (duffelpaymentsElement) {
+        setIsPayment(true);
         duffelpaymentsElement.render({
           paymentIntentClientToken:
             location.state.data.paymentIntentResponse.data.client_token,
@@ -247,17 +355,11 @@ const MyComponent = (props) => {
         duffelpaymentsElement.addEventListener("onSuccessfulPayment", () => {
           console.log("onPayloadReady\n");
 
-          // Remove duffelAncillariesElement and duffelpaymentsElement from the DOM
-          if (duffelAncillariesElement && duffelAncillariesElement.parentNode) {
-            duffelAncillariesElement.parentNode.removeChild(
-              duffelAncillariesElement
-            );
-          }
+          // if (duffelpaymentsElement && duffelpaymentsElement.parentNode) {
+          //   duffelpaymentsElement.parentNode.removeChild(duffelpaymentsElement);
+          // }
 
-          if (duffelpaymentsElement && duffelpaymentsElement.parentNode) {
-            duffelpaymentsElement.parentNode.removeChild(duffelpaymentsElement);
-          }
-          saveBooking();
+          confirmPayment();
         });
 
         duffelpaymentsElement.addEventListener("onFailedPayment", (event) =>
@@ -285,29 +387,6 @@ const MyComponent = (props) => {
 
     return result;
   };
-
-  const bookOffer = async () => {
-    console.log("fsddddddddddddddd");
-    setIsFetching(true);
-
-    console.log("location");
-    console.log(location);
-
-    const amount = props.flights[1][0].base_amount;
-    const currency = props.flights[1][0].base_currency;
-    const type = "balance";
-
-    const payments = { type: type, amount: amount, currency: currency };
-
-    setIsFetching(false);
-  };
-  // Check if props data is available; if not, redirect to home page
-  useEffect(() => {
-    if (!props.flights || props.flights.length === 0) {
-      console.error("Props data is missing, redirecting to home page.");
-      navigate("/"); // Redirect to home page
-    }
-  }, [props.flights, navigate]);
 
   const onSearchResultClick = () => {
     let criteria = {}; // Change to 'let' so it can be reassigned
@@ -358,7 +437,7 @@ const MyComponent = (props) => {
   };
   return (
     <section className="innerpage-wrapper">
-      <div className="innerpage-section-padding">
+      <div className="innerpage-section-padding mb-5">
         <div className="container">
           <div className="row">
             <div className="col-12">
@@ -367,9 +446,9 @@ const MyComponent = (props) => {
                   <li className="breadcrumb-item">
                     <span
                       style={{
-                        color: "blue",
+                        color: "#003988",
                         cursor: "pointer",
-                        textDecoration: "underline",
+                        textDecoration: "none",
                       }}
                       onClick={onSearchResultClick}
                     >
@@ -382,18 +461,141 @@ const MyComponent = (props) => {
                 </ol>
               </nav>
             </div>
-            <div className="col-12 col-md-12 col-lg-7 col-xl-8 content-side">
+            <div className="col-12 col-md-12 col-lg-7 col-xl-8 content-side mb-5">
               {/* Main Content */}
               <main className="booking-main">
-                <div id="duffelAncillariesContainer">
+                {" "}
+                {isAncillaries && (
+                  <h2 className="font-weight-bold mt-3 mb-3">Add Extras</h2>
+                )}
+                <div id="duffelAncillariesContainer mb-5">
                   {/* Duffel Ancillaries element will be rendered here */}
                   <duffel-ancillaries />
                 </div>
-                <div id="duffelPaymentsContainer">
+                {isPayment && (
+                  <h2 className="font-weight-bold mt-3 mb-3">Payment</h2>
+                )}
+                <div id="duffelPaymentsContainer  mb-5">
                   {/* Duffel Payments element will be rendered here */}
                   <duffel-payments />
                 </div>
               </main>
+            </div>
+            <div className="col-12 col-md-12 col-lg-5 col-xl-4 side-bar left-side-bar">
+              <div className="row">
+                <div className="container">
+                  <div className="card shadow-sm" style={{ width: "22rem;" }}>
+                    {/* <!-- Image Section --> */}
+                    <div className="card-header bg-light text-center p-3">
+                      <img
+                        src={flightimage}
+                        alt="Airplane"
+                        className="img-fluid"
+                        style={{ width: "50px;" }}
+                      />
+                    </div>
+
+                    {/* <!-- Flight Info Section --> */}
+                    <div className="card-body text-center">
+                      <h5 className="card-title font-weight-bold">
+                        {origincity} {"to"} {destinationcity}
+                      </h5>
+                      <p className="card-text text-muted">
+                        {operating_carrier_flight_number},{" "}
+                        {location.state.selectedFlight.slices.length === 1
+                          ? "One Way Flight"
+                          : "Round Trip Flight"}
+                      </p>
+
+                      <hr />
+
+                      {/* <!-- Flight Details --> */}
+                      <ul className="list-unstyled">
+                        <li className="d-flex justify-content-between">
+                          <strong>Depart:</strong>
+                          <span>{formattedDate}</span>
+                        </li>
+                        <li className="d-flex justify-content-between">
+                          <strong>Flight Duration:</strong>
+                          <span>
+                            {" "}
+                            {`${
+                              timedays > 0
+                                ? `${timedays} day${
+                                    timedays !== 1 ? "s" : ""
+                                  }, `
+                                : ""
+                            }${
+                              hours > 0
+                                ? `${hours} hour${hours !== 1 ? "s" : ""}, `
+                                : ""
+                            }${
+                              minutes > 0
+                                ? `${minutes} minute${minutes !== 1 ? "s" : ""}`
+                                : ""
+                            }`}
+                          </span>
+                        </li>
+                        <li className="d-flex justify-content-between">
+                          <strong>Class Name:</strong>
+                          <span>{cabin}</span>
+                        </li>
+                        <li className="d-flex justify-content-between">
+                          <strong>Stops:</strong>
+                          <span>{stops}</span>
+                        </li>
+                        <li className="d-flex justify-content-between">
+                          <strong>Airlines Name:</strong>
+                          <span>{airlinesName}</span>
+                        </li>
+                        <li className="d-flex justify-content-between">
+                          <strong>Aircraft Type:</strong>
+                          <span>{aircraftName}</span>
+                        </li>
+                      </ul>
+
+                      <hr />
+
+                      {/* <!-- Pricing Section --> */}
+                      <div className="d-flex justify-content-between">
+                        <span>
+                          <strong>Fare:</strong>
+                        </span>
+                        <span>{"$ " + formattedAmount}</span>
+                      </div>
+                      <div className="d-flex justify-content-between">
+                        <span>
+                          <strong>Taxes & Fees:</strong>
+                        </span>
+                        <span>{"$ " + tax_amount}</span>
+                      </div>
+
+                      <div className="d-flex justify-content-between">
+                        <span>
+                          <strong>Additional Checked Baggage:</strong>
+                        </span>
+                        <span>{extraBag && `$ ${extraBag}`}</span>
+                      </div>
+                      <div className="d-flex justify-content-between">
+                        <span>
+                          <strong>Seat Selection:</strong>
+                        </span>
+                        <span>{seatSelection && `$ ${seatSelection}`}</span>
+                      </div>
+
+                      <hr />
+
+                      {/* <!-- Total Due Section --> */}
+                      <div className="d-flex justify-content-between">
+                        <h5 className="font-weight-bold">Total Due:</h5>
+                        <h5 className="font-weight-bold">
+                          {"$ " + formattedTotalAmount}
+                        </h5>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

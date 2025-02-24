@@ -1,6 +1,6 @@
 .Flight-info-details {
   display: flex;
-  display: -webkit-box; 
+  display: -webkit-box;
   display: -moz-box;
   display: -ms-flexbox;
   display: -webkit-flex;
@@ -37,18 +37,22 @@
   line-height: 20px
 }
 
-.itinerary-card__travel-item--segment-info div:nth-child(2),.itinerary-card__travel-item--arrival span:nth-child(2),.itinerary-card__travel-item--departure span:nth-child(2),.itinerary-card__travel-item--layover span:nth-child(2) {
+.itinerary-card__travel-item--segment-info div:nth-child(2),
+.itinerary-card__travel-item--arrival span:nth-child(2),
+.itinerary-card__travel-item--departure span:nth-child(2),
+.itinerary-card__travel-item--layover span:nth-child(2) {
   position: relative;
   display: flex;
   justify-content: center
 }
+
 .itinerary-card__travel-item>span.material-symbols-outlined {
   font-size: 20px
 }
 
 .itinerary-card__travel-items {
-  
-  transition: max-height var(--default-transition),margin-top var(--default-transition);
+
+  transition: max-height var(--default-transition), margin-top var(--default-transition);
   border-top: 1px solid var(--grey-200);
   /* margin-top: -5rem; */
   margin-left: 0px;
@@ -67,7 +71,8 @@
   line-height: 20px
 }
 
-.itinerary-card__travel-item>*:first-child,.itinerary-card__travel-item>span.material-symbols-outlined {
+.itinerary-card__travel-item>*:first-child,
+.itinerary-card__travel-item>span.material-symbols-outlined {
   color: var(--grey-600)
 }
 
@@ -77,7 +82,12 @@
   flex-wrap: wrap;
   font-size: 15px;
 }
-.itinerary-card p,.itinerary-card span,.itinerary-card img,.itinerary-card ul,.itinerary-card h3 {
+
+.itinerary-card p,
+.itinerary-card span,
+.itinerary-card img,
+.itinerary-card ul,
+.itinerary-card h3 {
   animation: fadein 1s;
   -moz-animation: fadein 1s;
   -webkit-animation: fadein 1s;
@@ -99,6 +109,7 @@
   -webkit-font-feature-settings: 'liga';
   -webkit-font-smoothing: antialiased;
 }
+
 .itinerary-card {
   display: block;
   border: solid 1px var(--grey-200);
@@ -120,16 +131,32 @@
 
 .itinerary-card__travel-item--segment-info {
   color: var(--grey-600);
-  padding-block:0;font-size: 12px;
-  line-height: 18px
+  padding-block: 0;
+  font-size: 12px;
+  line-height: 18px;
+  width: 785px;
+  /* Make it full width */
+  display: flex;
+  /* Ensure children are laid out properly */
+  flex-wrap: wrap;
+  /* Allow wrapping of content if needed */
+  padding: 1rem;
+  /* Optional: Add padding for better spacing */
+  box-sizing: border-box;
+  /* Include padding in width calculation */
+  justify-content: space-around;
 }
 
 
-.itinerary-card__travel-item>*:first-child,.itinerary-card__travel-item>span.material-symbols-outlined {
+.itinerary-card__travel-item>*:first-child,
+.itinerary-card__travel-item>span.material-symbols-outlined {
   color: var(--grey-600)
 }
 
-.itinerary-card__travel-item--segment-info div:nth-child(2),.itinerary-card__travel-item--arrival span:nth-child(2),.itinerary-card__travel-item--departure span:nth-child(2),.itinerary-card__travel-item--layover span:nth-child(2) {
+.itinerary-card__travel-item--segment-info div:nth-child(2),
+.itinerary-card__travel-item--arrival span:nth-child(2),
+.itinerary-card__travel-item--departure span:nth-child(2),
+.itinerary-card__travel-item--layover span:nth-child(2) {
   position: relative;
   display: flex;
   justify-content: center
@@ -137,28 +164,37 @@
 
 .itinerary-card__travel-item--segment-info span {
   color: var(--grey-300);
-  margin-inline:8px}
+  margin-inline: 8px
+}
 
 .itinerary-card__travel-item--segment-info img {
-    margin-right: 4px
+  margin-right: 4px
 }
 
 .itinerary-card__travel-item--destination {
   padding: 10px 5px;
 }
-.itinerary-card__travel-item>*:first-child,.itinerary-card__travel-item>span.material-symbols-outlined {
+
+.itinerary-card__travel-item>*:first-child,
+.itinerary-card__travel-item>span.material-symbols-outlined {
   color: var(--grey-600)
 }
+
 .itinerary-card__travel-item>span.material-symbols-outlined {
   font-size: 20px
 }
 
-.itinerary-card__travel-item--layover,.itinerary-card__travel-item--departure,.itinerary-card__travel-item--arrival {
+.itinerary-card__travel-item--layover,
+.itinerary-card__travel-item--departure,
+.itinerary-card__travel-item--arrival {
   color: var(--grey-600);
   background-color: var(--grey-100)
 }
 
-.itinerary-card__travel-item--segment-info div:nth-child(2),.itinerary-card__travel-item--arrival span:nth-child(2),.itinerary-card__travel-item--departure span:nth-child(2),.itinerary-card__travel-item--layover span:nth-child(2) {
+.itinerary-card__travel-item--segment-info div:nth-child(2),
+.itinerary-card__travel-item--arrival span:nth-child(2),
+.itinerary-card__travel-item--departure span:nth-child(2),
+.itinerary-card__travel-item--layover span:nth-child(2) {
   position: relative;
   display: flex;
   justify-content: center
@@ -169,7 +205,10 @@
   margin-top: -36px
 }
 
-.itinerary-card__travel-item--arrival span:nth-child(2):before,.itinerary-card__travel-item--departure span:nth-child(2):after,.itinerary-card__travel-item--layover span:nth-child(2):before,.itinerary-card__travel-item--layover span:nth-child(2):after {
+.itinerary-card__travel-item--arrival span:nth-child(2):before,
+.itinerary-card__travel-item--departure span:nth-child(2):after,
+.itinerary-card__travel-item--layover span:nth-child(2):before,
+.itinerary-card__travel-item--layover span:nth-child(2):after {
   display: block;
   content: "";
   margin-top: -24px;
@@ -178,12 +217,17 @@
   border-left: dashed 1px var(--grey-300)
 }
 
-.itinerary-card__travel-item--layover,.itinerary-card__travel-item--departure,.itinerary-card__travel-item--arrival {
+.itinerary-card__travel-item--layover,
+.itinerary-card__travel-item--departure,
+.itinerary-card__travel-item--arrival {
   color: var(--grey-600);
   background-color: var(--grey-100)
 }
 
-.itinerary-card__travel-item--segment-info div:nth-child(2),.itinerary-card__travel-item--arrival span:nth-child(2),.itinerary-card__travel-item--departure span:nth-child(2),.itinerary-card__travel-item--layover span:nth-child(2) {
+.itinerary-card__travel-item--segment-info div:nth-child(2),
+.itinerary-card__travel-item--arrival span:nth-child(2),
+.itinerary-card__travel-item--departure span:nth-child(2),
+.itinerary-card__travel-item--layover span:nth-child(2) {
   position: relative;
   display: flex;
   justify-content: center
@@ -193,7 +237,12 @@
   max-height: 1500px;
   margin-top: 0
 }
-.itinerary-card p,.itinerary-card span,.itinerary-card img,.itinerary-card ul,.itinerary-card h3 {
+
+.itinerary-card p,
+.itinerary-card span,
+.itinerary-card img,
+.itinerary-card ul,
+.itinerary-card h3 {
   /* animation:fadein 1s; */
   -moz-animation: fadein 1s;
   /* -webkit-animation:fadein 1s; */
@@ -216,4 +265,50 @@
 .airline-logo--small {
   width: 30px;
   height: 30px;
+}
+
+.airline-logo--medium {
+  width: 40px;
+  height: 40px;
+}
+
+.airline-logo--large {
+  width: 50px;
+  height: 50px;
+}
+
+.logo-stack {
+  position: relative;
+  /* To enable child positioning */
+  display: flex;
+  /* Align logos in a row */
+  gap: -20px;
+  /* Negative gap to overlap logos slightly */
+  align-items: center;
+  /* Vertically align logos */
+}
+
+.airline-logo-overlap {
+  width: 30px;
+  /* Adjust logo size */
+  height: auto;
+  z-index: calc(100 - var(--logo-index));
+  /* Higher logos have priority */
+}
+
+.single-logo {
+  position: static;
+  /* Remove overlap behavior */
+  margin-left: 0;
+  /* Reset margin for single logo */
+  width: 40px;
+  /* Set width to 40px for a single logo */
+}
+
+.layover-detail {
+  margin-left: -0.5rem;
+}
+
+.layover-detail p{
+  font-size: 15px;
 }

@@ -8,6 +8,7 @@ import googleimage from "../assets/images/google.png";
 import facebookimage from "../assets/images/facebook.png";
 import { Link, useNavigate, useNavigation } from "react-router-dom";
 import { Carousel } from "react-bootstrap";
+const apiUrl = process.env.REACT_APP_API_BASE_URL;
 
 const Registration = (props) => {
   const navigate = useNavigate();
@@ -63,20 +64,19 @@ const Registration = (props) => {
     } else {
       // Form is valid, submit the data or perform other actions
       console.log("Form data:", formData);
-      const payload = {
-        email: formData.email,
-        userName: formData.username,
-        password: formData.password,
-      };
+
       const configuration = {
         method: "post",
-        url: "http://192.168.1.92:3000/authentication/register",
+        url: apiUrl + "/authentication/register",
         data: {
           email: formData.email,
           userName: formData.username,
           password: formData.password,
+          google_id: null,
+          facebook_id: null,
         },
       };
+      console.log("configuration", configuration);
       await axios(configuration)
         .then((result) => {
           console.log("response", result.data);
@@ -85,10 +85,14 @@ const Registration = (props) => {
           navigate("/login");
         })
         .catch((error) => {
+          console.log(error);
           setRegister(false);
           if (error.response) {
             // Check if the error status is 400
             if (error.response.status === 400) {
+              console.log("Bad Request", error.response.data); // Log the error response
+              alert(`Error: ${error.response.data.message}`); // Show error message to user
+            } else if (error.response.status === 409) {
               console.log("Bad Request", error.response.data); // Log the error response
               alert(`Error: ${error.response.data.message}`); // Show error message to user
             } else {

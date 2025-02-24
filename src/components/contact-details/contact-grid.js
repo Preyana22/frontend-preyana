@@ -18,7 +18,11 @@ import { findFlights } from "../../actions";
 import { connect } from "react-redux";
 import { CountryDropdown, RegionDropdown } from "react-country-region-selector";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
+const apiUrl = process.env.REACT_APP_API_BASE_URL;
 
+var extraBag = 0;
+var seatSelection = 0;
+var formattedTotalAmount = 0;
 const Contacts = (props) => {
   const [selectedDay, setSelectedDay] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState([]);
@@ -28,6 +32,10 @@ const Contacts = (props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [error, setError] = useState("");
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [isAncillaries, setIsAncillaries] = useState(false);
+
+  const user_id = localStorage.getItem("userId");
 
   const toggleTerms = () => {
     setIsOpen(!isOpen);
@@ -60,26 +68,29 @@ const Contacts = (props) => {
   };
 
   const location = useLocation();
-  console.log("location.state.flights", location.state.flights);
-  // const name =
-  //   location.state.flights.slices[0].segments[0].operating_carrier["name"];
-  // const flightNo =
-  //   location.state.flights.slices[0].segments[0].marketing_carrier_flight_number;
-  // const arrivalTime = location.state.flights.slices[0].segments[0].arriving_at;
-  const origin = location.state.flights.slices[0].origin.iata_code;
-  const destination = location.state.flights.slices[0].destination.iata_code;
+
   const origincity = location.state.flights.slices[0].origin.city_name;
   const destinationcity =
     location.state.flights.slices[0].destination.city_name;
-  const price = location.state.flights.total_amount;
-  const base_amount = location.state.flights.base_amount;
-  const tax_amount = location.state.flights.tax_amount;
+
+  const baseAmount = Number(location.state.flights.base_amount);
+  const markup = baseAmount * 0.15;
+  const baseprice = baseAmount + markup;
+  const formattedAmount = baseprice.toFixed(2); // Rounds to "1335.37"
+  const tax_amount = Number(location.state.flights.tax_amount);
+
+  const price = baseprice + tax_amount;
   const date = location.state.flights.slices[0].segments[0].departing_at;
-  const formattedDate = moment(date).format("ddd D MM, YYYY, hh:mm A");
+  const formattedDate = moment(date).format("ddd MMM D, YYYY, hh:mm A");
   const arrivaldate = location.state.flights.slices[0].segments[0].arriving_at;
-  const formattedArrivalDate = moment(arrivaldate).format("D MM YYYY, hh:mm A");
+
   const time = location.state.flights.slices[0].segments[0].duration;
-  const stops = location.state.flights.slices[0].segments[0].stops;
+  const stops = location.state.flights.slices[0].segments[0].stops ? "" : "";
+  // const stops =
+  //   location.state.flights.slices[0].segments[0].stops.length > 0
+  //     ? location.state.flights.slices[0].segments[0].stops.length + "Stop"
+  //     : "Non stop";
+
   const aircraftName = location.state.flights.slices[0].segments[0].aircraft
     ? location.state.flights.slices[0].segments[0].aircraft.name
     : null;
@@ -95,6 +106,10 @@ const Contacts = (props) => {
   // Parse the duration using moment.js
   const momentDuration = moment.duration(time);
 
+  const airlinesName = location.state.flights.slices[0].segments[0]
+    .operating_carrier.name
+    ? location.state.flights.slices[0].segments[0].operating_carrier.name
+    : "";
   // Extract the components
   const timedays = momentDuration.days();
   const hours = momentDuration.hours();
@@ -102,6 +117,7 @@ const Contacts = (props) => {
   const cabin =
     location.state.flights.slices[0].segments[0].passengers[0]
       .cabin_class_marketing_name;
+
   const [isFetching, setIsFetching] = useState(false);
   const navigate = useNavigate();
   let titles, genderdetails;
@@ -111,16 +127,17 @@ const Contacts = (props) => {
   const paymenttype =
     location.state.flights.payment_requirements.requires_instant_payment;
   const gender = ["Female", "Male"];
-  console.log("paymenttype" + paymenttype);
+
   const flights = props.flights || {};
   flights.nonStopFlights = props.flights;
   const flightsCount = flights.length;
   let arr = [];
   arr = location.state.flights.passengers;
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     const { flights } = props;
-    let hasError = false; // Track if there's any validation error
+    let hasError = false;
     let contactDetails = [];
 
     // Validate and iterate over the form data
@@ -136,35 +153,51 @@ const Contacts = (props) => {
       const day = event.target[`dayOfBirth${index}`].value;
       const month = event.target[`monthOfBirth${index}`].value;
       const year = event.target[`yearOfBirth${index}`].value;
-
       const dateOfBirth = `${year}-${month.padStart(2, "0")}-${day.padStart(
         2,
         "0"
       )}`; // YYYY-MM-DD format
 
       // **Validation Logic**
-      if (!event.target[familyname1].value) {
-        alert(`Family name is required for passenger ${index + 1}`);
-        hasError = true;
-      }
-      if (!event.target[given_name1].value) {
-        alert(`Given name is required for passenger ${index + 1}`);
-        hasError = true;
-      }
-      if (!event.target[email1].value) {
-        alert(`Email is required for passenger ${index + 1}`);
-        hasError = true;
-      }
-      if (!genderdetails || !genderdetails.state || !genderdetails.state.text) {
-        alert(`Gender is required for passenger ${index + 1}`);
+
+      if ((index === 0 && !titles) || !titles.state || !titles.state.text) {
+        alert(`Title is required for passenger ${index + 1}`);
         hasError = true;
       }
 
-      if (!event.target[familyname1].value) {
-        alert(`Family name is required for passenger ${index + 1}`);
+      if (index === 0 && !event.target[familyname1].value) {
+        alert(`Last name is required for passenger ${index + 1}`);
+        hasError = true;
+      } else if (event.target[familyname1].value.length < 2) {
+        alert(
+          `Last name must be at least 2 characters for passenger ${index + 1}`
+        );
         hasError = true;
       }
-      // Continue adding other field validations as needed...
+
+      // Validate Given Name
+      if (index === 0 && !event.target[given_name1].value) {
+        alert(`First name is required for passenger ${index + 1}`);
+        hasError = true;
+      } else if (event.target[given_name1].value.length < 2) {
+        alert(
+          `First name must be at least 2 characters for passenger ${index + 1}`
+        );
+        hasError = true;
+      }
+
+      if (index === 0 && !event.target[email1].value) {
+        alert(`Email is required for passenger ${index + 1}`);
+        hasError = true;
+      }
+      if (
+        (index === 0 && !genderdetails) ||
+        !genderdetails.state ||
+        !genderdetails.state.text
+      ) {
+        alert(`Gender is required for passenger ${index + 1}`);
+        hasError = true;
+      }
 
       contactDetails.push({
         title: titles.state.text,
@@ -180,56 +213,65 @@ const Contacts = (props) => {
         gender: genderdetails.state.text.charAt(0).toLowerCase(),
         born_on: dateOfBirth,
         type: item.type,
-        address1: event.target[address1].value,
-        address2: event.target[address2].value,
-        city: event.target[city].value,
-        region: region,
-        postal: event.target[postal].value,
-        country: country,
+        address1: index === 0 ? event.target[address1].value : "",
+        address2: index === 0 ? event.target[address2].value : "",
+        city: index === 0 ? event.target[city].value : "",
+        region: index === 0 ? region : "",
+        postal: index === 0 ? event.target[postal].value : "",
+        country: index === 0 ? country : "",
       });
     });
 
-    // If there's an error, stop the form submission
+    // Stop the form submission if there's an error
     if (hasError) {
       return;
     }
 
-    // Proceed with API calls if no errors
-    if (localStorage.getItem("userId") === null) {
-      const configuration = {
-        method: "post",
-        url: "http://192.168.1.92:3000/authentication/register",
-        data: {
-          email: event.target["email0"].value,
-          userName: event.target["email0"].value,
-          password: null,
-        },
-      };
-      await axios(configuration)
-        .then((result) => {
-          console.log("response", result.data);
-          console.log(result.data.message);
-        })
-        .catch((error) => {
-          console.log("Error: " + error);
-          if (error.response) {
-            if (error.response.status === 400) {
-              alert(`Error: ${error.response.data.message}`);
-            } else {
-              alert(`Error: ${error.response.status}`);
-            }
-          } else {
-            alert("Something went wrong. Please try again later.");
+    const email = event.target["email0"].value;
+    let isNewUser = false;
+
+    const extraCharges = (
+      Number(formattedTotalAmount) +
+      Number(extraBag) +
+      Number(seatSelection)
+    ).toFixed(2);
+    formattedTotalAmount = extraCharges;
+
+    try {
+      // Check if the email already exists
+      const checkEmailResponse = await axios.get(
+        `${apiUrl}/authentication/check-email`,
+        {
+          params: { email },
+        }
+      );
+
+      if (!checkEmailResponse.data.exists && !localStorage.getItem("email")) {
+        // If the email doesn't exist, proceed with registration
+        const registrationResponse = await axios.post(
+          apiUrl + "/authentication/register",
+          {
+            email,
+            userName: email,
+            password: null,
           }
-        });
+        );
+        console.log("User registered:", registrationResponse.data.message);
+        isNewUser = true;
+      }
+    } catch (error) {
+      console.error("Error checking or registering email:", error);
+      alert("Something went wrong. Please try again later.");
+      return;
     }
 
+    // Proceed with booking
     setIsFetching(true);
 
-    const amount = location.state.flights.total_amount;
+    const amount = String(extraCharges);
+
     const currency = location.state.flights.total_currency;
     const type = "balance";
-
     const payments = { type: type, amount: amount, currency: currency };
     const test = {
       type: "hold",
@@ -238,9 +280,12 @@ const Contacts = (props) => {
       payments: payments,
     };
 
+    console.log("booking test", test);
+
+    const selectedFlight = location.state.flights;
     try {
       const response = await axios.post(
-        "http://192.168.1.92:3000/airlines/book",
+        apiUrl + "/airlines/paymentIntent",
         test,
         {
           headers: {
@@ -252,20 +297,33 @@ const Contacts = (props) => {
       const { data, errors } = response.data;
 
       if (data) {
-        navigate("/booking", { state: { contactDetails, data } });
+        console.log("payment intent creation", data);
+
+        if (data.paymentIntentResponse.errors) {
+          console.error("Error:", data.paymentIntentResponse.errors[0].message); // Log individual error messages
+          alert(
+            `Booking error: ${data.paymentIntentResponse.errors[0].message}`
+          );
+        }
+
+        navigate("/booking", {
+          state: {
+            contactDetails,
+            data,
+            selectedFlight,
+            extraBag,
+            seatSelection,
+          },
+        });
       } else {
         console.error("Errors:", errors);
       }
     } catch (error) {
-      // if (error.response) {
-      //   console.error("Response Error:", error.response.data);
-      // } else if (error.request) {
-      //   console.error("No response received:", error.request);
-      // } else {
-      //   console.error("Error", error.message);
-      // }
+      console.error("Error booking flight:", error);
+      alert("Something went wrong with booking. Please try again later.");
+    } finally {
+      setIsFetching(false);
     }
-    setIsFetching(false);
   };
 
   const transformPassengerData = (passengerData) => {
@@ -288,6 +346,76 @@ const Contacts = (props) => {
     return result;
   };
 
+  const convertToString = (input) => {
+    // Check if the input is an object and not null
+    if (typeof input === "object" && input !== null) {
+      return Object.values(input).join(""); // Convert object to string
+    }
+    return input; // If it's not an object, return it unchanged
+  };
+
+  useEffect(() => {
+    extraBag = Number(extraBag).toFixed(2);
+    seatSelection = Number(seatSelection).toFixed(2);
+    formattedTotalAmount = price.toFixed(2); // Rounds to "1335.37" // Rounds to "1335.37"
+    if (location.state.flights) {
+      const duffelAncillariesElement =
+        document.querySelector("duffel-ancillaries");
+      console.log(location.state.flights);
+      const client_key = localStorage.getItem("flightkey");
+
+      if (duffelAncillariesElement) {
+        setIsAncillaries(true);
+        duffelAncillariesElement.render({
+          debug: true,
+          offer_id: location.state.flights.id,
+          client_key: client_key,
+          seat_maps: [],
+          services: ["bags", "seats", "cancel_for_any_reason"],
+          passengers: location.state.flights.passengers,
+        });
+
+        duffelAncillariesElement.addEventListener("onPayloadReady", (event) => {
+          console.log("duffelAncillariesElement", event);
+
+          let final_amountdata = Number.parseFloat(
+            event.detail.data.payments[0].amount
+          ).toFixed(2);
+          event.detail.data.payments[0].amount = final_amountdata;
+          let body = JSON.stringify({ data: event.detail.data });
+          console.log("duffelAncillariesElement body");
+          console.log(body);
+
+          if (event.detail.metadata.baggage_services.length > 0) {
+            extraBag = Number.parseFloat(
+              event.detail.metadata.baggage_services[0].serviceInformation
+                .total_amount
+            ).toFixed(2);
+          }
+
+          if (event.detail.metadata.seat_services.length > 0) {
+            seatSelection = Number.parseFloat(
+              event.detail.metadata.seat_services[0].serviceInformation
+                .total_amount
+            ).toFixed(2);
+          }
+          // Listen for clicks on the body and use event delegation
+          document.body.addEventListener("click", function (event) {
+            // Check if the clicked element or its ancestor is the custom element with the correct data-testid
+            const clickedElement = event.target.closest(
+              '[data-testid="confirm-selection-for-baggage"]'
+            );
+
+            if (clickedElement) {
+              console.log("Element with data-testid clicked");
+              // Add your custom logic here
+            }
+          });
+        });
+      }
+    }
+  }, []);
+
   useEffect(() => {
     if (phone) {
       const phoneNumber = parsePhoneNumberFromString(`+${phone}`);
@@ -303,6 +431,30 @@ const Contacts = (props) => {
       }
     }
   }, [phone]); // Validate phone number every time it changes
+
+  const getUserDetails = async (userId) => {
+    try {
+      const response = await axios.get(
+        apiUrl + "/authentication/profile/" + userId,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      // console.log("Full response: ", response);
+      setEmail(response.data.email);
+    } catch (error) {
+      if (error.response) {
+        console.error("Response Error:", error.response.data);
+      } else if (error.request) {
+        console.error("No response received:", error.request);
+      } else {
+        console.error("Error", error.message);
+      }
+    }
+  };
+
   const onSearchResultClick = () => {
     let criteria = {}; // Change to 'let' so it can be reassigned
     const originStateText = localStorage.getItem("origin");
@@ -401,8 +553,6 @@ const Contacts = (props) => {
                   <h5 className="font-weight-bold">Billing Information</h5>
                 </div>
                 {arr.map((item, index) => {
-                  console.log(item);
-
                   return (
                     <div className={`personal-info${index}`}>
                       <h6 className="font-weight-bold">
@@ -428,7 +578,7 @@ const Contacts = (props) => {
                               </sup>
                               Title
                             </label>
-                            <Form.Group controlId="titles">
+                            <Form.Group controlId={`titles${index}`}>
                               <Typeahead
                                 labelKey="titles"
                                 options={title}
@@ -451,7 +601,7 @@ const Contacts = (props) => {
                                   </i>
                                 </small>
                               </sup>
-                              Given Name
+                              First Name
                             </label>
 
                             <Form.Group controlId={`given_name${index}`}>
@@ -459,7 +609,7 @@ const Contacts = (props) => {
                                 type="text"
                                 className="form-control"
                                 name={`given_name${index}`}
-                                placeholder="Given Name"
+                                placeholder="First Name"
                                 required
                               />
                             </Form.Group>
@@ -479,7 +629,7 @@ const Contacts = (props) => {
                                   </i>
                                 </small>
                               </sup>
-                              Family name
+                              Last name
                             </label>
 
                             <Form.Group controlId={`familyname${index}`}>
@@ -487,7 +637,7 @@ const Contacts = (props) => {
                                 type="text"
                                 className="form-control"
                                 name={`familyname${index}`}
-                                placeholder="Family name"
+                                placeholder="Last name"
                                 required
                               />
                             </Form.Group>
@@ -509,7 +659,6 @@ const Contacts = (props) => {
                           </div>
                         </div>
                       </div>
-
                       <div className="row">
                         <div className="col-md-6">
                           <div className="form-group">
@@ -556,7 +705,6 @@ const Contacts = (props) => {
                                   name={`dayOfBirth${index}`}
                                   value={selectedDay[index]}
                                   onChange={(e) => handleDayChange(index, e)}
-                                  required
                                 >
                                   <option value="">Day</option>
                                   {days.map((day) => (
@@ -572,7 +720,6 @@ const Contacts = (props) => {
                                   name={`monthOfBirth${index}`}
                                   value={selectedMonth[index]}
                                   onChange={(e) => handleMonthChange(index, e)}
-                                  required
                                 >
                                   <option value="">Month</option>
                                   {months.map((month) => (
@@ -588,7 +735,6 @@ const Contacts = (props) => {
                                   name={`yearOfBirth${index}`}
                                   value={selectedYear[index]}
                                   onChange={(e) => handleYearChange(index, e)}
-                                  required
                                 >
                                   <option value="">Year</option>
                                   {years.map((year) => (
@@ -602,163 +748,171 @@ const Contacts = (props) => {
                           </div>
                         </div>
                       </div>
-                      <div className="row">
-                        <div className="col-md-12">
-                          <div className="form-group">
-                            <label>
-                              {" "}
-                              <sup>
-                                <small>
-                                  <i className="fa fa-asterisk text-secondary mr-1">
-                                    {" "}
-                                  </i>
-                                </small>
-                              </sup>
-                              Address Line 1
-                            </label>
 
-                            <Form.Group controlId={`address1${index}`}>
-                              <Form.Control
-                                type="text"
-                                className="form-control"
-                                name={`address1${index}`}
-                                placeholder="Address line 1"
-                                required
-                              />
-                            </Form.Group>
-                          </div>
-                        </div>
-                        <div className="col-md-12">
-                          <div className="form-group">
-                            <label>Address Line 2</label>
+                      {index === 0 && (
+                        <>
+                          <div className="row">
+                            <div className="col-md-12">
+                              <div className="form-group">
+                                <label>
+                                  {" "}
+                                  <sup>
+                                    <small>
+                                      <i className="fa fa-asterisk text-secondary mr-1">
+                                        {" "}
+                                      </i>
+                                    </small>
+                                  </sup>
+                                  Address Line 1
+                                </label>
 
-                            <Form.Group controlId={`address2${index}`}>
-                              <Form.Control
-                                type="text"
-                                className="form-control"
-                                name={`address2${index}`}
-                                placeholder="Address line 2"
-                              />
-                            </Form.Group>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-md-12">
-                          <div className="form-group">
-                            <label>
-                              {" "}
-                              <sup>
-                                <small>
-                                  <i className="fa fa-asterisk text-secondary mr-1">
-                                    {" "}
-                                  </i>
-                                </small>
-                              </sup>
-                              Country
-                            </label>
+                                <Form.Group controlId={`address1${index}`}>
+                                  <Form.Control
+                                    type="text"
+                                    className="form-control"
+                                    name={`address1${index}`}
+                                    placeholder="Address line 1"
+                                    required={index === 0} // Conditionally set required
+                                  />
+                                </Form.Group>
+                              </div>
+                            </div>
+                            <div className="col-md-12">
+                              <div className="form-group">
+                                <label>Address Line 2</label>
 
-                            <Form.Group controlId={`country${index}`}>
-                              <CountryDropdown
-                                className="custom-dropdown country-dropdown"
-                                value={country}
-                                onChange={(val) => setCountry(val)}
-                              />
-                            </Form.Group>
+                                <Form.Group controlId={`address2${index}`}>
+                                  <Form.Control
+                                    type="text"
+                                    className="form-control"
+                                    name={`address2${index}`}
+                                    placeholder="Address line 2"
+                                  />
+                                </Form.Group>
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                        <div className="col-md-4">
-                          <div className="form-group">
-                            <label>
-                              {" "}
-                              <sup>
-                                <small>
-                                  <i className="fa fa-asterisk text-secondary mr-1">
-                                    {" "}
-                                  </i>
-                                </small>
-                              </sup>
-                              City/Town/Department
-                            </label>
+                          <div className="row">
+                            <div className="col-md-12">
+                              <div className="form-group">
+                                <label>
+                                  {" "}
+                                  <sup>
+                                    <small>
+                                      <i className="fa fa-asterisk text-secondary mr-1">
+                                        {" "}
+                                      </i>
+                                    </small>
+                                  </sup>
+                                  Country
+                                </label>
 
-                            <Form.Group controlId={`city${index}`}>
-                              <Form.Control
-                                type="text"
-                                className="form-control"
-                                name={`city1${index}`}
-                                placeholder="City/Town/Department"
-                                required
-                              />
-                            </Form.Group>
-                          </div>
-                        </div>
-                        <div className="col-md-4">
-                          <div className="form-group">
-                            <label>
-                              {" "}
-                              <sup>
-                                <small>
-                                  <i className="fa fa-asterisk text-secondary mr-1">
-                                    {" "}
-                                  </i>
-                                </small>
-                              </sup>
-                              State/Province/Region
-                            </label>
+                                <Form.Group controlId={`country${index}`}>
+                                  <CountryDropdown
+                                    className="custom-dropdown country-dropdown"
+                                    value={country}
+                                    onChange={(val) => setCountry(val)}
+                                    required={index === 0} // Conditionally set required
+                                  />
+                                </Form.Group>
+                              </div>
+                            </div>
+                            <div className="col-md-4">
+                              <div className="form-group">
+                                <label>
+                                  {" "}
+                                  <sup>
+                                    <small>
+                                      <i className="fa fa-asterisk text-secondary mr-1">
+                                        {" "}
+                                      </i>
+                                    </small>
+                                  </sup>
+                                  City
+                                </label>
 
-                            <Form.Group controlId={`region${index}`}>
-                              <RegionDropdown
-                                className="custom-dropdown region-dropdown"
-                                country={country}
-                                value={region}
-                                onChange={(val) => setRegion(val)}
-                              />
-                            </Form.Group>
-                          </div>
-                        </div>
-                        <div className="col-md-4">
-                          <div className="form-group">
-                            <label>
-                              {" "}
-                              <sup>
-                                <small>
-                                  <i className="fa fa-asterisk text-secondary mr-1">
-                                    {" "}
-                                  </i>
-                                </small>
-                              </sup>
-                              Zip/Postal Code
-                            </label>
+                                <Form.Group controlId={`city${index}`}>
+                                  <Form.Control
+                                    type="text"
+                                    className="form-control"
+                                    name={`city1${index}`}
+                                    placeholder="City/Town/Department"
+                                    required={index === 0} // Conditionally set required
+                                  />
+                                </Form.Group>
+                              </div>
+                            </div>
+                            <div className="col-md-4">
+                              <div className="form-group">
+                                <label>
+                                  {" "}
+                                  <sup>
+                                    <small>
+                                      <i className="fa fa-asterisk text-secondary mr-1">
+                                        {" "}
+                                      </i>
+                                    </small>
+                                  </sup>
+                                  State
+                                </label>
 
-                            <Form.Group controlId={`postal${index}`}>
-                              <Form.Control
-                                type="text"
-                                className="form-control"
-                                name={`postal${index}`}
-                                placeholder="Zip/Postal Code"
-                                required
-                              />
-                            </Form.Group>
+                                <Form.Group controlId={`region${index}`}>
+                                  <RegionDropdown
+                                    className="custom-dropdown region-dropdown"
+                                    country={country}
+                                    value={region}
+                                    onChange={(val) => setRegion(val)}
+                                  />
+                                </Form.Group>
+                              </div>
+                            </div>
+                            <div className="col-md-4">
+                              <div className="form-group">
+                                <label>
+                                  {" "}
+                                  <sup>
+                                    <small>
+                                      <i className="fa fa-asterisk text-secondary mr-1">
+                                        {" "}
+                                      </i>
+                                    </small>
+                                  </sup>
+                                  Zip Code
+                                </label>
+
+                                <Form.Group controlId={`postal${index}`}>
+                                  <Form.Control
+                                    type="text"
+                                    className="form-control"
+                                    name={`postal${index}`}
+                                    placeholder="Zip/Postal Code"
+                                    required={index === 0} // Conditionally set required
+                                  />
+                                </Form.Group>
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-md-12">
-                          <div className="form-group">
-                            <label>Phone Number</label>
-                            <Form.Group controlId={`phone${index}`}>
-                              <PhoneInput
-                                country={"us"} // Default country
-                                value={phone}
-                                onChange={(phone) => setPhone(phone)}
-                              />
-                              {error && (
-                                <div className="error text-danger">{error}</div>
-                              )}
-                            </Form.Group>
+                          <div className="row">
+                            <div className="col-md-12">
+                              <div className="form-group">
+                                <label>Phone Number</label>
+                                <Form.Group controlId={`phone${index}`}>
+                                  <PhoneInput
+                                    country={"us"} // Default country
+                                    value={phone}
+                                    onChange={(phone) => setPhone(phone)}
+                                  />
+                                  {error && (
+                                    <div className="error text-danger">
+                                      {error}
+                                    </div>
+                                  )}
+                                </Form.Group>
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      </div>
+                        </>
+                      )}
                     </div>
                   );
                 })}
@@ -797,7 +951,7 @@ const Contacts = (props) => {
                         {/* <!-- Flight Details --> */}
                         <ul className="list-unstyled">
                           <li className="d-flex justify-content-between">
-                            <strong>Departure:</strong>
+                            <strong>Depart:</strong>
                             <span>{formattedDate}</span>
                           </li>
                           <li className="d-flex justify-content-between">
@@ -824,12 +978,16 @@ const Contacts = (props) => {
                             </span>
                           </li>
                           <li className="d-flex justify-content-between">
-                            <strong>className:</strong>
+                            <strong>Class Name:</strong>
                             <span>{cabin}</span>
                           </li>
                           <li className="d-flex justify-content-between">
                             <strong>Stops:</strong>
                             <span>{stops}</span>
+                          </li>
+                          <li className="d-flex justify-content-between">
+                            <strong>Airlines Name:</strong>
+                            <span>{airlinesName}</span>
                           </li>
                           <li className="d-flex justify-content-between">
                             <strong>Aircraft Type:</strong>
@@ -844,32 +1002,46 @@ const Contacts = (props) => {
                           <span>
                             <strong>Fare:</strong>
                           </span>
-                          <span>{"$ " + base_amount}</span>
+                          <span>{"$ " + formattedAmount}</span>
                         </div>
+
                         <div className="d-flex justify-content-between">
                           <span>
-                            <a href="#" className="text-primary">
-                              Taxes & Fees
-                            </a>
+                            <strong>Taxes & Fees:</strong>
                           </span>
                           <span>{"$ " + tax_amount}</span>
                         </div>
 
+                        <div className="d-flex justify-content-between">
+                          <span>
+                            <strong>Additional Checked Baggage:</strong>
+                          </span>
+                          <span>{extraBag && `$ ${extraBag}`}</span>
+                        </div>
+                        <div className="d-flex justify-content-between">
+                          <span>
+                            <strong>Seat Selection:</strong>
+                          </span>
+                          <span>{seatSelection && `$ ${seatSelection}`}</span>
+                        </div>
                         <hr />
 
                         {/* <!-- Total Due Section --> */}
                         <div className="d-flex justify-content-between">
                           <h5 className="font-weight-bold">Total Due:</h5>
-                          <h5 className="font-weight-bold">{"$ " + price}</h5>
+                          <h5 className="font-weight-bold">
+                            {formattedTotalAmount &&
+                              `$ ${formattedTotalAmount}`}
+                          </h5>
                         </div>
 
                         {/* <!-- Button Section --> */}
                         <div className="text-center mt-3">
                           <button
-                            className="btn btn-primary btn-lg btn-block rounded-pill"
+                            className="btn btn-primary btn-lg btn-block rounded-pill book-now"
                             disabled={isFetching}
                           >
-                            {isFetching ? "Booking..." : "Buy Now"}
+                            {isFetching ? "Booking..." : "Book"}
                           </button>
                         </div>
                       </div>
@@ -880,7 +1052,19 @@ const Contacts = (props) => {
             </div>
           </Form>
           <div className="col-12 col-md-12 col-lg-7 col-xl-8 content-side p-0">
-            <div className="agreement-section">
+            {/* Main Content */}
+            <main className="booking-main">
+              {" "}
+              {isAncillaries && (
+                <h2 className="font-weight-bold mt-3 mb-3">Add Extras</h2>
+              )}
+              <div id="duffelAncillariesContainer mb-5">
+                {/* Duffel Ancillaries element will be rendered here */}
+                <duffel-ancillaries />
+              </div>
+            </main>
+
+            <div className="agreement-section mt-5">
               {/* Agreement of Purchase */}
               <h5 className="font-weight-bold">Agreement of Purchase</h5>
               <p className="text-dark">

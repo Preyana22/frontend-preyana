@@ -2,7 +2,8 @@
   width: 100%;
   z-index: 2;
   position: absolute;
-  top: 4rem;
+  left: 0px;
+  top: 2.8rem;
   background-color: white;
   color: gray;
   border-radius: 5px;
@@ -15,13 +16,14 @@
   display: flex;
   justify-content: space-between;
   margin: 10px;
+  color: #000;
 }
 
 .optionCounter {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 12px;
+  font-size: 15px;
   color: black;
 }
 
@@ -40,7 +42,7 @@
 
 .headerSearchItem {
   border-width: 1px;
-  border-style: solid;
+  border-style: none;
   border-color: #d9d4d4;
   background-color: white;
   height: 2.4rem;
@@ -56,13 +58,13 @@
   display: inline-flex;
   align-items: center;
   line-height: 2;
-  font-size: 0.9rem;
+  font-size: 14px;
   margin-top: 0.3rem;
 }
 
 .headerSearchTripItem {
   border-width: 1px;
-  border-style: solid;
+  border-style: none;
   border-color: #d9d4d4;
   background-color: white;
   height: 2.4rem;
@@ -79,7 +81,7 @@
   align-items: center;
   line-height: 2;
   width: 100%;
-  font-size: 0.9rem;
+  font-size: 16px;
   margin-top: 0.3rem;
 }
 
@@ -87,7 +89,8 @@
   width: 100%;
   z-index: 2;
   position: absolute;
-  top: 4rem;
+  left: 0px;
+  top: 2.8rem;
   background-color: white;
   color: gray;
   border-radius: 5px;
@@ -122,7 +125,8 @@
   /* Prevent clicking on the icon */
 }
 .form-label{
-  font-size: 0.9rem;
+  color: #000;
+  font-size: 18px;
   font-weight: bold;
 }
 
@@ -135,7 +139,7 @@
 .headerSearchText {
   position: relative;
   display: inline-block;
-  padding-right: 60px;
+  padding-right: 9rem;
   /* Space for the arrow */
 }
 
@@ -169,3 +173,24 @@
   color: #0050B7;
 }
 
+.kep-login-facebook{
+padding: 5px !important;
+  font-size: 12px !important;
+  height: 35px !important;
+  border-radius: 3px !important;
+  text-transform: capitalize !important;
+}
+
+#cabinclass{
+  border: none;
+}
+
+#toDestination{
+  background-color: #005085;
+    color: #fff;
+}
+
+#toDestination:hover{
+background-color: #ffd842;
+  color: #000;
+}

@@ -56,11 +56,11 @@ html,body{
 	height:100%;
 	position:relative;
 	scroll-behavior: smooth;
-	font-family: 'Lato';
+ 	font-family: "Noto Sans", sans-serif;
 }
 
 p,ul,a,.btn,span,input,select,textarea,label, table, .meta h2, blockquote, small, .newsletter h2, .cruise-offer-text h3, .package h2, .welcome-message h2, #hot-tour h3, #hot-tour h2, #message-banner h2, .member-name h3, #error-text h2, .company-name, #coming-soon-text h2, .booking-form-block .selected-price, #dashboard h2, #dashboard h3, #dashboard h4, #web-name, .tvl-insurance-info .innerpage-heading h1, .big-heading h2, .traveler-info h3, .list-group-heading,.page-search-form h2, .member-info-2 h4, #faq-page .content-side .card-title, .service-intro-text h4, .popup-ad-text h4{
-	font-family: 'Lato';
+ font-family: "Noto Sans", sans-serif;
 }
 
 p,ul{
@@ -73,7 +73,7 @@ ul{
 }
 
 h1,h2,h3,h4,h5,h6,.main-title a, .flight-info h3 .flight-destination,.blog-post-title a, .block-title a, .detail-block .detail-title a, .side-bar .detail-block-2 .detail-title a, #travel-guide .tv-guide-block .tab-text h3 a{
-	font-family: 'Lato';
+ font-family: "Noto Sans", sans-serif;
 	margin-top:0;
 	line-height:1.3em;
 }
@@ -95,11 +95,11 @@ h4 {
 }
 
 h5 {
-	font-size: 14px;
+	font-size: 16px;
 }
 
 h6 {
-	font-size: 12px;
+	font-size: 14px;
 }
 
 .page-heading{
@@ -169,6 +169,7 @@ h6 {
 	padding-top:86px;
 	padding-bottom:86px;
 	border-bottom: 1px solid #cde6f3;
+	background: #FAFBFD;
 }
 
 .innerpage-section-padding{
@@ -2691,7 +2692,7 @@ nav.navbar .container.padding {
 }
 
 .ftr-top-grey .form-control {
-    font-size: 13px;
+    font-size: 16px;
 }
 
 .footer-widget .footer-heading{
@@ -3414,7 +3415,7 @@ nav.navbar .container.padding {
 }
 
 .block-title{
-	font-size:20px;
+	font-size:16px;
 	margin-bottom:0px;
 }
 
@@ -3430,6 +3431,7 @@ nav.navbar .container.padding {
 
 .grid-block{
 	margin-bottom:30px;
+	border: 1px solid #e6e7e8;
 }
 
 .grid-block .block-title{
@@ -4015,7 +4017,7 @@ nav.navbar .container.padding {
 }
 
 .page-search-form .tab-pane{
-	padding-top:30px;
+	padding-top:12px;
 }
 
 .pg-search-form label{
@@ -4029,7 +4031,7 @@ nav.navbar .container.padding {
 .pg-search-form .btn, .Flight-info .btn{
 	/* margin-top:15px; */
 	padding:8px 34px;
-	background-color: #0047b1;
+	background-color: #005085;
 	color: #fff;
 }
 
@@ -6312,7 +6314,7 @@ nav.navbar .container.padding {
 
 .sub-title-text
 {
-	font-family: 'Lato';
+ font-family: "Noto Sans", sans-serif;
 }
 .container-bg
 {
@@ -6347,7 +6349,7 @@ nav.navbar .container.padding {
 	position: absolute;
 	bottom: 1.6rem;
 	left: 0.7rem;
-	top: 2.5rem;
+	top: 0.5rem;
 }
 .pg-search-form input[type="date"] {
 	text-indent: 1rem;
@@ -6422,7 +6424,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .searchbtn{
-	margin-top: 2rem;
+	margin-top: 0.5rem;
 }
 /* Custom Navbar Styling */
 .navbar-custom {

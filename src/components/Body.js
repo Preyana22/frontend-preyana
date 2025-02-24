@@ -6,9 +6,198 @@ import { findFlights } from "../actions";
 import { useNavigate } from "react-router-dom";
 import "./body.css";
 import axios from "axios";
-
 import flightimage from "../assets/images/flightimage.png";
 import SearchFlight from "./search-flight/SearchFlight";
+const apiUrl = process.env.REACT_APP_API_BASE_URL;
+const countryCodeMapping = {
+  AF: "Afghanistan",
+  AL: "Albania",
+  DZ: "Algeria",
+  AS: "American Samoa",
+  AD: "Andorra",
+  AO: "Angola",
+  AI: "Anguilla",
+  AG: "Antigua and Barbuda",
+  AR: "Argentina",
+  AM: "Armenia",
+  AU: "Australia",
+  AT: "Austria",
+  AZ: "Azerbaijan",
+  BS: "Bahamas",
+  BH: "Bahrain",
+  BD: "Bangladesh",
+  BB: "Barbados",
+  BY: "Belarus",
+  BE: "Belgium",
+  BZ: "Belize",
+  BJ: "Benin",
+  BT: "Bhutan",
+  BO: "Bolivia",
+  BA: "Bosnia and Herzegovina",
+  BW: "Botswana",
+  BR: "Brazil",
+  BN: "Brunei Darussalam",
+  BG: "Bulgaria",
+  BF: "Burkina Faso",
+  BI: "Burundi",
+  CV: "Cabo Verde",
+  KH: "Cambodia",
+  CM: "Cameroon",
+  CA: "Canada",
+  KY: "Cayman Islands",
+  CF: "Central African Republic",
+  TD: "Chad",
+  CL: "Chile",
+  CN: "China",
+  CO: "Colombia",
+  KM: "Comoros",
+  CD: "Democratic Republic of the Congo",
+  CG: "Republic of the Congo",
+  CR: "Costa Rica",
+  HR: "Croatia",
+  CU: "Cuba",
+  CY: "Cyprus",
+  CZ: "Czech Republic",
+  DK: "Denmark",
+  DJ: "Djibouti",
+  DM: "Dominica",
+  DO: "Dominican Republic",
+  EC: "Ecuador",
+  EG: "Egypt",
+  SV: "El Salvador",
+  GQ: "Equatorial Guinea",
+  ER: "Eritrea",
+  EE: "Estonia",
+  SZ: "Eswatini",
+  ET: "Ethiopia",
+  FJ: "Fiji",
+  FI: "Finland",
+  FR: "France",
+  GA: "Gabon",
+  GM: "Gambia",
+  GE: "Georgia",
+  DE: "Germany",
+  GH: "Ghana",
+  GR: "Greece",
+  GT: "Guatemala",
+  GN: "Guinea",
+  GW: "Guinea-Bissau",
+  GY: "Guyana",
+  HT: "Haiti",
+  HN: "Honduras",
+  HK: "Hong Kong",
+  HU: "Hungary",
+  IS: "Iceland",
+  IN: "India",
+  ID: "Indonesia",
+  IR: "Iran",
+  IQ: "Iraq",
+  IE: "Ireland",
+  IL: "Israel",
+  IT: "Italy",
+  JM: "Jamaica",
+  JP: "Japan",
+  KE: "Kenya",
+  KI: "Kiribati",
+  KP: "North Korea",
+  KR: "South Korea",
+  KW: "Kuwait",
+  KG: "Kyrgyzstan",
+  LA: "Laos",
+  LV: "Latvia",
+  LB: "Lebanon",
+  LS: "Lesotho",
+  LR: "Liberia",
+  LY: "Libya",
+  LI: "Liechtenstein",
+  LT: "Lithuania",
+  LU: "Luxembourg",
+  MG: "Madagascar",
+  MW: "Malawi",
+  MY: "Malaysia",
+  MV: "Maldives",
+  ML: "Mali",
+  MT: "Malta",
+  MH: "Marshall Islands",
+  MR: "Mauritania",
+  MU: "Mauritius",
+  MX: "Mexico",
+  FM: "Micronesia",
+  MD: "Moldova",
+  MC: "Monaco",
+  MN: "Mongolia",
+  ME: "Montenegro",
+  MA: "Morocco",
+  MZ: "Mozambique",
+  MM: "Myanmar",
+  NA: "Namibia",
+  NR: "Nauru",
+  NP: "Nepal",
+  NL: "Netherlands",
+  NZ: "New Zealand",
+  NI: "Nicaragua",
+  NE: "Niger",
+  NG: "Nigeria",
+  NO: "Norway",
+  OM: "Oman",
+  PK: "Pakistan",
+  PW: "Palau",
+  PA: "Panama",
+  PG: "Papua New Guinea",
+  PY: "Paraguay",
+  PE: "Peru",
+  PH: "Philippines",
+  PL: "Poland",
+  PT: "Portugal",
+  QA: "Qatar",
+  RE: "Réunion",
+  RO: "Romania",
+  RU: "Russia",
+  RW: "Rwanda",
+  SA: "Saudi Arabia",
+  SN: "Senegal",
+  RS: "Serbia",
+  SC: "Seychelles",
+  SL: "Sierra Leone",
+  SG: "Singapore",
+  SK: "Slovakia",
+  SI: "Slovenia",
+  SB: "Solomon Islands",
+  SO: "Somalia",
+  ZA: "South Africa",
+  SS: "South Sudan",
+  ES: "Spain",
+  LK: "Sri Lanka",
+  SD: "Sudan",
+  SR: "Suriname",
+  SE: "Sweden",
+  CH: "Switzerland",
+  SY: "Syria",
+  TW: "Taiwan",
+  TJ: "Tajikistan",
+  TZ: "Tanzania",
+  TH: "Thailand",
+  TG: "Togo",
+  TO: "Tonga",
+  TT: "Trinidad and Tobago",
+  TN: "Tunisia",
+  TR: "Turkey",
+  TM: "Turkmenistan",
+  TV: "Tuvalu",
+  UG: "Uganda",
+  UA: "Ukraine",
+  AE: "United Arab Emirates",
+  GB: "United Kingdom",
+  US: "United States",
+  UY: "Uruguay",
+  UZ: "Uzbekistan",
+  VU: "Vanuatu",
+  VE: "Venezuela",
+  VN: "Vietnam",
+  YE: "Yemen",
+  ZM: "Zambia",
+  ZW: "Zimbabwe",
+};
 
 const isDate = (date) => {
   return new Date(date) !== "Invalid Date" && !isNaN(new Date(date));
@@ -80,7 +269,7 @@ export const Body = (props) => {
     // const getAirports = async () => {
     //   try {
     //     const { data } = await axios.get(
-    //       `http://192.168.1.92:3000/airlines/airports`
+    //       apiUrl + `/airlines/airports`
     //     );
     //     console.log(data);
     //     setAirports(data);
@@ -131,7 +320,7 @@ export const Body = (props) => {
   const [status, setFormValid] = useState({ isValid: false });
   // console.log(status);
   let invalidFields = {};
-  const handleSubmit1 = (event) => {
+  const handleSubmit1 = (event, slice) => {
     event.preventDefault(); // Prevent default form submission
 
     const { flights } = props;
@@ -159,13 +348,52 @@ export const Body = (props) => {
     // console.log(Adults); // Log the populated Adults array for debugging
 
     // Define origin and destination cities
-    const origin_city = "LHR"; // Example origin city
-    const destination_city = "SYD"; // Example destination city
+    const origin_city = slice.origin.iata_code; // Example origin city
+    const destination_city = slice.destination.iata_code; // Example destination city
     const cabinclass = "Economy"; // Example destination city
 
     // Format today's date as YYYY-MM-DD
     const today = new Date();
     const formattedDate = today.toISOString().split("T")[0];
+
+    const originCombine = `${slice.origin.name}, ${slice.origin.city_name} (${
+      slice.origin.iata_code
+    }), ${
+      countryCodeMapping[slice.origin.iata_country_code] || "Unknown Country"
+    }`;
+    const destinationCombine = `${slice.destination.name}, ${
+      slice.destination.city_name
+    } (${slice.destination.iata_code}), ${
+      countryCodeMapping[slice.destination.iata_country_code] ||
+      "Unknown Country"
+    }`;
+    // Wrap the origin city in an array
+    const originArray = [originCombine];
+    const destinationArray = [destinationCombine]; // Example destination city
+
+    // Function to extract the second part (after splitting and trimming)
+    const getSecondPart = (stateText) => {
+      console.log(stateText);
+      const parts = stateText.split(","); // Split by commas
+      let secondPart = parts[1]
+        ? parts[1].replace(/\s*\(.*\)/, "").trim() // Remove "(IND)" if present
+        : "";
+
+      // If secondPart is empty, check for value inside brackets
+      if (!secondPart) {
+        const match = parts[1] ? parts[1].match(/\(([^)]+)\)/) : null;
+        if (match && match[1]) {
+          secondPart = match[1].trim(); // Get the matched value inside parentheses
+        } else {
+          console.log("No match found for second part");
+        }
+      }
+
+      return secondPart;
+    };
+    // Get the second part for origin and destination
+    const originSecondPart = getSecondPart(originCombine);
+    const destinationSecondPart = getSecondPart(destinationCombine);
 
     // Construct the search criteria object
     const criteria = {
@@ -174,16 +402,17 @@ export const Body = (props) => {
       departureDate: formattedDate,
       numOfPassengers: Adults, // List of passengers
       cabin_class: cabinclass, // Cabin class (could also be a state or prop)
+      origin_city_name: originSecondPart,
+      destination_city_name: destinationSecondPart,
     };
 
-    // Wrap the origin city in an array
-    const originArray = ["Heathrow Airport, London (LHR), United Kingdom"];
-    const destinationArray = ["Sydney Airport, Sydney (SYD), Australia"]; // Example destination city
     const cabinclassArray = [cabinclass]; // Example destination city
+
     // Store the array in local storage as a JSON string
     localStorage.setItem("origin", JSON.stringify(originArray));
     localStorage.setItem("destination", JSON.stringify(destinationArray));
     localStorage.setItem("cabinclass", JSON.stringify(cabinclassArray));
+    localStorage.setItem("isReturn", false);
     localStorage.setItem("dateOfDeparture", JSON.stringify(formattedDate));
 
     // console.log(criteria); // Log criteria for debugging
@@ -194,87 +423,6 @@ export const Body = (props) => {
     // Navigate to results page
     navigate("/results");
   };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const { flights } = props;
-    invalidFields = {};
-
-    if (isReturn === false) {
-      criteria = {
-        origin: origin.state.text,
-        destination: destination.state.text,
-        departureDate: event.target.dateOfDep.value,
-
-        numOfPassengers: event.target.numOfPassengers.value,
-        cabin_class: cabinclass.state.text,
-      };
-    } else {
-      criteria = {
-        origin: origin.state.text,
-        destination: destination.state.text,
-        departureDate: event.target.dateOfDep.value,
-        returnDate: event.target.dateOfReturn.value,
-        numOfPassengers: event.target.numOfPassengers.value,
-        cabin_class: cabinclass.state.text,
-      };
-    }
-    // console.log(criteria);
-    /* if (event.target.flightType[1].checked ) {
-        criteria.returnDate = event.target.dateOfReturn.value;
-        if (!isDate(event.target.dateOfReturn.value)) {
-          invalidFields.returnDate = true;
-        }
-      }*/
-
-    if (!airports.includes(criteria.origin)) {
-      invalidFields.origin = true;
-    }
-    if (
-      !airports.includes(criteria.destination) ||
-      criteria.origin === criteria.destination
-    ) {
-      invalidFields.destination = true;
-    }
-    if (!isDate(criteria.departureDate)) {
-      invalidFields.departureDate = true;
-    }
-    if (!isDate(criteria.departureDate)) {
-      invalidFields.departureDate = true;
-    }
-    if (Object.keys(invalidFields).length > 0) {
-      setFormValid({ isValid: false, ...invalidFields });
-      return;
-    }
-
-    setFormValid({ isValid: true });
-    props.findFlights({ flights, criteria });
-
-    navigate("/results");
-  };
-  const mystyle = {
-    background:
-      "linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)) 0% 0% / cover, url(../assets/images/homepage-slider.jpg) 50% 0%",
-    height: "100%",
-    width: "1510px",
-    marginRight: "0px",
-    float: "left",
-    display: "block",
-  };
-
-  /* const airports = [
-        'LHR',
-        'CDG',
-        'BCN',
-        'LAX',
-        'MEL',
-        'SYD',
-        'AKL',
-        'DEL',
-        'SIN',
-        'HKG'
-       
-      ];*/
 
   const cabin_details = ["Economy", "Premium Economy", "Business", "First"];
 
@@ -309,52 +457,70 @@ export const Body = (props) => {
         Adults.push(infantData);
       }
 
-      const origin_city = "LHR"; // Origin city (example)
-      const destination_city = "SYD"; // Destination city (example)
+      // Define route pairs with IATA codes
+      const routes = [
+        { origin: "SFO", destination: "HYD" },
+        { origin: "LAX", destination: "BOM" },
+        { origin: "DEL", destination: "LAX" },
+        { origin: "CHI", destination: "HYD" },
+      ];
 
       // Format today's date as YYYY-MM-DD
       const today = new Date();
       const formattedDate = today.toISOString().split("T")[0];
 
-      // Construct the search criteria
-      const criteria = {
-        origin: origin_city,
-        destination: destination_city,
-        departureDate: formattedDate,
-        numOfPassengers: Adults, // List of passengers
-        cabin_class: "Economy",
-      };
+      // Create an array of promises for all fetch requests
+      const fetchRequests = routes.map(async (route) => {
+        const { origin, destination } = route;
 
-      // Request options for the fetch API
-      const requestOptions = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(criteria),
-      };
+        // Construct the search criteria
+        const criteria = {
+          origin: origin,
+          destination: destination,
+          departureDate: formattedDate,
+          numOfPassengers: Adults, // List of passengers
+          cabin_class: "Economy",
+        };
 
-      // Log the requestOptions for debugging
-      // console.log("Request Options:", requestOptions);
+        // Request options for the fetch API
+        const requestOptions = {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(criteria),
+        };
 
-      // Perform the fetch request
-      const response = await fetch(
-        "http://192.168.1.92:3000/airlines/test",
-        requestOptions
-      );
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status} - ${response.statusText}`);
-      }
+        // Perform the fetch request
+        const response = await fetch(apiUrl + "/airlines/test", requestOptions);
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status} - ${response.statusText}`);
+        }
 
-      const flightsdata = await response.json();
+        const flightsdata = await response.json();
 
-      // Log the response data for debugging
-      // console.log("Flights Data:", flightsdata[1][0].slices[0].duration);
+        // Return the flight data for the current route
+        return flightsdata[1]; // Assuming flightsdata[1] contains the required data
+      });
 
-      setFlightsData(flightsdata[1]); // Set the fetched data to state
+      // Use Promise.all to wait for all requests to complete concurrently
+      const allFlightsData = await Promise.all(fetchRequests);
+
+      // Flatten the results from all routes and update the state
+      setFlightsData((prevData) => [...prevData, ...allFlightsData.flat()]);
     } catch (error) {
       // Log the error if the fetch request fails
       console.error("Error during fetch:", error);
     }
   };
+
+  function calculatePriceWithMarkup(baseAmount, taxAmount) {
+    const base_amount = Number(baseAmount);
+    const markup = Number(base_amount) * 0.15;
+    const baseprice = base_amount + markup;
+    const tax_amount = Number(taxAmount);
+    const price = baseprice + tax_amount;
+
+    return price.toFixed(2); // Formats to two decimal places
+  }
 
   return (
     <>
@@ -364,133 +530,160 @@ export const Body = (props) => {
             <SearchFlight />
             <div className="row">
               <div className="col-12 col-md-12 col-lg-12 col-xl-12 content-side">
-                <div className="row pb-4">
+                <div className="row pb-4 mb-5">
                   <div className="col-12 col-md-12 col-lg-12 col-xl-12">
-                    <h2 className="font-weight-bold">
-                      Flights Deals to Top Destination
-                    </h2>
+                    <h3 className="font-weight-bold">
+                      Flight Deals to Top Destinations
+                    </h3>
                   </div>
                 </div>
                 <div className="row">
-                  {flightsData.slice(0, 4).map((flight, index) => (
-                    <div
-                      key={index}
-                      className="col-12 col-md-6 col-lg-3 col-xl-3"
-                    >
-                      <div className="grid-block main-block f-grid-block">
-                        <a href="#">
-                          <div className="main-img f-img">
-                            <img
-                              src={flightimage}
-                              className="img-fluid"
-                              alt="flight-img"
-                            />
-                          </div>
-                        </a>
-                        <div className="block-info f-grid-info">
-                          <div className="f-grid-desc">
-                            {/* Check if slices exist and contain data */}
-                            <div className="f-grid-desc">
-                              {/* Ensure slices and iata_code exist before accessing */}
-                              {flight?.slices &&
-                                flight?.slices.length > 0 &&
-                                flight?.slices[0].origin &&
-                                flight?.slices[0].destination && (
-                                  <>
-                                    <div className="timeduration">
-                                      <span className="f-grid-time">
-                                        <i className="fa fa-clock-o"></i>
-                                        {formatDuration(
-                                          flight?.slices[0].duration
-                                        )}
-                                      </span>
-                                    </div>
-                                    <h3 className="block-title">
-                                      <a href="#">
-                                        {flight?.slices[0].origin.iata_code}
-                                        {" TO "}
-                                        {
-                                          flight?.slices[0].destination
-                                            .iata_code
-                                        }
-                                      </a>
-                                    </h3>
-                                  </>
-                                )}
-                            </div>
+                  {flightsData &&
+                    // Group flights by route and map one record per route
+                    ["SFO-HYD", "LAX-BOM", "DEL-LAX", "ORD-HYD"].map(
+                      (route) => {
+                        // Find the first flight for the current route
+                        const flight = flightsData.find(
+                          (flight) =>
+                            ((flight.slices &&
+                              flight.slices.length > 0 &&
+                              `${flight.slices[0].origin.iata_code}-${flight.slices[0].destination.iata_code}`) ||
+                              `${flight.slices[0].origin.iata_city_code}-${flight.slices[0].destination.iata_code}`) ===
+                            route
+                        );
 
-                            <p className="block-minor">
-                              {flight?.slices &&
-                                flight?.slices.length > 0 &&
-                                flight?.slices[0].segments[0].aircraft &&
-                                flight?.slices[0].fare_brand_name && (
-                                  <>
-                                    <span>
-                                      {
-                                        flight?.slices[0].segments[0].aircraft
-                                          .name
-                                      }
-                                      {" , "}
-                                    </span>
-
-                                    {flight?.slices[0].fare_brand_name}
-                                  </>
-                                )}
-                            </p>
-                            <ul className="list-unstyled list-inline offer-price-1">
-                              <li className="price">
-                                {flight?.base_currency} {flight?.base_amount}
-                              </li>
-                            </ul>
-                          </div>
-
-                          <div className="f-grid-timing">
-                            <ul className="list-unstyled">
-                              {flight?.slices &&
-                                flight?.slices.length > 0 &&
-                                flight?.slices[0].segments[0].departing_at &&
-                                flight?.slices[0].segments[0].arriving_at && (
-                                  <>
-                                    <li>
-                                      <span>
-                                        <i className="fa fa-plane"></i>
-                                      </span>
-                                      <span className="date">
-                                        {formatFlightDate(
-                                          flight?.slices[0].segments[0]
-                                            .departing_at
-                                        )}
-                                      </span>
-                                    </li>
-                                    <li>
-                                      <span>
-                                        <i className="fa fa-plane"></i>
-                                      </span>
-                                      <span className="date">
-                                        {formatFlightDate(
-                                          flight?.slices[0].segments[0]
-                                            .arriving_at
-                                        )}
-                                      </span>
-                                    </li>
-                                  </>
-                                )}
-                            </ul>
-                          </div>
-
-                          <div className="grid-btn">
-                            <a
-                              href="#"
-                              className="btn btn-orange btn-block btn-lg"
-                              onClick={handleSubmit1}
+                        // Render the flight if found
+                        return (
+                          flight && (
+                            <div
+                              key={route}
+                              className="col-12 col-md-6 col-lg-3 col-xl-3"
                             >
-                              Book
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                              <div className="grid-block main-block f-grid-block">
+                                {/* <a href="#"> */}
+                                <div className="main-img f-img">
+                                  <img
+                                    src={flightimage}
+                                    className="img-fluid"
+                                    alt="flight-img"
+                                  />
+                                </div>
+                                {/* </a> */}
+                                <div className="block-info f-grid-info">
+                                  <div className="f-grid-desc">
+                                    {/* Check if slices exist and contain data */}
+                                    {flight?.slices &&
+                                      flight?.slices.length > 0 &&
+                                      flight?.slices[0].origin &&
+                                      flight?.slices[0].destination && (
+                                        <>
+                                          <div className="timeduration">
+                                            <span className="f-grid-time">
+                                              <i className="fa fa-clock-o"></i>
+                                              {formatDuration(
+                                                flight?.slices[0].duration
+                                              )}
+                                            </span>
+                                          </div>
+                                          <h3 className="block-title">
+                                            <a href="#">
+                                              {
+                                                flight?.slices[0].origin
+                                                  .city_name
+                                              }
+                                              {" To "}
+                                              {
+                                                flight?.slices[0].destination
+                                                  .city_name
+                                              }
+                                            </a>
+                                          </h3>
+                                        </>
+                                      )}
+                                  </div>
+
+                                  <p className="block-minor">
+                                    {flight?.slices &&
+                                      flight?.slices.length > 0 &&
+                                      flight?.slices[0].segments[0].aircraft &&
+                                      flight?.slices[0].fare_brand_name && (
+                                        <>
+                                          <span>
+                                            {
+                                              flight?.slices[0].segments[0]
+                                                .aircraft.name
+                                            }
+                                            {" , "}
+                                          </span>
+
+                                          {flight?.slices[0].fare_brand_name}
+                                        </>
+                                      )}
+                                  </p>
+                                  <ul className="list-unstyled list-inline offer-price-1">
+                                    <li className="price">
+                                      {`$ ${calculatePriceWithMarkup(
+                                        flight?.base_amount,
+                                        flight?.tax_amount
+                                      )}`}
+                                    </li>
+                                  </ul>
+                                </div>
+
+                                <div className="f-grid-timing">
+                                  <ul className="list-unstyled">
+                                    {flight?.slices &&
+                                      flight?.slices.length > 0 &&
+                                      flight?.slices[0].segments[0]
+                                        .departing_at &&
+                                      flight?.slices[0].segments[0]
+                                        .arriving_at && (
+                                        <>
+                                          <li>
+                                            <span>
+                                              <i className="fa fa-plane"></i>
+                                            </span>
+                                            <span className="date">
+                                              {formatFlightDate(
+                                                flight?.slices[0].segments[0]
+                                                  .departing_at
+                                              )}
+                                            </span>
+                                          </li>
+                                          <li>
+                                            <span>
+                                              <i className="fa fa-plane"></i>
+                                            </span>
+                                            <span className="date">
+                                              {formatFlightDate(
+                                                flight?.slices[0].segments[0]
+                                                  .arriving_at
+                                              )}
+                                            </span>
+                                          </li>
+                                        </>
+                                      )}
+                                  </ul>
+                                </div>
+
+                                <div className="grid-btn mb-3 p-2">
+                                  <a
+                                    href="#"
+                                    className="btn btn-orange btn-block btn-lg"
+                                    id="toDestination"
+                                    onClick={(event) =>
+                                      handleSubmit1(event, flight?.slices[0])
+                                    }
+                                  >
+                                    Book
+                                  </a>
+                                </div>
+                              </div>
+                            </div>
+                          )
+                        );
+                      }
+                    )}
                 </div>
               </div>
             </div>

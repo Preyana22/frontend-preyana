@@ -21,7 +21,7 @@
 
 .clear-all {
     font-size: 14px;
-    color: #007bff;
+    color: #005085;
     /* Bootstrap's primary link color */
     text-decoration: none;
 }
@@ -70,13 +70,15 @@
 
 #range-slider-custom .range-slider__range {
 height: 20%;
-    background: #007bff !important;
+    background: #005085 !important;
     transition: height 0.3s;
 }
 
 #range-slider-custom .range-slider__thumb {
-    background: #fff !important;
+    background: #005085 !important;
     transition: transform 0.3s;
+    width: 20px !important;
+    height: 20px !important;
 }
 
 #range-slider-custom .range-slider__thumb[data-active] {
@@ -119,4 +121,8 @@ height: 20%;
 .filter-section:last-child {
     border-bottom: none;
     margin-bottom: 0;
+}
+
+.filters input[type=radio]{
+    margin-right: 10px;
 }

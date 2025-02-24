@@ -4,6 +4,7 @@ import sideimage from "../assets/images/flight-1.jpg";
 
 import axios from "axios";
 import { Carousel } from "react-bootstrap";
+const apiUrl = process.env.REACT_APP_API_BASE_URL;
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
@@ -62,7 +63,7 @@ const ForgotPassword = () => {
         console.log("Form data:", formData);
         const configuration = {
           method: "post",
-          url: "http://192.168.1.92:3000/authentication/change-password",
+          url: apiUrl + "/authentication/change-password",
           data: {
             userId: localStorage.getItem("userId"),
             currentPassword: formData.password,

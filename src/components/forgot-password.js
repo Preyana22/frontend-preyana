@@ -8,6 +8,7 @@ import googleimage from "../assets/images/google.png";
 import facebookimage from "../assets/images/facebook.png";
 import axios from "axios";
 import { Carousel } from "react-bootstrap";
+const apiUrl = process.env.REACT_APP_API_BASE_URL;
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ const ForgotPassword = () => {
         console.log("Form data:", formData);
         const configuration = {
           method: "post",
-          url: "http://192.168.1.92:3000/authentication/forgot-password",
+          url: apiUrl + "/authentication/forgot-password",
           data: {
             email: formData.email,
           },
@@ -68,13 +69,13 @@ const ForgotPassword = () => {
 
   return (
     <>
-      <section class="innerpage-wrapper">
-        <div id="forgot-password" class="innerpage-section-padding">
-          <div class="container">
-            <div class="row">
-              <div class="col-md-12">
-                <div class="flex-content">
-                  <div class="custom-form custom-form-fields">
+      <section className="innerpage-wrapper">
+        <div id="forgot-password" className="innerpage-section-padding">
+          <div className="container">
+            <div className="row">
+              <div className="col-md-12">
+                <div className="flex-content">
+                  <div className="custom-form custom-form-fields">
                     <h3>Forgot Password</h3>
                     <p>
                       When you fill in your registered email address, you will
@@ -82,7 +83,7 @@ const ForgotPassword = () => {
                     </p>
                     <form onSubmit={handleSubmit}>
                       <div className="form-group">
-                        <label class="custom-label">Email</label>
+                        <label className="custom-label">Email</label>
                         <input
                           type="text"
                           className={`form-control ${
@@ -98,13 +99,13 @@ const ForgotPassword = () => {
                         )}
                       </div>
 
-                      <button class="btn btn-orange btn-block">Send</button>
+                      <button className="btn btn-orange btn-block">Send</button>
                     </form>
 
                     <div className="other-links">
                       <p className="link-line">
                         Already Have An Account ?{" "}
-                        <Link class="link-text" to="/login">
+                        <Link className="link-text" to="/login">
                           {" "}
                           Sign In
                         </Link>

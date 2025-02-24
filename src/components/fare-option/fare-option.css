@@ -24,12 +24,12 @@
 }
 
 .active-checkout{
-    background-color: #003988;
+    background-color: #005085;
     color: #fff;
 }
 
 .active-checkout:hover {
-    background-color: #003988;
+    background-color: #005085;
     color: #fff;
 }
 
@@ -48,4 +48,18 @@
 
 .total-price {
     text-align: center;
+}
+
+#fare-container p,
+#fare-container ul{
+    font-size: 18px;
+}
+.fare-layover-detail{
+margin-left: -0.5rem;
+    background: #f7f7fd;
+    border-radius: 10px;
+}
+
+#fare-container span{
+    font-size: 16px;
 }

@@ -1,11 +1,12 @@
 import { put, takeLatest, all } from "redux-saga/effects";
 import { findPaths } from "./../lib/flightManager";
 import { transformFlightDates } from "./../lib/utils";
+const apiUrl = process.env.REACT_APP_API_BASE_URL;
 
 function* fetchFlights() {
   // try {
   //   //https://my-json-server.typicode.com/mneema/mock-db/flights
-  //   const json = yield fetch("http://192.168.1.92:3000/airlines").then(
+  //   const json = yield fetch(apiUrl + "airlines").then(
   //     (response) => response.json()
   //   );
   //   return json;
@@ -35,16 +36,18 @@ function* findFlights(payload) {
         // departureDate,
         numOfPassengers,
         // cabinclass,
+        origin_city_name,
+        destination_city_name,
       },
     } = payload.payload;
+
     const listOfFlights = {};
-    const json1 = yield fetch(
-      "http://192.168.1.92:3000/airlines/test",
-      requestOptions
-    ).then((response) => response.json());
+    const json1 = yield fetch(apiUrl + "/airlines/test", requestOptions).then(
+      (response) => response.json()
+    );
     // console.log(JSON.stringify(json1));
 
-    /*const json = yield fetch('http://192.168.1.92:3000/airlines')
+    /*const json = yield fetch(apiUrl + '/airlines')
       .then(response => response.json());*/
     yield put({ type: "GET_FLIGHTS_SUCCESS", json: json1 });
     yield put({
@@ -60,6 +63,8 @@ function* findFlights(payload) {
           destination: origin,
           date: returnDate,
           numOfPassengers,
+          origin_city_name: origin_city_name,
+          destination_city_name: destination_city_name,
         },
       });
     }
@@ -67,6 +72,8 @@ function* findFlights(payload) {
     // listOfFlights.onwards = findPaths({ flights, criteria: { origin, destination, date: departureDate, numOfPassengers } });
 
     yield put({ type: "GET_ROUTES_SUCCESS", json: json1 });
+    localStorage.setItem("flightkey", json1[0]);
+    // console.log(json1);
     return json1;
   } catch (e) {
     console.log("error", e);

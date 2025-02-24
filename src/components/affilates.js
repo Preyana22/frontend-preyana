@@ -9,7 +9,7 @@ const Affilates = () => {
             <div class="row">
               <div class="col-md-12">
                 <div class="custom-form custom-form-fields">
-                  <h3>Affilates</h3>
+                  <h3>Affiliates</h3>
                 </div>
               </div>
             </div>
