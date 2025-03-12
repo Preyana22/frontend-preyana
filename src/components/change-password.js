@@ -109,7 +109,7 @@ const ForgotPassword = () => {
                     </h3>
                     <form onSubmit={handleSubmit}>
                       <div className="form-group">
-                        <label className="custom-label">Password</label>
+                        <label className="custom-label">Old Password</label>
                         <input
                           type={hidePassword ? "password" : "text"}
                           className={`form-control ${

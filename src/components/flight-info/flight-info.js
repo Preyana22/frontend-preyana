@@ -49,10 +49,12 @@ export const FlightInfo = (props) => {
           <MultiFlightInfo data={flight} />
         </div>
 
-        <div
+        
+      </div>
+      <div
           className={`Flight-info ${
             isMultiMode ? "gray-background" : ""
-          } col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12`}
+          } `}
         >
           {/* <FlightLogo data={flight}></FlightLogo> */}
 
@@ -70,7 +72,6 @@ export const FlightInfo = (props) => {
             </Button>
           )}
         </div>
-      </div>
     </Card>
   );
 };

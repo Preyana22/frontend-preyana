@@ -12,7 +12,8 @@ const Profile = () => {
 
   // Error state to manage validation errors
   const [errors, setErrors] = useState({});
-
+  const [cardNumber, setCardNumber] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const convertDate = (dateString) => {
     // Check if dateString is null or undefined
     if (!dateString) {
@@ -130,12 +131,26 @@ const Profile = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    console.log(name);
+    // Check if card number is empty
+    if(name=='cardNumber'){
+        if (value.replace(/[0-9\s]/g, '') !== '') {
+          setErrorMessage('Card number must contain only digits and spaces.');
+          return;
+        }
+        if (value.length > 20) {
+          setErrorMessage('Invalid card number.');
+        } else {
+          setErrorMessage('');
+        }
+    }
+    
     setFormData((prev) => ({ ...prev, [name]: value }));
 
     // Clear error for this field if it has been corrected
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
-
+  
   const validateForm = () => {
     const newErrors = {};
 
@@ -181,6 +196,9 @@ const Profile = () => {
 
     // Validate before submitting
     if (!validateForm()) {
+      return;
+    }
+    if (errorMessage) { // Check if there is an error
       return;
     }
 
@@ -573,7 +591,8 @@ const Profile = () => {
                     name="cardNumber"
                     value={formData.cardNumber}
                     onChange={handleInputChange}
-                  />
+                  />  {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+
                 </Form.Group>
                 <Form.Group className="col-12">
                   <Form.Label>Billing Address</Form.Label>
