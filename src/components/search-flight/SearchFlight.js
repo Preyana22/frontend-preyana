@@ -646,6 +646,36 @@ const SearchFlight = ({ onSearch, ...props }) => {
     setSelectedCabinClass(cabin_details[0]);
     localStorage.setItem("cabinclass", JSON.stringify([cabin_details[0]]));
   }, [cabin_details, openOptions, options, isReturn]);
+  // Handle tab click
+  const [activeTab, setActiveTab] = useState("flights");
+  const handleTabClick = (e, tabName) => {
+    e.preventDefault();
+    setActiveTab(tabName);
+    
+    if (tabName === "hotels") {
+      // Hide flights-info-container completely
+      const flightInfo = document.querySelector(".flights-info-container.row");
+     
+      if (flightInfo) {
+        flightInfo.classList.add("tab-pane", "fade");
+        // flightInfo.classList.add("tab-pane", "fade");
+         flightInfo.style.display = "none"; // Hide element completely
+      }
+      // Navigate to "/"
+     
+    } 
+    if (tabName === "flights") {
+
+      // Show the flights-info-container when Flights tab is selected
+      const flightInfo = document.querySelector(".flights-info-container.row");
+
+      if (flightInfo) {
+        flightInfo.classList.remove("tab-pane", "fade");
+        flightInfo.style.display = "";
+      }
+    }
+    
+  };
 
   return (
     <>
@@ -679,6 +709,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
                     <a
                       className="nav-link active"
                       href="#flights"
+                      onClick={(e) => handleTabClick(e, "flights")}
                       data-bs-toggle="tab"
                     >
                       <span>
@@ -694,7 +725,10 @@ const SearchFlight = ({ onSearch, ...props }) => {
                     </a>
                   </li>
                   <li className="nav-item">
-                    <a className="nav-link" href="#hotels" data-bs-toggle="tab">
+                    <a className="nav-link" 
+                      href="#hotels"  
+                      onClick={(e) => handleTabClick(e, "hotels")} 
+                      data-bs-toggle="tab">
                       <span>
                         <img
                           src={hotelIcon}

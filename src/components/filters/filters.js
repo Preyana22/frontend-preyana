@@ -94,7 +94,39 @@ const Filters = ({ flights, onFiltersChange }) => {
     depart: [19, 32],
     return: [15, 32],
   });
+// console.log(flights);
+useEffect(() => {
+    if (!flights || airlines.length > 0) return; // Run only if flights exist & airlines are empty
 
+    let allLoyaltyPrograms = [];
+
+    // Loop through the flights array
+    flights.forEach((item) => {
+      if (item.supported_loyalty_programmes) {
+        allLoyaltyPrograms.push(...item.supported_loyalty_programmes);
+      }
+
+      // Check nested objects
+      Object.values(item).forEach((innerItem) => {
+        if (typeof innerItem === "object" && innerItem.supported_loyalty_programmes) {
+          allLoyaltyPrograms.push(...innerItem.supported_loyalty_programmes);
+        }
+      });
+    });
+
+    // Remove duplicates
+    const uniqueLoyaltyPrograms = [...new Set(allLoyaltyPrograms)];
+    const uniqueProgramsArray = Array.from(uniqueLoyaltyPrograms);
+
+    console.log(uniqueLoyaltyPrograms);
+
+    // Save to localStorage
+    localStorage.setItem("uniqueLoyaltyPrograms", JSON.stringify(uniqueProgramsArray));
+
+    // Update state
+    setAirlines(uniqueProgramsArray);
+}, [flights]); // Runs only when flights change
+// 
   // UseEffect to get flights data from localStorage
   useEffect(() => {
     const storedFlights = localStorage.getItem("flightsData");
@@ -194,7 +226,8 @@ const Filters = ({ flights, onFiltersChange }) => {
     setAirlineCodes(airlineCode);
     if (typeof onFiltersChange === "function") {
       onFiltersChange({
-        loyaltyProgrammes: airlineCode,
+        // loyaltyProgrammes: airlineCode,
+        loyaltyProgrammes: airlineCode === "" ? null : airlineCode, // Reset filter if empty
       });
     } else {
       console.error("onFiltersChange is not a function");
@@ -232,6 +265,7 @@ const Filters = ({ flights, onFiltersChange }) => {
       <div className="filter-section">
         <h5>STOPS</h5>
         <div>
+          
           <input
             type="radio"
             id="nonstop"
@@ -299,7 +333,7 @@ const Filters = ({ flights, onFiltersChange }) => {
         )}
       </div>
       {/* Price Filter */}
-      <div className="filter-section">
+      {/* <div className="filter-section">
         <h5>PRICE</h5>
         <RangeSlider
           min={0}
@@ -332,7 +366,30 @@ const Filters = ({ flights, onFiltersChange }) => {
           <span className="text-left">${price[0]}</span>
           <span className="text-right">${price[1]}</span>
         </div>
+      </div> */}
+    <div className="filter-section">
+      <h5>PRICE RANGE</h5>
+      <div className="d-flex">
+        <input
+          type="number"
+          className="form-control"
+          placeholder="Min Price"
+          value={price[0] === null ? "" : price[0]} // Prevent showing 0 when empty
+          onChange={(e) => handlePriceChange([e.target.value === "" ? null : Number(e.target.value), price[1]])}
+          min="0"
+        />
+        <span className="mx-2">-</span>
+        <input
+          type="number"
+          className="form-control"
+          placeholder="Max Price"
+          value={price[1] === null ? "" : price[1]} // Prevent showing 0 when empty
+          onChange={(e) => handlePriceChange([price[0], e.target.value === "" ? null : Number(e.target.value)])}
+          min="0"
+        />
       </div>
+    </div>
+
       {/* Bags Filter */}
       {/* <div className="filter-section">
         <h5>BAGS</h5>

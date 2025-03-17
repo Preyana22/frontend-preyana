@@ -538,9 +538,11 @@ export const Body = (props) => {
                   </div>
                 </div>
                 <div className="row">
+                  
                   {flightsData &&
                     // Group flights by route and map one record per route
                     ["SFO-HYD", "LAX-BOM", "DEL-LAX", "ORD-HYD"].map(
+                      
                       (route) => {
                         // Find the first flight for the current route
                         const flight = flightsData.find(
@@ -561,12 +563,23 @@ export const Body = (props) => {
                             >
                               <div className="grid-block main-block f-grid-block">
                                 {/* <a href="#"> */}
-                                <div className="main-img f-img">
-                                  <img
+                                <div className="main-img ">
+                                  {/* <img
                                     src={flightimage}
                                     className="img-fluid"
                                     alt="flight-img"
-                                  />
+                                  /> */}
+                                   <img
+                                style={{width: "100%",height: "150px", display: "block",   // Optional rounded corners
+                                }}
+                            src={`/assets/images/${flight?.slices?.[0]?.destination?.city_name}.webp`}
+                            className="img-fluid"
+                            alt={flight?.slices?.[0]?.destination?.city_name || "flight-img"}
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = "/assets/images/flight-1.jpg"; // Fallback image
+                            }}
+                          />
                                 </div>
                                 {/* </a> */}
                                 <div className="block-info f-grid-info">
