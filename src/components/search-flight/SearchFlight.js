@@ -655,20 +655,26 @@ const SearchFlight = ({ onSearch, ...props }) => {
     if (tabName === "hotels") {
       // Hide flights-info-container completely
       const flightInfo = document.querySelector(".flights-info-container.row");
-     
+      const topdeal = document.getElementById("topdeal");
+      if (topdeal) {
+      
+        topdeal.style.display = "none"; // Hide element completely
+      }
       if (flightInfo) {
+        flightInfo.classList.add("tab-pane", "fade");
         flightInfo.classList.add("tab-pane", "fade");
         // flightInfo.classList.add("tab-pane", "fade");
          flightInfo.style.display = "none"; // Hide element completely
       }
       // Navigate to "/"
-     
     } 
     if (tabName === "flights") {
-
       // Show the flights-info-container when Flights tab is selected
       const flightInfo = document.querySelector(".flights-info-container.row");
-
+      const topdeal = document.getElementById("topdeal");
+      if (topdeal) {
+        topdeal.style.display = ""; // Hide element completely
+      }
       if (flightInfo) {
         flightInfo.classList.remove("tab-pane", "fade");
         flightInfo.style.display = "";
@@ -749,76 +755,36 @@ const SearchFlight = ({ onSearch, ...props }) => {
                         <div className="row mt-0">
                           {/* Trip Type Selection */}
                           <div className="col-12 col-md-6 col-lg-4 col-xl-3 col-sm-12 col-xs-12">
-                            <div className="form-group">
-                              {/* <label htmlFor="tripType" className="form-label">
-                                Trip Type
-                              </label> */}
-                              <div
-                                className="headerSearchTripItem"
-                                ref={dropdownRef}
-                              >
-                                {/* Trip Options Arrow */}
-                                <span
-                                  onClick={() => setTripOptions(!tripOptions)}
-                                  className={`headerSearchTripText ${
-                                    tripOptions ? "arrow-up" : "arrow-down"
-                                  }`}
-                                >
-                                  {isReturn ? "Round Trip" : "One Way"}
-                                  <i
-                                    className={`trip-arrow ${
-                                      tripOptions
-                                        ? "fa fa-chevron-up"
-                                        : "fa fa-chevron-down"
-                                    }`}
-                                    aria-hidden="true"
-                                  ></i>
-                                </span>
+                          <div className="form-group">
 
-                                {tripOptions && (
-                                  <div className="tripoptions">
-                                    <div className="tripoptionItem">
-                                      <div className="tripoptionCounter">
-                                        <Form.Group className="mb-0">
-                                          <Form.Check
-                                            inline
-                                            checked={isReturn}
-                                            type="radio"
-                                            label="Round Trip"
-                                            name="flightType"
-                                            id="formHorizontalRadios2"
-                                            onChange={(e) => {
-                                              setFlightType(true);
-                                              setTimeout(() => {
-                                                setTripOptions(false);
-                                              }, 100);
-                                            }}
-                                          />
-                                          <Form.Check
-                                            inline
-                                            checked={!isReturn}
-                                            type="radio"
-                                            label="One Way"
-                                            name="flightType"
-                                            id="formHorizontalRadios1"
-                                            onChange={(e) => {
-                                              setFlightType(false);
-                                              setTimeout(() => {
-                                                setTripOptions(false);
-                                              }, 100);
-                                            }}
-                                          />
-                                        </Form.Group>
-                                      </div>
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
+                          <Form.Group className="mb-0">
+                            <Form.Check
+                              inline
+                              checked={isReturn}
+                              type="radio"
+                              label="Round Trip"
+                              name="flightType"
+                              id="formHorizontalRadios2"
+                              onChange={() => setFlightType(true)}
+                            />
+                            <Form.Check
+                              inline
+                              style={{ marginLeft: '20px' }}
+                              checked={!isReturn}
+                              type="radio"
+                              label="One Way"
+                              name="flightType"
+                              id="formHorizontalRadios1"
+                              onChange={() => setFlightType(false)}
+                            />
+                          </Form.Group>
+                        </div>
+
                           </div>
 
                           {/* Cabin Class Selection */}
-                          <div className="col-12 col-md-6 col-lg-4 col-xl-3 col-sm-12 col-xs-12">
+                          <div className="col-12 col-md-6 col-lg-4 col-xl-3 col-sm-12 col-xs-12 ">
+                            
                             <Form.Group controlId="cabinclass">
                               {/* <label
                                 htmlFor="cabinclass"
@@ -833,6 +799,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
                                   onChange={handleCabinClassChange}
                                   onFocus={() => toggleDropdown(true)}
                                   onBlur={() => toggleDropdown(false)}
+                                  className="border-0 bg-transparent"
                                 >
                                   <option value="">Select Cabin Class</option>
                                   {cabin_details.map((cabin, index) => (
@@ -855,6 +822,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
                               )}
                             </Form.Group>
                           </div>
+                          
 
                           {/* Passengers Options */}
                           <div className="col-12 col-md-6 col-lg-4 col-xl-3 col-sm-12 col-xs-12">

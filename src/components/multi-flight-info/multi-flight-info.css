@@ -270,6 +270,7 @@
 .airline-logo--medium {
   width: 40px;
   height: 40px;
+   z-index: calc(100 - var(--logo-index));
 }
 
 .airline-logo--large {
@@ -289,9 +290,8 @@
 }
 
 .airline-logo-overlap {
-  width: 30px;
-  /* Adjust logo size */
-  height: auto;
+  width: 40px;
+  height: 40px;
   z-index: calc(100 - var(--logo-index));
   /* Higher logos have priority */
 }

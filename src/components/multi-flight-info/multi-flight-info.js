@@ -271,23 +271,6 @@ export const MultiFlightInfo = (props) => {
                     </strong>
                   </p>
                   <div className="itinerary-card__travel-item itinerary-card__travel-item--segment-info border rounded p-2 mt-3 ml-0 mr-0">
-                    {console.log(slice)}
-                    {/* {sliceIndex === 0 && (
-                      <div className="logo-stack">
-                        {slice.segments.map((segment) => (
-                          <img
-                            key={segment.id}
-                            className={`airline-logo-overlap ${
-                              slice.segments.length === 1 ? "single-logo" : ""
-                            }`}
-                            src={segment.operating_carrier.logo_symbol_url}
-                            alt={`Logo for ${segment.operating_carrier.name}`}
-                            id={`logo-${segment.origin.iata_code}-${segment.operating_carrier.iata_code}`}
-                            phx-update="ignore"
-                          />
-                        ))}
-                      </div>
-                    )} */}
                     {sliceIndex === 0 && (
                       <div className="logo-stack">
                         {[...new Map(
@@ -305,6 +288,7 @@ export const MultiFlightInfo = (props) => {
                       </div>
                     )}
                     {sliceIndex !== 0 && (
+                      <div className="logo-stack">
                       <img
                         className="airline-logo--medium mr-4"
                         src={
@@ -314,6 +298,7 @@ export const MultiFlightInfo = (props) => {
                         id={`logo-${slice.segments[0].origin.iata_code}-${slice.segments[0].operating_carrier.iata_code}`}
                         phx-update="ignore"
                       />
+                     </div>
                     )}
                     <div className="d-block">
                       <p className="mb-0 text-black">
