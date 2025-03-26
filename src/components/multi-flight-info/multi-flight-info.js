@@ -270,7 +270,7 @@ export const MultiFlightInfo = (props) => {
                       ].join(" | ")}
                     </strong>
                   </p>
-                  <div className="itinerary-card__travel-item itinerary-card__travel-item--segment-info border rounded p-2 mt-3 ml-0 mr-0">
+                  <div className="itinerary-card__travel-item itinerary-card__travel-item--segment-info border rounded p-2 mt-3 ml-0 mr-2">
                     {console.log(slice)}
                     {/* {sliceIndex === 0 && (
                       <div className="logo-stack">
