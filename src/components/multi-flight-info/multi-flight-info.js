@@ -305,6 +305,7 @@ export const MultiFlightInfo = (props) => {
                       </div>
                     )}
                     {sliceIndex !== 0 && (
+                      <div className="logo-stack">
                       <img
                         className="airline-logo--medium mr-4"
                         src={
@@ -314,6 +315,7 @@ export const MultiFlightInfo = (props) => {
                         id={`logo-${slice.segments[0].origin.iata_code}-${slice.segments[0].operating_carrier.iata_code}`}
                         phx-update="ignore"
                       />
+                     </div>
                     )}
                     <div className="d-block">
                       <p className="mb-0 text-black">

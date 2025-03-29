@@ -459,6 +459,11 @@ export const Body = (props) => {
 
       // Define route pairs with IATA codes
       const routes = [
+        { origin: "BOM", destination: "DEL" },
+        { origin: "DEL", destination: "HYD" },
+        { origin: "DEL", destination: "BLR" },
+        { origin: "HYD", destination: "DEL" },
+
         { origin: "SFO", destination: "HYD" },
         { origin: "LAX", destination: "BOM" },
         { origin: "DEL", destination: "LAX" },
@@ -528,18 +533,182 @@ export const Body = (props) => {
         <div id="search-result-page" className="">
           <div className="container">
             <SearchFlight />
-            <div className="row">
+            <div className="row" id="topdeal">
               <div className="col-12 col-md-12 col-lg-12 col-xl-12 content-side">
                 <div className="row pb-4 mb-5">
                   <div className="col-12 col-md-12 col-lg-12 col-xl-12">
                     <h3 className="font-weight-bold">
-                      Flight Deals to Top Destinations
+                      Deals to Top Destinations
                     </h3>
                   </div>
                 </div>
                 <div className="row">
-                  
+                 
                   {flightsData &&
+                  
+                    // Group flights by route and map one record per route
+                    ["BOM-DEL", "DEL-HYD", "DEL-BLR", "HYD-DEL"].map(
+               
+                      (route) => {
+                        // Find the first flight for the current route
+                        const flight = flightsData.find(
+                          (flight) =>
+                            ((flight.slices &&
+                              flight.slices.length > 0 &&
+                              `${flight.slices[0].origin.iata_code}-${flight.slices[0].destination.iata_code}`) ||
+                              `${flight.slices[0].origin.iata_city_code}-${flight.slices[0].destination.iata_code}`) ===
+                            route
+                        );
+                        {console.log(flight)}
+                        // Render the flight if found
+                        return (
+                          flight && (
+                            <div
+                              key={route}
+                              className="col-12 col-md-6 col-lg-3 col-xl-3"
+                            >
+                              <div className="grid-block main-block f-grid-block ">
+                                {/* <a href="#"> */}
+                                <div className="main-img">
+                                  {/* <img
+                                    src={flightimage}
+                                    className="img-fluid"
+                                    alt="flight-img"
+                                  /> */}
+                                   <img
+                                style={{width: "100%",height: "150px", display: "block",   // Optional rounded corners
+                                }}
+                            src={`/assets/images/${flight?.slices?.[0]?.destination?.city_name}.webp`}
+                            className="img-fluid"
+                            alt={flight?.slices?.[0]?.destination?.city_name || "flight-img"}
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = "/assets/images/flight-1.jpg"; // Fallback image
+                            }}
+                          />
+                                </div>
+                                {/* </a> */}
+                                <div className="block-info f-grid-info">
+                                  <div className="f-grid-desc">
+                                    {/* Check if slices exist and contain data */}
+                                    {flight?.slices &&
+                                      flight?.slices.length > 0 &&
+                                      flight?.slices[0].origin &&
+                                      flight?.slices[0].destination && (
+                                        <>
+                                          <div className="timeduration">
+                                            <span className="f-grid-time">
+                                              <i className="fa fa-clock-o"></i>
+                                              {formatDuration(
+                                                flight?.slices[0].duration
+                                              )}
+                                            </span>
+                                          </div>
+                                          <h3 className="block-title">
+                                            <a href="#">
+                                              {
+                                                flight?.slices[0].origin
+                                                  .city_name
+                                              }
+                                              {" To "}
+                                              {
+                                                flight?.slices[0].destination
+                                                  .city_name
+                                              }
+                                            </a>
+                                          </h3>
+                                        </>
+                                      )}
+                                  </div>
+
+                                  {/* <p className="block-minor">
+                                    {flight?.slices &&
+                                      flight?.slices.length > 0 &&
+                                      flight?.slices[0].segments[0].aircraft &&
+                                      flight?.slices[0].fare_brand_name && (
+                                        <>
+                                          <span>
+                                            {
+                                              flight?.slices[0].segments[0]
+                                                .aircraft.name
+                                            }
+                                            {" , "}
+                                          </span>
+
+                                          {flight?.slices[0].fare_brand_name}
+                                        </>
+                                      )}
+                                  </p> */}
+                                  <ul className="list-unstyled list-inline offer-price-1">
+                                    <li className="price">
+                                      {`$ ${calculatePriceWithMarkup(
+                                        flight?.base_amount,
+                                        flight?.tax_amount
+                                      )}`}
+                                    </li>
+                                  </ul>
+                                </div>
+
+                                <div className="f-grid-timing">
+                                  <ul className="list-unstyled">
+                                    {flight?.slices &&
+                                      flight?.slices.length > 0 &&
+                                      flight?.slices[0].segments[0]
+                                        .departing_at &&
+                                      flight?.slices[0].segments[0]
+                                        .arriving_at && (
+                                        <>
+                                          <li>
+                                            <span>
+                                              <i className="fa fa-plane"></i>
+                                            </span>
+                                            <span className="date">
+                                              {formatFlightDate(
+                                                flight?.slices[0].segments[0]
+                                                  .departing_at
+                                              )}
+                                            </span>
+                                          </li>
+                                          <li>
+                                            <span>
+                                              <i className="fa fa-plane"></i>
+                                            </span>
+                                            <span className="date">
+                                              {formatFlightDate(
+                                                flight?.slices[0].segments[0]
+                                                  .arriving_at
+                                              )}
+                                            </span>
+                                          </li>
+                                        </>
+                                      )}
+                                  </ul>
+                                </div>
+
+                                <div className="grid-btn mb-3 p-2">
+                                  <a
+                                    href="#"
+                                    className="btn btn-orange btn-block btn-lg"
+                                    id="toDestination"
+                                    onClick={(event) =>
+                                      handleSubmit1(event, flight?.slices[0])
+                                    }
+                                  >
+                                    Book
+                                  </a>
+                                </div>
+                              </div>
+                            </div>
+                          )
+                        );
+                      }
+                    )}
+                </div>
+                
+                <div className="row">
+                
+                  {flightsData &&
+                  
                     // Group flights by route and map one record per route
                     ["SFO-HYD", "LAX-BOM", "DEL-LAX", "ORD-HYD"].map(
                       
@@ -559,7 +728,7 @@ export const Body = (props) => {
                           flight && (
                             <div
                               key={route}
-                              className="col-12 col-md-6 col-lg-3 col-xl-3"
+                              className="col-12 col-md-6 col-lg-3 col-xl-3 "
                             >
                               <div className="grid-block main-block f-grid-block">
                                 {/* <a href="#"> */}
@@ -615,7 +784,7 @@ export const Body = (props) => {
                                       )}
                                   </div>
 
-                                  <p className="block-minor">
+                                  {/* <p className="block-minor">
                                     {flight?.slices &&
                                       flight?.slices.length > 0 &&
                                       flight?.slices[0].segments[0].aircraft &&
@@ -632,7 +801,7 @@ export const Body = (props) => {
                                           {flight?.slices[0].fare_brand_name}
                                         </>
                                       )}
-                                  </p>
+                                  </p> */}
                                   <ul className="list-unstyled list-inline offer-price-1">
                                     <li className="price">
                                       {`$ ${calculatePriceWithMarkup(

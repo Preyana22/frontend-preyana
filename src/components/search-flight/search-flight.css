@@ -1,7 +1,53 @@
 .interchange-icon img {
   transition: transform 0.3s ease;
 }
-
 .rotated {
   transform: rotate(-180deg);
+}
+.no-border-dropdown {
+  border: none;
+  background-color: transparent;
+  outline: none;
+  box-shadow: none; /* Removes any shadow */
+}
+.cabin-selector-inline {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.cabin-button-inline {
+  background-color: #f5f7fa;
+  border: 2px solid #e0e0e0;
+  color: #333;
+  padding: 10px 16px;
+  border-radius: 30px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex: 1;
+  min-width: 100px;
+  text-align: center;
+}
+
+.cabin-button-inline.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.cabin-button-inline:hover {
+  background-color: #e0f3ff;
+  border-color: #007bff;
+}
+
+/* Optional: Add Scrollbar for Overflow */
+.cabin-selector-inline::-webkit-scrollbar {
+  height: 6px;
+}
+
+.cabin-selector-inline::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 10px;
 }
