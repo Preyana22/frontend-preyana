@@ -157,6 +157,7 @@ const Login = (props) => {
 
     await axios(configuration)
       .then((result) => {
+        console.log(result);
         localStorage.setItem("email", result.data.user._doc.email);
         localStorage.setItem("userName", result.data.user._doc.userName);
         localStorage.setItem("userId", result.data.user.$__._id);

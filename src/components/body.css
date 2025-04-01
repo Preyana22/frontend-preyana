@@ -140,6 +140,7 @@
   position: relative;
   display: inline-block;
   padding-right: 8rem;
+  padding-top: 9px;
   /* Space for the arrow */
 }
 

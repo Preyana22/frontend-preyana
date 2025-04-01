@@ -29,13 +29,9 @@ const Filters = ({ flights, onFiltersChange ,onSearch}) => {
       try {
         const parsedFlights = JSON.parse(storedFlights);
         setflightData(parsedFlights);
-        console.log(parsedFlights);
-
         let uniqueLoyaltyPrograms = new Set();
         let uniqueIataCodes = new Set();
         let airlineCounts = {};
-        let airlineCountsNew = {};
-        let uniqueAirlines = {};
         const processFlight = (flight) => {
           // Get loyalty programs
           (flight.supported_loyalty_programmes || []).forEach((program) =>
@@ -55,29 +51,6 @@ const Filters = ({ flights, onFiltersChange ,onSearch}) => {
               airlineCounts[iataCode].count += 1;
             }
           }
-          // if (flight.owner?.iata_code && flight.owner?.name) {
-          //   const iataCode = flight.owner.iata_code;
-          //   const name = flight.owner.name;
-          //   uniqueIataCodes.add(iataCode);
-            
-          //   if (!airlineCounts[iataCode]) {
-          //     airlineCounts[iataCode] = { count: 1, name: name };
-          //   } else {
-          //     airlineCounts[iataCode].count += 1;
-          //   }
-          // }
-
-              // Get IATA codes along with airline name and count airlines
-            // if (flight.owner?.iata_code && flight.owner?.name) {
-            //   const code = flight.owner.iata_code;
-            //   const name = flight.owner.name;
-            //   // Store the airline details if not already stored
-            //   if (!uniqueAirlines[code]) {
-            //     uniqueAirlines[code] = { iata_code: code, name: name };
-            //   }
-            //   // Count the airlines
-            //   airlineCountsNew[code] = (airlineCountsNew[code] || 0) + 1;
-            // }
         };
     
         if (Array.isArray(parsedFlights)) {
@@ -93,9 +66,6 @@ const Filters = ({ flights, onFiltersChange ,onSearch}) => {
         const uniqueProgramsArray = Array.from(uniqueLoyaltyPrograms);
         const uniqueIataCodesArray = Array.from(uniqueIataCodes);
     
-        //  console.log("Unique Loyalty Programs:", uniqueProgramsArray);
-          console.log("Unique IATA Codes:", uniqueIataCodesArray);
-        console.log("Airline Counts:", airlineCounts);
     
         // Update localStorage
         localStorage.setItem("uniqueLoyaltyPrograms", JSON.stringify(uniqueIataCodesArray));
