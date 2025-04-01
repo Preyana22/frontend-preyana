@@ -145,3 +145,56 @@ p, ul {
 .textcol {
    color: #2563EB;
 }
+@media (min-width:760px) and (max-width: 768px) {
+
+  .filter-section h5 {
+    font-size: 12px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    font-weight: bold;
+  }
+  .filters-header h5 {
+    margin: 0;
+    font-weight: bold;
+    font-size: 14px;
+}
+.filters {
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 5px;
+    font-size: 0.8rem;
+}
+.Flight-info p {
+    /* flex: 1 1 20%; */
+    font-size: 14px;
+}
+  }
+  /* mobile */
+@media (max-width: 400px) {
+
+    .filter-section h5 {
+        font-size: 13px;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        font-weight: bold;
+      }
+      .filters-header h5 {
+        margin: 0;
+        font-weight: bold;
+        font-size: 14px;
+    }
+    .filters {
+        border: 1px solid #ddd;
+        padding: 15px;
+        border-radius: 5px;
+        font-size: 0.8rem;
+    }
+    .flight-search-info h3{
+        margin: 10px 10px 10px 0px;
+        font-size: 18px;
+        font-size: 1.1rem;
+      }
+      .itinerary-card__travel-item--segment-info img{
+        margin-bottom: 15px;
+      }
+}

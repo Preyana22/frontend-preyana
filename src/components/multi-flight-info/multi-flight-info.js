@@ -243,7 +243,7 @@ export const MultiFlightInfo = (props) => {
                   key={slice.segments[0].id}
                   className="itinerary-card__travel-item itinerary-card__travel-item--origin d-block pb-0"
                 >
-                  <p className="mb-0">
+                  <p className=" mb-0 smaller-text">
                     <strong className="mr-1">
                       {sliceIndex === 0
                         ? "Depart:"
@@ -301,7 +301,7 @@ export const MultiFlightInfo = (props) => {
                      </div>
                     )}
                     <div className="d-block">
-                      <p className="mb-0 text-black">
+                      <p className="mb-0 text-black smaller-text">
                         <strong>
                           {new Date(
                             slice.segments[0].departing_at
@@ -331,7 +331,7 @@ export const MultiFlightInfo = (props) => {
                       </p>
                     </div>
                     <div className="d-block">
-                      <p className="mb-0 text-black">
+                      <p className="mb-0 text-black smaller-text">
                         {/* Calculate total duration (including layovers) */}
                         {calculateTotalDurationWithLayovers(slice.segments)}
                       </p>
@@ -346,7 +346,7 @@ export const MultiFlightInfo = (props) => {
                       </p>
                     </div>
                     <div className="d-block">
-                      <p className="mb-0 text-black">
+                      <p className="mb-0 text-black smaller-text">
                         {getStopText(slice.segments.length)}
                       </p>
                       {slice.segments.length > 1 &&
@@ -362,10 +362,10 @@ export const MultiFlightInfo = (props) => {
                               key={segment.id}
                               className="layover-detail d-block"
                             >
-                              <p className="mb-0">
+                              <p className="mb-0 smaller-text">
                                 <small>
-                                  <span>{layoverTime}</span>
-                                  <span className="ml-0">
+                                  <span className="block">{layoverTime}</span>
+                                  <span className="ml-0 block">
                                     {segment.destination.city_name}
                                   </span>
                                 </small>
@@ -375,7 +375,7 @@ export const MultiFlightInfo = (props) => {
                         })}
                     </div>
                     <div className="d-block">
-                      <p className="mb-0 text-black">
+                      <p className="mb-0 text-black smaller-text">
                         <strong>
                           {new Date(
                             slice.segments[
@@ -387,7 +387,7 @@ export const MultiFlightInfo = (props) => {
                           })}
                         </strong>
                       </p>
-                      <p className="mb-0">
+                      <p className="mb-0 smaller-text">
                         <small>
                           {" "}
                           {new Date(
@@ -401,7 +401,7 @@ export const MultiFlightInfo = (props) => {
                           })}
                         </small>
                       </p>
-                      <p className="mb-0">
+                      <p className="mb-0 smaller-text">
                         <small>
                           {
                             slice.segments[slice.segments.length - 1]
@@ -409,7 +409,7 @@ export const MultiFlightInfo = (props) => {
                           }
                         </small>
                       </p>
-                      <p className="mb-0">
+                      <p className="mb-0 smaller-text">
                         <small>
                           {
                             slice.segments[slice.segments.length - 1]
