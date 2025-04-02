@@ -45,7 +45,7 @@ export const FlightInfo = (props) => {
   return (
     <Card>
       <div className="row">
-        <div className="col-12 col-xl-8 col-lg-8 col-md-8 col-sm-12 col-xs-12  p-0">
+        <div className="col-12 col-sm-12 col-xs-12  p-0">
           <MultiFlightInfo data={flight} />
         </div>
 

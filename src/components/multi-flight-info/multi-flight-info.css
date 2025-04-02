@@ -1,9 +1,9 @@
 .Flight-info-details {
-  display: flex;
-  display: -webkit-box;
+  /* display: flex; */
+  /* display: -webkit-box;
   display: -moz-box;
-  display: -ms-flexbox;
-  display: -webkit-flex;
+  display: -ms-flexbox; */
+  /* display: -webkit-flex; */
   flex-wrap: wrap;
   justify-content: start;
   align-items: center;
@@ -145,7 +145,7 @@
   padding-block: 0;
   font-size: 12px;
   line-height: 18px;
-  width: 785px;
+  max-width: 785px;
   /* Make it full width */
   display: flex;
   /* Ensure children are laid out properly */

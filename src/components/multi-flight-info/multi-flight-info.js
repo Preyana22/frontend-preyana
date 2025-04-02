@@ -270,7 +270,24 @@ export const MultiFlightInfo = (props) => {
                       ].join(" | ")}
                     </strong>
                   </p>
-                  <div className="itinerary-card__travel-item itinerary-card__travel-item--segment-info border rounded p-2 mt-3 ml-0 mr-0">
+                  <div className="itinerary-card__travel-item itinerary-card__travel-item--segment-info border rounded p-2 mt-3 ml-0 mr-2">
+                    {console.log(slice)}
+                    {/* {sliceIndex === 0 && (
+                      <div className="logo-stack">
+                        {slice.segments.map((segment) => (
+                          <img
+                            key={segment.id}
+                            className={`airline-logo-overlap ${
+                              slice.segments.length === 1 ? "single-logo" : ""
+                            }`}
+                            src={segment.operating_carrier.logo_symbol_url}
+                            alt={`Logo for ${segment.operating_carrier.name}`}
+                            id={`logo-${segment.origin.iata_code}-${segment.operating_carrier.iata_code}`}
+                            phx-update="ignore"
+                          />
+                        ))}
+                      </div>
+                    )} */}
                     {sliceIndex === 0 && (
                       <div className="logo-stack">
                         {[...new Map(
