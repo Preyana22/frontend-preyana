@@ -305,7 +305,6 @@ const SearchFlight = ({ onSearch, ...props }) => {
     let savedDateOfRet = JSON.parse(localStorage.getItem("dateOfReturn"));
     if(savedDateOfDep==null)
     {
-      console.log("Asdfhashf");
       const today = new Date();
       // Departure: Day after tomorrow
       const departureDate = new Date();
@@ -321,7 +320,6 @@ const SearchFlight = ({ onSearch, ...props }) => {
       arrivalDate.setDate(departureDate.getDate() + 7); // 7 days later
       savedDateOfRet =arrivalDate.toISOString().split("T")[0]; // YYYY-MM-DD forma
     }
-    console.log(savedDateOfDep);
     
     const storedOptions = localStorage.getItem("options");
     const storedTripType = localStorage.getItem("isReturn");
