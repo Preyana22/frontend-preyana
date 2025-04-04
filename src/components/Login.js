@@ -118,10 +118,10 @@ const Login = (props) => {
 console.log(configuration);
     await axios(configuration)
       .then((result) => {
-        const email = result?.data?.user?.email;
-        const userName = result?.data?.user?.userName;
-        const userId = result?.data?.user?._id;
-        console.log(result?.data?.user);
+        const email = result?.data?.email;
+        const userName = result?.data?.userName;
+        const userId = result?.data?._id;
+        console.log(result?.data);
         localStorage.setItem("email", email);
         localStorage.setItem("userName", userName);
         localStorage.setItem("userId", userId);
@@ -338,7 +338,7 @@ console.log(configuration);
                             onError={handleFailure}
                           />
                         </GoogleOAuthProvider> */}
-     <Link to="/login" id="googleSignInDiv">
+                        <Link to="/login" id="googleSignInDiv">
                           <img
                             src={googleimage}
                             className="img-fluid plane_hotel_icon"
