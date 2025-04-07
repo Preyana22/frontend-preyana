@@ -258,7 +258,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
       // Simulate a delay to mimic fetching data
       await new Promise((resolve) => {
         // alert();
-        setTimeout(resolve, 4000);
+        setTimeout(resolve, 40);
       });
       // You would replace this with actual API call and handle results
     } else {
@@ -761,7 +761,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
                   <li className="nav-item">
                     <a className="nav-link" 
                       href="#hotels"  
-                      onClick={(e) => handleTabClick(e, "hotels")} 
+                      onClick={(e) => handleTabClick(e, "hotels")}
                       data-bs-toggle="tab">
                       <span>
                         <img
@@ -771,7 +771,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
                         />
                       </span>
                       <span className="d-md-inline-flex d-none st-text">
-                        Hotels
+                        Stays
                       </span>
                     </a>
                   </li>
@@ -822,9 +822,9 @@ const SearchFlight = ({ onSearch, ...props }) => {
             onChange={(selectedOption) =>
               handleCabinClassChange({ target: { value: selectedOption.value } })
             }
-            onFocus={() => toggleDropdown(true)}
-            onBlur={() => toggleDropdown(false)}
-         className="bg-transparent border-none focus:ring-0 shadow-none text-gray-700"
+            onMenuOpen={() => toggleDropdown(true)}
+            onMenuClose={() => toggleDropdown(false)}
+         className="bg-transparent border-none focus:ring-0 shadow-none text-gray-700 "
             // placeholder="Select Cabin Class"
             
             isClearable={false}

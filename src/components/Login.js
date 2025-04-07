@@ -9,8 +9,7 @@ import { Carousel } from "react-bootstrap";
 import FacebookLogin from "react-facebook-login";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 const apiUrl = process.env.REACT_APP_API_BASE_URL;
-const clientId = "661049864550-seshj8qse9fg074167lb5r188srl5jmm.apps.googleusercontent.com";
-const FACEBOOK_APP_ID = '1177952970046119'; // Replace!
+const clientId = "1095079319599-1vplrl2314aor4nefuvol83km1mbcqfc.apps.googleusercontent.com";
 const Login = (props) => {
   const [formData, setFormData] = useState({
     username: "",
@@ -115,16 +114,14 @@ const Login = (props) => {
         google_id: userObject.sub,
       },
     };
-console.log(configuration);
+     console.log(configuration);
     await axios(configuration)
       .then((result) => {
-        const email = result?.data?.email;
-        const userName = result?.data?.userName;
-        const userId = result?.data?._id;
-        console.log(result?.data);
-        localStorage.setItem("email", email);
-        localStorage.setItem("userName", userName);
-        localStorage.setItem("userId", userId);
+        console.log(result.data);
+        localStorage.setItem("email", result.data.user.email);
+        localStorage.setItem("userName", result.data.user.userName);
+        localStorage.setItem("userId", result.data.id);
+       
         navigate("/search");
       })
       .catch((error) => {
@@ -166,6 +163,7 @@ console.log(configuration);
         localStorage.setItem("userName", result.data.user._doc.userName);
         localStorage.setItem("userId", result.data.user.$__._id);
 
+
         navigate("/search");
       })
       .catch((error) => {
@@ -185,48 +183,7 @@ console.log(configuration);
         }
       });
   };
-  // const handleCallbackFacebookResponse = async (response) => {
-  //   console.log('Facebook Raw Response:', response);
 
-  //   if (response.accessToken) {
-  //     console.log('Got Facebook Access Token:', response.accessToken);
-  //     try {
-  //       // Send the Facebook accessToken to your NestJS backend
-  //       const apiResponse = await axios.post(
-  //         `${apiUrl}/auth/facebook/login`, // Your backend endpoint
-  //         { accessToken: response.accessToken } // Send token in request body
-  //       );
-
-  //       console.log('Backend Response:', apiResponse.data);
-
-  //       // Assuming backend sends back { appToken: 'your_jwt_token' }
-  //       const appToken = apiResponse.data.appToken; // Extract your app's token
-
-  //       if (appToken) {
-  //         // SAVE THE TOKEN!
-  //         localStorage.setItem('app_token', appToken);
-  //         console.log('App token saved to localStorage!');
-  //         // TODO: Update UI, redirect, fetch user profile using the appToken, etc.
-  //         alert('Login Successful!'); // Simple feedback
-  //       } else {
-  //         console.error('Backend did not return an appToken.');
-  //          alert('Login Failed (Backend Issue).');
-  //       }
-
-  //     } catch (error) {
-  //       console.error('Error sending token to backend:', error.response?.data || error.message);
-  //        alert('Login Failed (Backend Error).');
-  //     }
-  //   } else {
-  //     console.log('Facebook login failed or was cancelled.');
-  //      alert('Facebook Login Failed or Cancelled.');
-  //   }
-  // };
-
-  // const handleFailure = (error) => {
-  //     console.error('Facebook SDK Load Error:', error);
-  //     alert('Could not load Facebook Login.');
-  // }
   return (
     <>
       <section className="innerpage-wrapper">

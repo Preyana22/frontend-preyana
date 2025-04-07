@@ -271,7 +271,7 @@ export const MultiFlightInfo = (props) => {
                     </strong>
                   </p>
                   <div className="itinerary-card__travel-item itinerary-card__travel-item--segment-info border rounded p-2 mt-3 ml-0 mr-2">
-                    {console.log(slice)}
+                    {/* {console.log(slice)} */}
                     {/* {sliceIndex === 0 && (
                       <div className="logo-stack">
                         {slice.segments.map((segment) => (

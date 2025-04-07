@@ -69,3 +69,15 @@
 .checktrip {
   margin-top: 7px;
 }
+.select-container {
+  position: relative;
+}
+
+.cabin-arrow {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #555; /* adjust color if needed */
+}
