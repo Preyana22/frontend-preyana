@@ -16,7 +16,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 22
+          node-version: 16
 
       - name: Install Dependencies  
         run: npm install --legacy-peer-deps
@@ -34,7 +34,3 @@ jobs:
       - name: Deploy to AWS S3
         run: |
           aws s3 sync build/ s3://preyana-dev --delete
-
-      - name: Invalidate CloudFront Cache
-        run: |
-          aws cloudfront create-invalidation --distribution-id ERTEMCWCAL6IS --paths "/*"
