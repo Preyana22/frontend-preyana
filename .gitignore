@@ -6,8 +6,6 @@ node_modules/
 .pnp.js
 package-lock.json
 
-# ignore local environment overrides
-.env
 
 # testing
 /coverage
