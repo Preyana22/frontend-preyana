@@ -83,7 +83,15 @@ const FlightsGrid = ({ flights, criteria }) => {
         const updatedFlights = applyFilters(originalFlightData, searchCriteria);
 
         if (updatedFlights) {
-          console.log("Flights data after filtering:", updatedFlights);
+          // console.log("Flights data after filtering:", updatedFlights);
+          // const iataCodes = updatedFlights.map(flight => flight?.owner?.iata_code);
+          // console.log(iataCodes);
+          // console.log(updatedFlights[0].owner.iata_code)
+          // const uniqueIataCodes = [
+          //   ...new Set(updatedFlights.map(flight => flight?.owner?.iata_code).filter(Boolean))
+          // ];
+          
+          // console.log(uniqueIataCodes);
           setFlightsData(updatedFlights); // Update flightsData
         } else {
           console.error("Error: No updated flights data found!");
@@ -153,6 +161,7 @@ const FlightsGrid = ({ flights, criteria }) => {
   };
 
   const applyFilters = (flights, filterCriteria) => {
+    // console.log(filterCriteria);
     // Ensure flights is an array or convert it
     const safeFlights = Array.isArray(flights)
       ? flights
@@ -171,6 +180,42 @@ const FlightsGrid = ({ flights, criteria }) => {
         !filterCriteria.price || // No price filter
         (totalWithMarkup >= parseFloat(filterCriteria.price[0]) &&
           totalWithMarkup <= parseFloat(filterCriteria.price[1]));
+        
+          // ✅ Time Ranges for Filters
+    const timeRanges = {
+      earlyMorning: [0, 4],
+      morning: [5, 11],
+      afternoon: [12, 17],
+      evening: [18, 23],
+    };
+
+    // ✅ Departure Time Filter
+    let isDepartureValid = !filterCriteria.departureTime || filterCriteria.departureTime.length === 0;
+    let isArrivalValid = !filterCriteria.arrivalTime || filterCriteria.arrivalTime.length === 0;
+
+    flight.slices.forEach((slice) => {
+      if (!slice.segments || slice.segments.length === 0) {
+        return;
+      }
+      // slice.segments.forEach((segment) => {
+        const departureTime = new Date(slice.segments[0].departing_at).getHours();
+        const arrivalTime = new Date(slice.segments[0].arriving_at).getHours();
+    
+        // ✅ Check Departure Time
+        if (filterCriteria.departureTime?.length) {
+          isDepartureValid = isDepartureValid || filterCriteria.departureTime.some((time) => {
+            return departureTime >= timeRanges[time][0] && departureTime <= timeRanges[time][1];
+          });
+        }
+
+        // ✅ Check Arrival Time
+        if (filterCriteria.arrivalTime?.length) {
+          isArrivalValid = isArrivalValid || filterCriteria.arrivalTime.some((time) => {
+            return arrivalTime >= timeRanges[time][0] && arrivalTime <= timeRanges[time][1];
+          });
+        }
+      // });
+    });
 
       // Stops filter
       const stops = flight.slices?.[0]?.segments?.length - 1 || 0; // Calculate stops
@@ -228,23 +273,32 @@ const FlightsGrid = ({ flights, criteria }) => {
       ) {
         loyaltyProgrammesFilter = Object.keys(loyaltyProgrammesFilter); // Convert object keys to array
       }
-
-      // Loyalty programme filter
+     // Loyalty programme filter
       const matchesLoyaltyProgrammesFilter =
-        !loyaltyProgrammesFilter || // No loyalty programme filter
-        (Array.isArray(loyaltyProgrammesFilter) &&
-          flight.slices?.some((slice) =>
-            slice.segments?.some((segment) =>
-              loyaltyProgrammesFilter.includes(
-                segment.operating_carrier?.iata_code
-              )
-            )
-          ));
+      !filterCriteria.loyaltyProgrammes ||
+      (Array.isArray(filterCriteria.loyaltyProgrammes) &&
+        flight.owner &&
+        filterCriteria.loyaltyProgrammes.includes(flight.owner.iata_code));
+      // const matchesLoyaltyProgrammesFilter =
+      //   !loyaltyProgrammesFilter || // No loyalty programme filter
+      //   (Array.isArray(loyaltyProgrammesFilter) &&
+      //     flight.slices?.some((slice) =>
+      //       slice.segments?.some((segment) =>
+      //         loyaltyProgrammesFilter.includes(
+      //           segment.operating_carrier?.iata_code
+      //         )
+      //       )
+      //     ));
+      //     console.log(matchesLoyaltyProgrammesFilter);
+   
+
       // Combine all filters
       const matchesAllFilters =
         withinPriceRange &&
         matchesStops &&
         carryOnBagFilter &&
+        isDepartureValid &&
+        isArrivalValid &&
         matchesLoyaltyProgrammesFilter;
 
       return matchesAllFilters;
@@ -254,17 +308,20 @@ const FlightsGrid = ({ flights, criteria }) => {
   const handleFilters = async (filtersCriteria) => {
     // Reset current page to 1 whenever filters change
     setCurrentPage(1);
-
+// console.log(filtersCriteria);
     const storedFlights = localStorage.getItem("flightsData");
+  
     if (storedFlights) {
       const flights = JSON.parse(storedFlights);
+      // console.log(flights);
       if (
         Object.keys(flights) &&
         Object.keys(flights).length > 0 &&
         filtersCriteria
       ) {
+        
         const filtered = applyFilters(flights, filtersCriteria);
-
+        // console.log(filtered)
         setFlightsData(filtered);
         if (filtered) {
           localStorage.setItem(
@@ -287,7 +344,7 @@ const FlightsGrid = ({ flights, criteria }) => {
 
         <div className="flights-info-container row">
           <div className="col-12 col-md-3 col-lg-3 col-xl-3 col-xs-12 col-sm-12">
-            <Filters onFiltersChange={handleFilters} flights={flightsData} />
+            <Filters onFiltersChange={handleFilters} flights={flightsData}  onSearch={handleSearch}/>
           </div>
 
           <div className="col-12 col-md-9 col-lg-9 col-xl-9 col-xs-12 col-sm-12 mt-0">
