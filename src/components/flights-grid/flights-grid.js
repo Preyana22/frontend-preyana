@@ -150,12 +150,15 @@ const FlightsGrid = ({ flights, criteria }) => {
       setSearchCriteria(criteria);
     }
   }, [flights, criteria]);
+  const [searchTrigger, setSearchTrigger] = useState(0);
+
 
   const handleSearch = () => {
     if (criteria) {
       setSearchCriteria(criteria);
       setSearchInitiated(true);
       setCurrentPage(1); // Reset to the first page
+      setSearchTrigger((prev) => prev + 1);
       localStorage.setItem("searchCriteria", JSON.stringify(criteria));
     }
   };
@@ -344,7 +347,7 @@ const FlightsGrid = ({ flights, criteria }) => {
 
         <div className="flights-info-container row">
           <div className="col-12 col-md-3 col-lg-3 col-xl-3 col-xs-12 col-sm-12">
-            <Filters onFiltersChange={handleFilters} flights={flightsData}  onSearch={handleSearch}/>
+            <Filters  key={searchTrigger} onFiltersChange={handleFilters} flights={flightsData}  onSearch={handleSearch}/>
           </div>
 
           <div className="col-12 col-md-9 col-lg-9 col-xl-9 col-xs-12 col-sm-12 mt-0">

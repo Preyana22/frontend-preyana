@@ -47,10 +47,11 @@
   background-color: white;
   height: 2.4rem;
   text-align: left;
-  text-indent: 10px;
+  /* text-indent: 10px; */
   vertical-align: middle;
   line-height: 1.5;
   border-radius: 5px;
+  margin-top: 10px;
 }
 
 .headerSearchText {
@@ -137,7 +138,7 @@
     /* Space for the arrow */
   }
 .headerSearchText {
-  position: relative;
+  /* position: relative; */
   display: inline-block;
   padding-right: 9rem;
   /* Space for the arrow */
@@ -193,4 +194,7 @@ padding: 5px !important;
 #toDestination:hover{
 background-color: #ffd842;
   color: #000;
+}
+.user-icon {
+  margin-right: 5px; /* Adjust this value as needed */
 }

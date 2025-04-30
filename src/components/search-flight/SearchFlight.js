@@ -21,6 +21,7 @@ import destination_1 from "../../assets/images/destination_1.jpg";
 import destination_2 from "../../assets/images/destination_2.jpg";
 import coming_soon from "../../assets/images/coming_soon.jpg";
 import { Alert, Carousel } from "react-bootstrap";
+import Select from 'react-select';
 import "./search-flight.css";
 import { debounce } from "lodash";
 const apiUrl = process.env.REACT_APP_API_BASE_URL;
@@ -36,7 +37,10 @@ const ErrorLabel = (props) => {
 };
 
 var cabin_details = ["Economy", "Premium Economy", "Business", "First"];
-
+const cabinOptions = cabin_details.map((cabin,index) => ({
+  value: index + 1,
+  label: cabin,
+}));
 const countryCodeMapping = {
   AF: "Afghanistan",
   AL: "Albania",
@@ -297,10 +301,29 @@ const SearchFlight = ({ onSearch, ...props }) => {
     const savedCabinClass = localStorage.getItem("cabinclass");
     const savedOrigin = localStorage.getItem("origin");
     const savedDestination = localStorage.getItem("destination");
-    const savedDateOfDep = JSON.parse(localStorage.getItem("dateOfDeparture"));
-    const savedDateOfRet = JSON.parse(localStorage.getItem("dateOfReturn"));
+    let savedDateOfDep = JSON.parse(localStorage.getItem("dateOfDeparture"));
+    let savedDateOfRet = JSON.parse(localStorage.getItem("dateOfReturn"));
+    if(savedDateOfDep==null)
+    {
+      const today = new Date();
+      // Departure: Day after tomorrow
+      const departureDate = new Date();
+      departureDate.setDate(today.getDate() + 2); // 2 days ahead
+      savedDateOfDep =departureDate.toISOString().split("T")[0]; // YYYY-MM-DD format
+    }
+    if(savedDateOfRet==null){
+      const today = new Date();
+  // Departure: Day after tomorrow
+  const departureDate = new Date();
+  departureDate.setDate(today.getDate() + 2); // 2 days ahead
+      const arrivalDate = new Date(departureDate);
+      arrivalDate.setDate(departureDate.getDate() + 7); // 7 days later
+      savedDateOfRet =arrivalDate.toISOString().split("T")[0]; // YYYY-MM-DD forma
+    }
+    
     const storedOptions = localStorage.getItem("options");
     const storedTripType = localStorage.getItem("isReturn");
+
 
     if (storedTripType) {
       setIsReturn(JSON.parse(storedTripType));
@@ -327,7 +350,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
     }
 
     if (savedCabinClass) {
-      setSelectedCabinClass(JSON.parse(savedCabinClass));
+      setSelectedCabinClass(savedCabinClass);
     }
   }, [location.pathname]);
 
@@ -346,8 +369,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
   const handleCabinClassChange = (event) => {
     const selectedCabin = event.target.value;
     setSelectedCabinClass(selectedCabin);
-
-    localStorage.setItem("cabinclass", JSON.stringify([selectedCabin]));
+    localStorage.setItem("cabinclass", selectedCabin);
 
     // Update status based on whether a selection was made
     if (selectedCabin) {
@@ -480,9 +502,9 @@ const SearchFlight = ({ onSearch, ...props }) => {
   let invalidFields = {};
 
   const getCabinClassValue = () => {
-    const cabinClassElement = document.getElementById("cabinclass");
-    const cabinClassValue = cabinClassElement ? cabinClassElement.value : "";
-    return cabinClassValue;
+    const cabinClassElement = localStorage.getItem("cabinclass");
+
+    return cabinClassElement;
   };
 
   // Function to extract the second part (after splitting and trimming)
@@ -508,13 +530,18 @@ const SearchFlight = ({ onSearch, ...props }) => {
   const handleSubmit1 = (event) => {
     let cabinValue;
     const cabinClassValue = getCabinClassValue();
-
-    if (cabinClassValue === "Premium Economy") {
+    if(cabinClassValue=="1"){
+      cabinValue = "economy";
+    }else if (cabinClassValue=="2") {
       cabinValue = "premium_economy";
-    } else {
-      cabinValue = cabinClassValue;
+    } else if(cabinClassValue=="3"){
+      cabinValue = "business";
+    }else if(cabinClassValue=="4") {
+      cabinValue = "first";
     }
-
+  
+// console.log("cabinValue",cabinValue);
+// console.log(typeof(cabinValue));
     event.preventDefault();
     const { flights } = props;
     invalidFields = {};
@@ -574,8 +601,8 @@ const SearchFlight = ({ onSearch, ...props }) => {
       };
     }
 
-    if (!cabin_details.includes(cabinClassValue)) {
-      invalidFields.cabinclass = true;
+    if (cabin_details.includes(cabinClassValue)) {
+      invalidFields.cabinclass = false;
     }
 
     if (!criteria.departureDate || !isDate(criteria.departureDate)) {
@@ -644,8 +671,9 @@ const SearchFlight = ({ onSearch, ...props }) => {
     getAirports(keyword, type);
     localStorage.setItem("options", JSON.stringify(options));
     localStorage.setItem("isReturn", JSON.stringify(isReturn)); // Store isReturn
-    setSelectedCabinClass(cabin_details[0]);
-    localStorage.setItem("cabinclass", JSON.stringify([cabin_details[0]]));
+
+    setSelectedCabinClass(1);
+    localStorage.setItem("cabinclass", '1');
   }, [cabin_details, openOptions, options, isReturn]);
   // Handle tab click
   const [activeTab, setActiveTab] = useState("flights");
@@ -758,7 +786,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
                           <div className="col-12 col-md-6 col-lg-4 col-xl-3 col-sm-12 col-xs-12">
                           <div className="form-group">
 
-                          <Form.Group className="mb-0">
+                          <Form.Group className="mb-0 checktrip" >
                             <Form.Check
                               inline
                               checked={isReturn}
@@ -785,30 +813,35 @@ const SearchFlight = ({ onSearch, ...props }) => {
 
                           {/* Cabin Class Selection */}
                           <div className="col-12 col-md-6 col-lg-4 col-xl-3 col-sm-12 col-xs-12 ">
-                            
                             <Form.Group controlId="cabinclass">
-                              {/* <label
-                                htmlFor="cabinclass"
-                                className="form-label"
-                              >
-                                Cabin Class
-                              </label> */}
                               <div className="select-container">
-                                <Form.Control
-                                  as="select"
-                                  value={selectedCabinClass}
-                                  onChange={handleCabinClassChange}
-                                  onFocus={() => toggleDropdown(true)}
-                                  onBlur={() => toggleDropdown(false)}
-                                  className="border-0 bg-transparent"
-                                >
-                                  <option value="">Select Cabin Class</option>
-                                  {cabin_details.map((cabin, index) => (
-                                    <option key={index} value={cabin}>
-                                      {cabin}
-                                    </option>
-                                  ))}
-                                </Form.Control>
+                               
+                              <Select
+
+            options={cabinOptions}
+            value={cabinOptions.find((option) => option.value === Number(selectedCabinClass)) || null}
+            onChange={(selectedOption) =>
+              handleCabinClassChange({ target: { value: selectedOption.value } })
+            }
+            onFocus={() => toggleDropdown(true)}
+            onBlur={() => toggleDropdown(false)}
+         className="bg-transparent border-none focus:ring-0 shadow-none text-gray-700"
+            // placeholder="Select Cabin Class"
+            
+            isClearable={false}
+            styles={{
+              control: (base) => ({
+                ...base,
+                backgroundColor: "transparent", // Transparent background
+                border: "none", // Removes border
+                boxShadow: "none", // Removes focus ring
+              }),
+              indicatorsContainer: (base) => ({
+                ...base,
+                display: "none", // Hides the dropdown arrow
+              }),
+            }}
+          />
                                 <i
                                   className={`cabin-arrow ${
                                     isDropdownOpen
@@ -818,7 +851,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
                                   aria-hidden="true"
                                 ></i>
                               </div>
-                              {status.cabinclass && (
+                              {status?.cabinclass && (
                                 <ErrorLabel message="Please select cabin class" />
                               )}
                             </Form.Group>

@@ -5,9 +5,10 @@
   "homepage": ".",
   "dependencies": {
     "@duffel/components": "^3.3.1",
+    "@react-oauth/google": "^0.12.1",
     "@stripe/stripe-js": "^3.1.0",
     "add": "^2.0.6",
-    "axios": "^1.6.7",
+    "axios": "^1.8.4",
     "bootstrap": "^4.3.1",
     "datatables.net": "^2.1.6",
     "datatables.net-dt": "^2.1.6",
@@ -27,13 +28,14 @@
     "react-redux": "^7.1.0",
     "react-router-dom": "^6.21.0",
     "react-scripts": "3.0.1",
+    "react-select": "^3.2.0",
     "redux": "^4.0.4",
     "redux-saga": "^1.0.5",
     "yarn": "^1.22.21"
   },
-  "scripts": {
-    "start": "react-scripts --openssl-legacy-provider start",
-    "build": "react-scripts --openssl-legacy-provider build",
+   "scripts": {
+    "start": "react-scripts start --no-source-maps",
+    "build": "CI=false react-scripts build --no-source-maps",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

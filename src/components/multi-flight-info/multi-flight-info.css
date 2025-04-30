@@ -29,12 +29,18 @@
 }
 
 .itinerary-card__travel-item {
-  display: grid;
+  /* display: grid; */
   grid-template-columns: 48px 20px auto;
   column-gap: 16px;
   padding: 10px 5px;
   font-size: 13px;
-  line-height: 20px
+  line-height: 20px;
+  display: flex;
+  /* align-items: center;        Vertically centers children */
+  justify-content: space-between; /* Adjust as needed */
+  /* padding: 8px; */
+  margin-top: 16px;
+
 }
 
 .itinerary-card__travel-item--segment-info div:nth-child(2),
@@ -81,6 +87,7 @@
   align-items: center;
   flex-wrap: wrap;
   font-size: 15px;
+   margin: 0;
 }
 
 .itinerary-card p,
@@ -93,7 +100,11 @@
   -webkit-animation: fadein 1s;
   -o-animation: fadein 1s
 }
-
+.itinerary-card__travel-item > div {
+  flex: 1;
+  /* Optionally add text-align or padding */
+  text-align: center;
+}
 .material-symbols-outlined {
   font-family: 'Material Symbols Outlined';
   font-weight: normal;
@@ -168,7 +179,7 @@
 }
 
 .itinerary-card__travel-item--segment-info img {
-  margin-right: 4px
+  margin-right: 20px
 }
 
 .itinerary-card__travel-item--destination {
@@ -237,7 +248,14 @@
   max-height: 1500px;
   margin-top: 0
 }
+.itinerary-card__travel-item p {
+ 
+}
 
+/* If you want to adjust only specific text, you can add a dedicated class */
+.smaller-text {
+  font-size: 0.8rem; /* Even smaller text */
+}
 .itinerary-card p,
 .itinerary-card span,
 .itinerary-card img,
@@ -312,3 +330,133 @@
 .layover-detail p{
   font-size: 15px;
 }
+
+@media (max-width: 600px){
+  .itinerary-card__travel-item--segment-info{
+    width: 645px;
+    margin: 0 auto; /* Center the element */
+    }
+}
+@media (min-width:907px) and (max-width: 970px) {
+  .itinerary-card__travel-item--segment-info{
+    width: 545px;
+    margin: 0 auto; /* Center the element */
+    }
+}
+@media (min-width: 1000px) and (max-width: 1198px) {
+  .itinerary-card__travel-item--segment-info{
+    width: 645px;
+    margin: 0 auto; /* Center the element */
+    }
+}
+/* ipad  */
+@media (min-width:760px) and (max-width: 990px) {
+  .itinerary-card__travel-item--segment-info{
+    width: 470px;
+    margin: 0 auto; /* Center the element */
+    }
+    .itinerary-card__travel-item p {
+    
+      font-size: 12px;
+       margin: 0;
+    }
+.block {
+  display: block;
+}
+.Flight-info p {
+  font-weight: bold !important;
+  color: #000000 !important;
+  font-size: 17px;
+  margin-top: 8px;
+  margin-bottom: 12px;
+}
+.pg-search-form .btn, .Flight-info .btn {
+  /* margin-top: 15px; */
+   padding: 6px 20px; 
+  background-color: #005085;
+  color: #fff;
+  size: a3;
+}
+.headerSearchText.optionarrow-down {
+  display: inline-flex;    /* Places icons and text in a single horizontal line */
+  align-items: center;     /* Vertically centers them if needed */
+  white-space: nowrap;     /* Prevents line breaks */
+}
+.passenger-arrow {
+  margin-left: 2px;        /* Optional spacing before the arrow icon */
+}
+.filter-section h5 {
+  font-size: 12px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+.flight-search-info h3{
+  margin: 0px 10px 10px 0px;
+  font-size: 18px;
+}
+.col-md-6 {
+  flex: 0 0 50.66667%; /* Equivalent to col-md-5 (since 5/12 ≈ 41.67%) */
+  max-width: 45.66667%;
+}
+
+
+}
+@media (max-width: 600px) {
+  .itinerary-card__travel-item {
+    flex-direction: column;
+    align-items: flex-start; /* or center */
+    /* width: auto; */
+  }
+  .itinerary-card__travel-item p {
+    display: grid;
+    align-items: center;
+    flex-wrap: wrap;
+    font-size: 15px;
+     margin: 0;
+  }
+
+.filters {
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 5px;
+  font-size: 10px;
+}
+.Flight-info p {
+  flex: 1 1 20%; 
+  font-size: 12px;
+}
+
+}
+/* mobile */
+@media (min-width:300px) and (max-width: 450px) {
+  .itinerary-card__travel-item {
+    flex-direction: column;
+    align-items: flex-start; /* or center */
+     width: 100%;
+  }
+  .itinerary-card__travel-item p {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    font-size: 15px;
+     margin: 0;
+     width: 100%;
+  }
+  .Flight-info p {
+     flex: 1 1 20%; 
+     font-size: 15px;
+}
+.itinerary-card__travel-item > div {
+  flex: 1;
+  /* Optionally add text-align or padding */
+  text-align: center;
+  width: 290px;
+}
+.block {
+  display: block;
+}
+}
+/* .block {
+  display: block;
+} */

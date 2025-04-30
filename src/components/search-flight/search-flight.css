@@ -51,3 +51,21 @@
   background-color: #ccc;
   border-radius: 10px;
 }
+.custom-select__control {
+
+  border: 1px solid #ccc;
+}
+
+.custom-select__placeholder {
+  color: #999;
+}
+.css-6q0nyr-Svg {
+  display: none;
+  fill: currentColor;
+  line-height: 1;
+  stroke: currentColor;
+  stroke-width: 0;
+}
+.checktrip {
+  margin-top: 7px;
+}
