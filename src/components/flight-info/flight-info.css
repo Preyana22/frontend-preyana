@@ -7,7 +7,7 @@
   flex-wrap: wrap;
   justify-content: flex-end;
   align-items: start;
-  padding: 10px;
+  padding: 0px 10px;
   cursor: default;
 }
 .Flight-info p{
@@ -42,4 +42,28 @@
   .itinerary-card__travel-item{
     width: 640px;
   }
+  .swap-button {
+    position: absolute;
+    top: 52%; /* Center between two fields */
+    left: 85%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  
+  .swap-button img {
+    width: 20px;
+    height: 20px;
+  }
+  .bg-transparent.border-none.focus\:ring-0.shadow-none.text-gray-700.css-2b097c-container.zindex {
+    z-index: 5;
+}
 }

@@ -4627,7 +4627,7 @@ Author:			Star Travel
 	}
 
 	#basic-navbar-nav div:first-child .dropdown{
-		margin-left: 10px !important;
+		margin-left: 0px !important;
 	}
 		#banner-sec {
 			display: none !important;

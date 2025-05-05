@@ -61,6 +61,7 @@ const FlightsGrid = ({ flights, criteria }) => {
     }
   };
 
+
   useEffect(() => {
     // Scroll to the target div whenever currentPage changes
     const element = document.getElementById("search-result-container");
@@ -74,7 +75,53 @@ const FlightsGrid = ({ flights, criteria }) => {
       setCurrentPage(currentPage - 1);
     }
   };
+/**
+ * Returns an array of page numbers and ellipsis ("...") based on the total pages and current page.
+ *
+ * @param {number} totalPages - Total number of pages.
+ * @param {number} currentPage - The currently active page.
+ * @returns {Array<number|string>} - An array of numbers and/or "..." for ellipsis.
+ */
+function getPaginationPages(totalPages, currentPage) {
+  const maxPagesToShow = 5; // Maximum page buttons to show (excluding first and last if ellipsis needed)
+  // If total pages is less than or equal to maxPagesToShow, return all pages.
+  if (totalPages <= maxPagesToShow) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
+  const pages = [];
+  // Always show the first page.
+  pages.push(1);
+  let startPage = Math.max(2, currentPage - 1);
+  let endPage = Math.min(totalPages - 1, currentPage + 1);
+  // Adjust when current page is near the start.
+  if (currentPage <= 3) {
+    startPage = 2;
+    endPage = 4;
+  }
+  // Adjust when current page is near the end.
+  if (currentPage >= totalPages - 2) {
+    startPage = totalPages - 3;
+    endPage = totalPages - 1;
+  }
 
+  // If there's a gap between first page and startPage, add ellipsis.
+  if (startPage > 2) {
+    pages.push("...");
+  }
+
+  // Push the middle page numbers.
+  for (let i = startPage; i <= endPage; i++) {
+    pages.push(i);
+  }
+
+  // If there's a gap between endPage and last page, add ellipsis.
+  if (endPage < totalPages - 1) {
+    pages.push("...");
+  }
+  // Always show the last page.
+  pages.push(totalPages);
+  return pages;
+}
   useEffect(() => {
     if (searchInitiated) {
       setIsLoading(true);
@@ -164,7 +211,8 @@ const FlightsGrid = ({ flights, criteria }) => {
   };
 
   const applyFilters = (flights, filterCriteria) => {
-    // console.log(filterCriteria);
+
+     console.log(filterCriteria);
     // Ensure flights is an array or convert it
     const safeFlights = Array.isArray(flights)
       ? flights
@@ -200,6 +248,7 @@ const FlightsGrid = ({ flights, criteria }) => {
       if (!slice.segments || slice.segments.length === 0) {
         return;
       }
+      
       // slice.segments.forEach((segment) => {
         const departureTime = new Date(slice.segments[0].departing_at).getHours();
         const arrivalTime = new Date(slice.segments[0].arriving_at).getHours();
@@ -207,6 +256,8 @@ const FlightsGrid = ({ flights, criteria }) => {
         // ✅ Check Departure Time
         if (filterCriteria.departureTime?.length) {
           isDepartureValid = isDepartureValid || filterCriteria.departureTime.some((time) => {
+            console.log(departureTime);
+            console.log(departureTime >= timeRanges[time][0] && departureTime <= timeRanges[time][1]);
             return departureTime >= timeRanges[time][0] && departureTime <= timeRanges[time][1];
           });
         }
@@ -364,33 +415,34 @@ const FlightsGrid = ({ flights, criteria }) => {
               <FlightNotFound />
             ) : (
               <>
-                {paginatedData.map((flight, index) => (
-                  <FlightInfo key={index} data={flight} />
-                ))}
-                <div className="pagination sticky-pagination">
-                  <button
-                    onClick={handlePreviousPage}
-                    disabled={currentPage === 1}
-                  >
-                    Previous
-                  </button>
-                  {Array.from({ length: totalPages }, (_, idx) => (
+              {paginatedData.map((flight, index) => (
+                <FlightInfo key={index} data={flight} />
+              ))}
+              <div className="pagination sticky-pagination">
+                <button onClick={handlePreviousPage} disabled={currentPage === 1}>
+                  Previous
+                </button>
+                
+                {getPaginationPages(totalPages, currentPage).map((page, idx) =>
+                  page === "..." ? (
+                    <span key={idx} className="px-2">...</span>
+                  ) : (
                     <button
                       key={idx}
-                      onClick={() => handlePageChange(idx + 1)}
-                      className={currentPage === idx + 1 ? "active" : ""}
+                      onClick={() => handlePageChange(page)}
+                      className={currentPage === page ? "active" : ""}
                     >
-                      {idx + 1}
+                      {page}
                     </button>
-                  ))}
-                  <button
-                    onClick={handleNextPage}
-                    disabled={currentPage === totalPages}
-                  >
-                    Next
-                  </button>
-                </div>
-              </>
+                  )
+                )}
+                
+                <button onClick={handleNextPage} disabled={currentPage === totalPages}>
+                  Next
+                </button>
+              </div>
+            </>
+            
             )}
           </div>
         </div>

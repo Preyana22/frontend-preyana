@@ -243,7 +243,7 @@ export const MultiFlightInfo = (props) => {
                   key={slice.segments[0].id}
                   className="itinerary-card__travel-item itinerary-card__travel-item--origin d-block pb-0"
                 >
-                  <p className=" mb-0 smaller-text">
+                  <p className=" mb-0 smaller-text heading-text">
                     <strong className="mr-1">
                       {sliceIndex === 0
                         ? "Depart:"
@@ -270,7 +270,8 @@ export const MultiFlightInfo = (props) => {
                       ].join(" | ")}
                     </strong>
                   </p>
-                  <div className="itinerary-card__travel-item itinerary-card__travel-item--segment-info border rounded p-2 mt-3 ml-0 mr-2">
+                  <div className="itinerary-card__travel-item itinerary-card__travel-item--segment-info  border rounded p-2 mt-3 ml-0 mr-2">
+                    
                     {/* {console.log(slice)} */}
                     {/* {sliceIndex === 0 && (
                       <div className="logo-stack">
@@ -288,22 +289,43 @@ export const MultiFlightInfo = (props) => {
                         ))}
                       </div>
                     )} */}
-                    {sliceIndex === 0 && (
+                    <div className="d-block single-line-info">
+                     {sliceIndex === 0 && (
                       <div className="logo-stack">
-                        {[...new Map(
-                          slice.segments.map(segment => [segment.operating_carrier.iata_code, segment])
-                        ).values()].map((segment) => (
-                          <img
-                            key={segment.operating_carrier.iata_code} // Unique key based on airline code
-                            className={`airline-logo-overlap ${slice.segments.length === 1 ? "single-logo" : ""}`}
-                            src={segment.operating_carrier.logo_symbol_url}
-                            alt={`Logo for ${segment.operating_carrier.name}`}
-                            id={`logo-${segment.origin.iata_code}-${segment.operating_carrier.iata_code}`}
-                            phx-update="ignore"
-                          />
-                        ))}
+                        {(() => {
+                          const uniqueAirlines = [...new Map(
+                            slice.segments.map(segment => [segment.operating_carrier.iata_code, segment])
+                          ).values()];
+
+                          if (uniqueAirlines.length > 1) {
+                            // If multiple airlines, show a single "multi-airline" image
+                            return (
+                              <img
+                                className="airline-logo-overlap"
+                                src="/assets/images/multi_logo.png" // Replace with your actual image
+                                alt="Multiple airlines"
+                                id={`logo-${slice.segments[0].origin.iata_code}-multiple`}
+                                phx-update="ignore"
+                              />
+                            );
+                          } else {
+                            // Show the single airline's logo
+                            const segment = uniqueAirlines[0];
+                            return (
+                              <img
+                                key={segment.operating_carrier.iata_code}
+                                className="airline-logo-overlap single-logo"
+                                src={segment.operating_carrier.logo_symbol_url}
+                                alt={`Logo for ${segment.operating_carrier.name}`}
+                                id={`logo-${segment.origin.iata_code}-${segment.operating_carrier.iata_code}`}
+                                phx-update="ignore"
+                              />
+                            );
+                          }
+                        })()}
                       </div>
                     )}
+
                     {sliceIndex !== 0 && (
                       <div className="logo-stack">
                       <img
@@ -317,7 +339,8 @@ export const MultiFlightInfo = (props) => {
                       />
                      </div>
                     )}
-                    <div className="d-block">
+                    </div>
+                    <div className="d-block  extra-info">
                       <p className="mb-0 text-black smaller-text">
                         <strong>
                           {new Date(
@@ -328,7 +351,7 @@ export const MultiFlightInfo = (props) => {
                           })}
                         </strong>
                       </p>
-                      <p className="mb-0">
+                      <p className="mb-0 ">
                         <small>
                           {" "}
                           {new Date(
@@ -340,20 +363,20 @@ export const MultiFlightInfo = (props) => {
                           })}
                         </small>
                       </p>
-                      <p className="mb-0">
-                        <small>{slice.segments[0].origin.city_name}</small>
+                      <p className="mb-0 single-line-info">
+                        <small >{slice.segments[0].origin.city_name}</small>
                       </p>
-                      <p className="mb-0">
-                        <small>{slice.segments[0].origin.iata_code}</small>
+                      <p className="mb-0 single-line-info">
+                        <small >{slice.segments[0].origin.iata_code}</small>
                       </p>
                     </div>
-                    <div className="d-block">
+                    <div className="d-block single-line-info">
                       <p className="mb-0 text-black smaller-text">
                         {/* Calculate total duration (including layovers) */}
                         {calculateTotalDurationWithLayovers(slice.segments)}
                       </p>
                       <p className="mb-0">
-                        <small>
+                        <small className="single-line-info">
                           {slice.segments[0].origin.iata_code}-
                           {
                             slice.segments[slice.segments.length - 1]
@@ -362,7 +385,7 @@ export const MultiFlightInfo = (props) => {
                         </small>
                       </p>
                     </div>
-                    <div className="d-block">
+                    <div className="d-block single-line-info">
                       <p className="mb-0 text-black smaller-text">
                         {getStopText(slice.segments.length)}
                       </p>
@@ -377,21 +400,21 @@ export const MultiFlightInfo = (props) => {
                           return (
                             <div
                               key={segment.id}
-                              className="layover-detail d-block"
+                              className="layover-detail d-block "
                             >
                               <p className="mb-0 smaller-text">
-                                <small>
-                                  <span className="block">{layoverTime}</span>
-                                  <span className="ml-0 block">
+                                <small className="">
+                                  <span className="block">{layoverTime}-{segment.destination.city_name}</span>
+                                  {/* <span className="ml-0 block">
                                     {segment.destination.city_name}
-                                  </span>
+                                  </span> */}
                                 </small>
                               </p>
                             </div>
                           );
                         })}
                     </div>
-                    <div className="d-block">
+                    <div className="d-block single-line-info">
                       <p className="mb-0 text-black smaller-text">
                         <strong>
                           {new Date(

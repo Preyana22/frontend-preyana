@@ -986,7 +986,7 @@ const Contacts = (props) => {
                             <span>{stops}</span>
                           </li>
                           <li className="d-flex justify-content-between">
-                            <strong>Airlines Name:</strong>
+                            <strong>Airline Name:</strong>
                             <span>{airlinesName}</span>
                           </li>
                           <li className="d-flex justify-content-between">

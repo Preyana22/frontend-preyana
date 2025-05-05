@@ -382,10 +382,24 @@ const SearchFlight = ({ onSearch, ...props }) => {
   const [dateOfDep, setDateOfDep] = useState("");
   const [returnDate, setDateOfRet] = useState("");
   // Handle dateOfDep change
-  const handleDateOfDepChange = (event) => {
-    const selectedDate = event.target.value; // Get the value directly
-    setDateOfRet(selectedDate);
-    setSelectedDateOfDep(selectedDate); // Set state directly
+  // const handleDateOfDepChange = (event) => {
+  //   const selectedDate = event.target.value; // Get the value directly
+  //   setDateOfRet(selectedDate);
+  //   setSelectedDateOfDep(selectedDate); // Set state directly
+  //   localStorage.setItem("dateOfDeparture", JSON.stringify(selectedDate));
+  // };
+   const handleDateOfDepChange = (event) => {
+    const selectedDate = event.target.value; // string in "YYYY-MM-DD" format
+    setSelectedDateOfDep(selectedDate);
+  
+    // Calculate 10 days ahead
+    const depDate = new Date(selectedDate);
+    depDate.setDate(depDate.getDate() + 10); // Add 10 days
+    
+    const returnDate = depDate.toISOString().split('T')[0]; // format to "YYYY-MM-DD"
+  
+    setSelectedDateOfRet(returnDate);
+  
     localStorage.setItem("dateOfDeparture", JSON.stringify(selectedDate));
   };
 
@@ -666,8 +680,8 @@ const SearchFlight = ({ onSearch, ...props }) => {
   };
 
   useEffect(() => {
-    const type = "origin";
-    getAirports(keyword, type);
+    // const type = "origin";
+    // getAirports(keyword, type);
     localStorage.setItem("options", JSON.stringify(options));
     localStorage.setItem("isReturn", JSON.stringify(isReturn)); // Store isReturn
 
@@ -782,7 +796,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
                       <Form onSubmit={handleSubmit1}>
                         <div className="row mt-0">
                           {/* Trip Type Selection */}
-                          <div className="col-12 col-md-6 col-lg-4 col-xl-3 col-sm-12 col-xs-12">
+                          <div className="col-12 col-md-6 col-lg-4 col-xl-3 col-sm-12 col-xs-12 space-info">
                           <div className="form-group">
 
                           <Form.Group className="mb-0 checktrip" >
@@ -809,44 +823,45 @@ const SearchFlight = ({ onSearch, ...props }) => {
                         </div>
 
                           </div>
-
+            
                           {/* Cabin Class Selection */}
-                          <div className="col-12 col-md-6 col-lg-4 col-xl-3 col-sm-12 col-xs-12 ">
+                          <div className="col-12 col-md-6 col-lg-4 col-xl-3 col-sm-12 col-xs-12 space-info">
                             <Form.Group controlId="cabinclass">
                               <div className="select-container">
                                
                               <Select
-
-            options={cabinOptions}
-            value={cabinOptions.find((option) => option.value === Number(selectedCabinClass)) || null}
-            onChange={(selectedOption) =>
-              handleCabinClassChange({ target: { value: selectedOption.value } })
-            }
-            onMenuOpen={() => toggleDropdown(true)}
-            onMenuClose={() => toggleDropdown(false)}
-         className="bg-transparent border-none focus:ring-0 shadow-none text-gray-700 "
-            // placeholder="Select Cabin Class"
-            
-            isClearable={false}
-            styles={{
-              control: (base) => ({
-                ...base,
-                backgroundColor: "transparent", // Transparent background
-                border: "none", // Removes border
-                boxShadow: "none", // Removes focus ring
-              }),
-              indicatorsContainer: (base) => ({
-                ...base,
-                display: "none", // Hides the dropdown arrow
-              }),
-            }}
-          />
+  
+                                    options={cabinOptions}
+                                    value={cabinOptions.find((option) => option.value === Number(selectedCabinClass)) || null}
+                                    onChange={(selectedOption) =>
+                                      handleCabinClassChange({ target: { value: selectedOption.value } })
+                                    }
+                                    onMenuOpen={() => toggleDropdown(true)}
+                                    onMenuClose={() => toggleDropdown(false)}
+                                className="bg-transparent border-none focus:ring-0 shadow-none text-gray-700 zindex"
+                                    // placeholder="Select Cabin Class"
+                                    
+                                    isClearable={false}
+                                    styles={{
+                                      control: (base) => ({
+                                        ...base,
+                                        backgroundColor: "transparent", // Transparent background
+                                        border: "none", // Removes border
+                                        boxShadow: "none", // Removes focus ring
+                                      }),
+                                      indicatorsContainer: (base) => ({
+                                        ...base,
+                                        display: "none", // Hides the dropdown arrow
+                                      }),
+                                    }}
+                                  />
                                 <i
                                   className={`cabin-arrow ${
                                     isDropdownOpen
                                       ? "fa fa-chevron-up"
                                       : "fa fa-chevron-down"
                                   }`}
+                                  
                                   aria-hidden="true"
                                 ></i>
                               </div>
@@ -858,7 +873,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
                           
 
                           {/* Passengers Options */}
-                          <div className="col-12 col-md-6 col-lg-4 col-xl-3 col-sm-12 col-xs-12">
+                          <div className="col-12 col-md-6 col-lg-4 col-xl-3 col-sm-12 col-xs-12 space-info">
                             <div className="form-group">
                               {/* <label
                                 htmlFor="passengers"
@@ -866,43 +881,32 @@ const SearchFlight = ({ onSearch, ...props }) => {
                               >
                                 Passengers
                               </label> */}
-                              <div
-                                className="headerSearchItem"
-                                ref={dropdownSearchRef}
-                              >
+                              <div className="headerSearchItem" ref={dropdownSearchRef}>
                                 {/* Passengers Options Arrow */}
                                 <span
+                                  role="button"
+                                  tabIndex={0}
                                   onClick={() => setOpenOptions(!openOptions)}
-                                  className={`headerSearchText ${
-                                    openOptions
-                                      ? "optionarrow-up"
-                                      : "optionarrow-down"
+                                  className={`headerSearchText d-flex align-items-center ${
+                                    openOptions ? "optionarrow-up" : "optionarrow-down"
                                   }`}
-                                >
-                                  <i className="fa fa-user"></i>{" "}
-                                  {options.adult +
-                                    options.children +
-                                    options.infant ===
-                                  1
-                                    ? ` ${
-                                        options.adult +
-                                        options.children +
-                                        options.infant
-                                      } Traveler`
-                                    : ` ${
-                                        options.adult +
-                                        options.children +
-                                        options.infant
-                                      } Travelers`}
+                                  style={{ cursor: 'pointer' }}
+                                 >
+                                  <i className="fa fa-user mr-1" aria-hidden="true"></i>
+                                  <span className="traveler-text">
+                                    {options.adult + options.children + options.infant === 1
+                                      ? ` ${options.adult + options.children + options.infant} Traveler`
+                                      : ` ${options.adult + options.children + options.infant} Travelers`}
+                                  </span>
                                   <i
-                                    className={`passenger-arrow ${
-                                      openOptions
-                                        ? "fa fa-chevron-up"
-                                        : "fa fa-chevron-down"
+                                    className={`ml-2 passenger-arrow ${
+                                      openOptions ? "fa fa-chevron-up" : "fa fa-chevron-down"
                                     }`}
                                     aria-hidden="true"
+                                    style={{ pointerEvents: 'none' }} // prevent this icon from blocking the click
                                   ></i>
                                 </span>
+
                                 {openOptions && (
                                   <div className="options">
                                     {/* Adult Counter */}
@@ -1045,7 +1049,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
                                   </div>
                                   {/* Swap Button */}
                                   <div
-                                    className="col-12 col-md-1 col-lg-1 col-xl-1 col-sm-12 col-xs-12 interchange-icon mb-3"
+                                    className="col-12 col-md-1 col-lg-1 col-xl-1 col-sm-12 col-xs-12 interchange-icon mb-3 swap-button"
                                     onClick={handleSwap}
                                   >
                                     <img
@@ -1082,63 +1086,56 @@ const SearchFlight = ({ onSearch, ...props }) => {
                                     </div>
                                   </div>
 
-                                  <div className="col-12 col-md-12 col-lg-5 col-xl-5 col-sm-12 col-xs-12">
-                                    <div className="row">
-                                      <div className="col-12 col-md-6 col-lg-6 col-xl-6 col-sm-12 col-xs-12">
-                                        <div className="form-group">
-                                          <Form.Group controlId="formGriddateOfDep">
-                                            {/* <Form.Label>
-                                              Departure Date
-                                            </Form.Label> */}
-                                            <Form.Control
-                                              type="date"
-                                              className="form-control dpd1"
-                                              name="dateOfDep"
-                                              placeholder="Departure Date"
-                                              // required
-                                              min={today} // Set the minimum date to today
-                                              value={selectedDateOfDep} // Bind the input value to the state
-                                              onChange={handleDateOfDepChange}
-                                            />
-                                            {status.dateOfDep && (
-                                              <ErrorLabel message="Please enter a valid depature date"></ErrorLabel>
-                                            )}
-                                            <img
-                                              src={calendarimage}
-                                              alt="from-to-image"
-                                              className="input-icon"
-                                            />
-                                          </Form.Group>
-                                        </div>
+                                  <div className="col-12 col-lg-5 mb-3">
+                                    <div className="row gx-2">
+                                      {/* Departure Date */}
+                                      <div className="col-12 col-sm-6 mb-3">
+                                        <Form.Group controlId="formGriddateOfDep" className="position-relative extra-margin">
+                                          <Form.Control
+                                            type="date"
+                                            className="form-control"
+                                            name="dateOfDep"
+                                            placeholder="Departure Date"
+                                            min={today}
+                                            value={selectedDateOfDep}
+                                            onChange={handleDateOfDepChange}
+                                          />
+                                          {status.dateOfDep && (
+                                            <ErrorLabel message="Please enter a valid departure date" />
+                                          )}
+                                          <img
+                                            src={calendarimage}
+                                            alt="calendar"
+                                            className="input-icon"
+                                          />
+                                        </Form.Group>
                                       </div>
 
-                                      <div className="col-12 col-md-6 col-lg-6 col-xl-6 col-sm-12 col-xs-12">
-                                        <div className="form-group">
-                                          <Form.Group controlId="formGriddateOfReturn">
-                                            {/* <Form.Label>Return Date</Form.Label> */}
-                                            <Form.Control
-                                              type="date"
-                                              className="form-control dpd1"
-                                              name="returnDate"
-                                              // required
-                                              placeholder="Return Date"
-                                              min={selectedDateOfDep} // Set the minimum date to the selected departure date
-                                              value={selectedDateOfRet} // Bind the input value to the state
-                                              onChange={handleDateOfRetChange}
-                                            />
-                                            {status.returnDate && (
-                                              <ErrorLabel message="Please enter a valid return date"></ErrorLabel>
-                                            )}
-                                            <img
-                                              src={calendarimage}
-                                              alt="from-to-image"
-                                              className="input-icon"
-                                            />
-                                          </Form.Group>
-                                        </div>
+                                      {/* Return Date */}
+                                      <div className="col-12 col-sm-6 mb-3">
+                                        <Form.Group controlId="formGriddateOfReturn" className="position-relative">
+                                          <Form.Control
+                                            type="date"
+                                            className="form-control"
+                                            name="returnDate"
+                                            placeholder="Return Date"
+                                            min={selectedDateOfDep}
+                                            value={selectedDateOfRet}
+                                            onChange={handleDateOfRetChange}
+                                          />
+                                          {status.returnDate && (
+                                            <ErrorLabel message="Please enter a valid return date" />
+                                          )}
+                                          <img
+                                            src={calendarimage}
+                                            alt="calendar"
+                                            className="input-icon"
+                                          />
+                                        </Form.Group>
                                       </div>
                                     </div>
                                   </div>
+                                  
                                   <div className="col-12 col-md-12 col-lg-12 col-xl-12">
                                     <button
                                       className="btn btn-orange searchbtn"

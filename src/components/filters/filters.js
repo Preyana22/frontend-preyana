@@ -6,87 +6,6 @@ import { connect } from "react-redux";
 import { findFlights } from "../../actions";
 import { useNavigate } from "react-router-dom";
 
-const airlineCodeMapping = {
-  AC: "Air Canada",
-  NZ: "Air New Zealand",
-  NH: "All Nippon Airways (ANA)",
-  OZ: "Asiana Airlines",
-  CM: "Copa Airlines",
-  MS: "EgyptAir",
-  SK: "SAS (Scandinavian Airlines)",
-  AI: "Air India",
-  OU: "Croatia Airlines",
-  BR: "EVA Air",
-  SQ: "Singapore Airlines",
-  AV: "Avianca",
-  UA: "United Airlines",
-  A3: "Aegean Airlines",
-  LH: "Lufthansa",
-  TK: "Turkish Airlines",
-  CA: "Air China",
-  TG: "Thai Airways",
-  ET: "Ethiopian Airlines",
-  TP: "TAP Air Portugal",
-  SA: "South African Airways",
-  AR: "Aerolineas Argentinas",
-  AM: "Aeromexico",
-  KQ: "Kenya Airways",
-  SU: "Aeroflot",
-  ME: "Middle East Airlines",
-  CI: "China Airlines",
-  MU: "China Eastern Airlines",
-  MF: "XiamenAir",
-  AA: "American Airlines",
-  CX: "Cathay Pacific Airways",
-  MH: "Malaysia Airlines",
-  BA: "British Airways",
-  AY: "Finnair",
-  UL: "SriLankan Airlines",
-  QF: "Qantas Airways",
-  IB: "Iberia",
-  JM: "Air Jamaica",
-  AS: "Alaska Airlines",
-  QR: "Qatar Airways",
-  UM: "Mahan Air",
-  RJ: "Royal Jordanian Airlines",
-  AT: "Royal Air Maroc",
-  AF: "Air France",
-  KL: "KLM Royal Dutch Airlines",
-  VS: "Virgin Atlantic",
-  GA: "Garuda Indonesia",
-  VN: "Vietnam Airlines",
-  OK: "Czech Airlines",
-  DL: "Delta Air Lines",
-  KE: "Korean Air",
-  UX: "Air Europa",
-  AZ: "ITA Airways (formerly Alitalia)",
-  BE: "Flybe",
-  DE: "Condor",
-  EN: "Air Dolomiti",
-  EW: "Eurowings",
-  KC: "Air Astana",
-  KM: "Air Malta",
-  LA: "LATAM Airlines",
-  LG: "Luxair",
-  LO: "LOT Polish Airlines",
-  LR: "Avianca Costa Rica",
-  LX: "SWISS",
-  OA: "Olympic Air",
-  OS: "Austrian Airlines",
-  SN: "Brussels Airlines",
-  TA: "TACA Airlines",
-  UK: "Vistara",
-  WE: "Thai Smile Airways",
-  WK: "Edelweiss Air",
-  ZH: "Shenzhen Airlines",
-  NK: "Spirit Airlines",
-  ZZ: "Duffel Airways",
-  CZ: "China Southern Airlines",
-  TN: "Air Tahiti Nui",
-  HA: "Hawaiian Airlines",
-  "4U": "Germanwings",
-  "4Y": "Eurowings Discover",
-};
 
 const Filters = ({ flights, onFiltersChange ,onSearch}) => {
   const [price, setPrice] = useState([10, 5000]);
@@ -101,33 +20,8 @@ const Filters = ({ flights, onFiltersChange ,onSearch}) => {
     depart: [19, 32],
     return: [15, 32],
   });
-useEffect(() => {
-    if (!flights || airlines.length > 0) return; // Run only if flights exist & airlines are empty
 
-    if (Array.isArray(flights) && flights[1]) {
-      const owners = Object.values(flights[1])
-        .filter(item => item && item.owner?.iata_code)
-        .map(item => item.owner.iata_code);
-        setflightData(Object.values(flights[1]));
-      // Get unique iata_code values using Set
-      const uniqueIataCodes = [...new Set(owners)];
-      console.log(owners);
-    // Calculate the count of each airline using reduce
-        const airlineCounts = owners.reduce((acc, code) => {
-          acc[code] = (acc[code] || 0) + 1;
-          return acc;
-        }, {});
-        setairlineCounts(airlineCounts);
-    // console.log(airlineCounts); // Example: { AA: 3, UA: 5, DL: 2 }
-    
-      localStorage.setItem("uniqueLoyaltyPrograms", JSON.stringify(uniqueIataCodes));
-    // Update state
-    setAirlines(uniqueIataCodes);
-    } else {
-      console.error("Flights data is missing or not properly structured.");
-    } 
-}, [flights]); // Runs only when flights change
-  // UseEffect to get flights data from localStorage
+    // UseEffect to get flights data from localStorage
   useEffect(() => {
    const storedFlights = localStorage.getItem("flightsData");
    
@@ -135,11 +29,9 @@ useEffect(() => {
       try {
         const parsedFlights = JSON.parse(storedFlights);
         setflightData(parsedFlights);
-        console.log(parsedFlights);
         let uniqueLoyaltyPrograms = new Set();
         let uniqueIataCodes = new Set();
         let airlineCounts = {};
-    
         const processFlight = (flight) => {
           // Get loyalty programs
           (flight.supported_loyalty_programmes || []).forEach((program) =>
@@ -148,12 +40,20 @@ useEffect(() => {
     
           // Get IATA codes and count airlines
           if (flight.owner?.iata_code) {
+           
             const iataCode = flight.owner.iata_code;
+            const name = flight.owner.name;
             uniqueIataCodes.add(iataCode);
-            airlineCounts[iataCode] = (airlineCounts[iataCode] || 0) + 1;
+       
+
+            if (!airlineCounts[iataCode]) {
+              airlineCounts[iataCode] = { count: 1, name: name };
+            } else {
+              airlineCounts[iataCode].count += 1;
+            }
           }
         };
-    
+        // console.log(airlineCounts);
         if (Array.isArray(parsedFlights)) {
           parsedFlights.forEach(processFlight);
         } else if (typeof parsedFlights === "object" && parsedFlights) {
@@ -162,14 +62,11 @@ useEffect(() => {
           console.error("The data in localStorage is neither an array nor a valid object");
           return;
         }
-    
+    // console.log(uniqueAirlines);
         // Convert Sets to arrays
         const uniqueProgramsArray = Array.from(uniqueLoyaltyPrograms);
         const uniqueIataCodesArray = Array.from(uniqueIataCodes);
     
-        //  console.log("Unique Loyalty Programs:", uniqueProgramsArray);
-        //  console.log("Unique IATA Codes:", uniqueIataCodesArray);
-        // console.log("Airline Counts:", airlineCounts);
     
         // Update localStorage
         localStorage.setItem("uniqueLoyaltyPrograms", JSON.stringify(uniqueIataCodesArray));
@@ -307,11 +204,12 @@ useEffect(() => {
   
     // Sort the airlines before displaying
     const sortedAirlines = [...airlines].sort((a, b) =>
-      (airlineCodeMapping[a] || a).localeCompare(airlineCodeMapping[b] || b)
+      (airlineCounts[a]?.name || a).localeCompare(airlineCounts[b]?.name || b)
     );
-  
+    
     // Show only 6 by default
     const visibleAirlines = showAll ? sortedAirlines : sortedAirlines.slice(0, 6);
+    
     // Time ranges definition
 const timeRanges = {
   earlyMorning: [0, 4],
@@ -339,7 +237,7 @@ const getAvailableTimeSlots = (flights, type) => {
       });
     });
   });
-
+// console.log(availableTimes)
   return Array.from(availableTimes);
 };
 let availableDepartureTimes = [];
@@ -438,7 +336,7 @@ if (flightData?.length) {
             className="form-checkbox text-blue-600"
           />
           <span className="ml-2">
-            {airlineCodeMapping[airlineCode] || airlineCode} ({airlineCounts[airlineCode] || 0})
+            {airlineCounts[airlineCode].name} ({airlineCounts[airlineCode].count || 0})
           </span>
         </label>
         </div>
@@ -553,54 +451,67 @@ if (flightData?.length) {
   </div>
 </div> */}
     {/* Departure Time */}  {/* Arrival Time */}
- <div className="flex justify-around items-start w-full">
+    <div className="flex justify-around items-start w-full">
 
-    <div className="filter-section">
-      <h5>Departure time</h5>
-      <div className="flex gap-4">
-        {timeFilters
-          .filter((filter) => availableDepartureTimes.includes(filter.value))
-          .map((filter) => (
-            <button
-              key={`departure-${filter.value}`}
-              onClick={() => handleTimeChange('departure', filter.value)}
-              className={`border rounded-lg p-2 w-[100px] ${
-                selectedDepartureTimes.includes(filter.value)
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-white'
-              }`}
-            >
-              <span className="text-2xl">{filter.icon}</span>
-              <p>{filter.label}</p>
-              <p className="text-sm">{filter.time}</p>
-            </button>
-          ))}
-      </div>
-    </div>
-  
-    <div className="filter-section">
-      <h5>Arrival time</h5>
-      <div className="flex gap-4">
-        {timeFilters
-          .filter((filter) => availableArrivalTimes.includes(filter.value))
-          .map((filter) => (
-            <button
-              key={`arrival-${filter.value}`}
-              onClick={() => handleTimeChange('arrival', filter.value)}
-              className={`border rounded-lg p-2 w-[100px] ${
-                selectedArrivalTimes.includes(filter.value)
-                  ? 'bg-green-500 text-white'
-                  : 'bg-white'
-              }`}
-            >
-              <span className="text-2xl">{filter.icon}</span>
-              <p>{filter.label}</p>
-              <p className="text-sm">{filter.time}</p>
-            </button>
-          ))}
-      </div>
-    </div>
+{/* Departure Time Filter */}
+<div className="filter-section">
+  <h5>Departure time</h5>
+  <div className="flex gap-4 flex-wrap">
+    {timeFilters.map((filter) => {
+      const isAvailable = availableDepartureTimes.includes(filter.value);
+      const isSelected = selectedDepartureTimes.includes(filter.value);
+
+      return (
+        <button
+          key={`departure-${filter.value}`}
+          onClick={() => isAvailable && handleTimeChange('departure', filter.value)}
+          disabled={!isAvailable}
+          className={`border-slot border rounded-lg p-2 w-[100px] transition duration-200
+            ${isSelected ? 'bg-blue-500 text-white' : 'bg-white'}
+             ${!isSelected && !isAvailable ? 'bg-gray-300 text-gray-600 cursor-not-allowed' : ''}
+            
+          `}
+          title={!isAvailable ? 'Not available' : ''}
+        >
+          <span className="text-2xl">{filter.icon}</span>
+          <p>{filter.label}</p>
+          <p className="text-sm">{filter.time}</p>
+        </button>
+      );
+    })}
   </div>
+</div>
+
+{/* Arrival Time Filter */}
+<div className="filter-section">
+  <h5>Arrival time</h5>
+  <div className="flex gap-4 flex-wrap">
+    {timeFilters.map((filter) => {
+      const isAvailable = availableArrivalTimes.includes(filter.value);
+      const isSelected = selectedArrivalTimes.includes(filter.value);
+
+      return (
+        <button
+          key={`arrival-${filter.value}`}
+          onClick={() => isAvailable && handleTimeChange('arrival', filter.value)}
+          disabled={!isAvailable}
+          className={`border-slot border rounded-lg p-2 w-[100px] transition duration-200
+            ${isSelected ? 'bg-green-500 text-white' : 'bg-white'}
+            ${!isAvailable ? 'opacity-50 cursor-not-allowed' : ''}
+          `}
+          title={!isAvailable ? 'Not available' : ''}
+        >
+          <span className="text-2xl">{filter.icon}</span>
+          <p>{filter.label}</p>
+          <p className="text-sm">{filter.time}</p>
+        </button>
+      );
+    })}
+  </div>
+</div>
+
+</div>
+
 
       {/* Bags Filter */}
       {/* <div className="filter-section">

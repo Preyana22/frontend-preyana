@@ -7,7 +7,7 @@
   flex-wrap: wrap;
   justify-content: start;
   align-items: center;
-  padding: 10px;
+  padding: 0px 10px 0px;
   margin-left: 10px;
   cursor: default;
 }
@@ -39,7 +39,7 @@
   /* align-items: center;        Vertically centers children */
   justify-content: space-between; /* Adjust as needed */
   /* padding: 8px; */
-  margin-top: 16px;
+  margin-top: 0px;
 
 }
 
@@ -101,7 +101,7 @@
   -o-animation: fadein 1s
 }
 .itinerary-card__travel-item > div {
-  flex: 1;
+
   /* Optionally add text-align or padding */
   text-align: center;
 }
@@ -179,7 +179,8 @@
 }
 
 .itinerary-card__travel-item--segment-info img {
-  margin-right: 20px
+  margin-right: 20px;
+  width: 55%;
 }
 
 .itinerary-card__travel-item--destination {
@@ -305,6 +306,7 @@
   /* Negative gap to overlap logos slightly */
   align-items: center;
   /* Vertically align logos */
+  margin-block: 30px;
 }
 
 .airline-logo-overlap {
@@ -331,11 +333,62 @@
   font-size: 15px;
 }
 
-@media (max-width: 600px){
+@media (min-width:300px) and (max-width: 600px){
   .itinerary-card__travel-item--segment-info{
     width: 645px;
     margin: 0 auto; /* Center the element */
     }
+    
+/* extra code for experiment */
+.itinerary-card__travel-item--segment-info {
+  color: var(--grey-600);
+  padding-block: 0;
+  font-size: 12px;
+  line-height: 18px;
+  max-width: 292px;
+  /* Make it full width */
+  display: block;
+  /* Ensure children are laid out properly */
+  flex-wrap: wrap;
+  /* Allow wrapping of content if needed */
+  padding: 1rem;
+  /* Optional: Add padding for better spacing */
+  box-sizing: border-box;
+  /* Include padding in width calculation */
+  justify-content: space-around;
+}
+.single-line-info {
+  display: flex !important;
+  flex-wrap: nowrap;
+  gap: 6px !important;
+  align-items: center;
+  width: 66px;
+
+}
+
+.single-line-info p, small{
+  margin: 0;
+  white-space: nowrap;
+}
+.logo-stack {
+  position: relative;
+  display: flex;
+  grid-gap: -20px;
+  gap: -20px;
+  align-items: center;
+  margin-block: 1px;
+}
+.extra-info {
+  display: flex !important;
+  flex-wrap: nowrap;
+  gap: 6px !important;
+  align-items: center;
+}
+.extra-info p, small{
+  margin-left: 0px;
+  /* margin-right: 8px; */
+}
+
 }
 @media (min-width:907px) and (max-width: 970px) {
   .itinerary-card__travel-item--segment-info{
@@ -360,13 +413,18 @@
       font-size: 12px;
        margin: 0;
     }
+    .clear-all{    
+      font-size: 12px;
+      display: contents;
+
+    }
 .block {
   display: block;
 }
 .Flight-info p {
   font-weight: bold !important;
   color: #000000 !important;
-  font-size: 17px;
+  font-size: 12px;
   margin-top: 8px;
   margin-bottom: 12px;
 }
@@ -393,7 +451,7 @@
 }
 .flight-search-info h3{
   margin: 0px 10px 10px 0px;
-  font-size: 18px;
+  font-size: 12px;
 }
 .col-md-6 {
   flex: 0 0 50.66667%; /* Equivalent to col-md-5 (since 5/12 ≈ 41.67%) */
@@ -409,7 +467,7 @@
     /* width: auto; */
   }
   .itinerary-card__travel-item p {
-    display: grid;
+    display: block;
     align-items: center;
     flex-wrap: wrap;
     font-size: 15px;
@@ -428,34 +486,198 @@
 }
 
 }
-/* mobile */
-@media (min-width:300px) and (max-width: 450px) {
+/* Mobile - One Line Layout */
+@media (min-width: 300px) and (max-width: 450px) {
   .itinerary-card__travel-item {
-    flex-direction: column;
-    align-items: flex-start; /* or center */
-     width: 100%;
-  }
-  .itinerary-card__travel-item p {
     display: flex;
+    flex-direction: row; /* Ensures it's in one horizontal line */
     align-items: center;
-    flex-wrap: wrap;
-    font-size: 15px;
-     margin: 0;
-     width: 100%;
+    justify-content: space-between;
+    flex-wrap: nowrap; /* Prevent wrapping */
+    width: 300px;
+    overflow-x: auto;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+    gap: 10px;
+    margin-top: -14px;
+
   }
+
+  .itinerary-card__travel-item > div {
+    flex: 1;
+    text-align: justify;
+    min-width: 200px; /* Keeps items readable */
+  }
+
+  .itinerary-card__travel-item p {
+    font-size: 14px;
+    margin: 0;
+    white-space: nowrap; /* Prevent text from wrapping */
+  }
+
   .Flight-info p {
-     flex: 1 1 20%; 
-     font-size: 15px;
+    font-size: 15px;
+    flex: none;
+  }
+  .Flight-info .btn {
+    /* margin-top: 15px; */
+    padding: 6px 12px;
+    background-color: #005085;
+    color: #fff;
 }
-.itinerary-card__travel-item > div {
-  flex: 1;
-  /* Optionally add text-align or padding */
-  text-align: center;
-  width: 290px;
+  /* .itinerary-card__travel-item--segment-info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 1px;
+    box-sizing: border-box;
+    font-size: 12px;
+    gap: 8px;
+  } */
+  
+
+  .block {
+    display: flex;
+  }
+  
+  .border {
+    margin-right: 9px;
+   /* margin-bottom:  0px !important;  */
 }
-.block {
+.itinerary-card__travel-item::-webkit-scrollbar {
+  height: 6px; /* adjust as needed */
+}
+
+.itinerary-card__travel-item::-webkit-scrollbar-track {
+  background: transparent; /* or use white: #fff */
+}
+
+
+.itinerary-card__travel-item::-webkit-scrollbar {
+  display: none;
+}
+.interchange-icon img {
+  transition: transform 0.3s ease;
+  width: 35px;
+}
+.search-tabs .tab-content .tab-pane .form-group, .search-tabs .tab-content .tab-pane .form-group {
+  font-size: small;
+  position: relative;
+}
+.passenger-arrow {
+  position: absolute;
+  right: 10px;
+  top: 36%;
+  transform: translateY(-50%);
+  color: #0047b1;
+  pointer-events: none;
+  font-size: 13px !important;
+}
+.headerSearchText {
+  line-height: 2;
+  font-size: small !important;
+  margin-top: 0.3rem;
+}
+.itinerary-card__travel-item--segment-info img {
+  margin-right: 20px;
+  margin-left: -3px;
+
+}
+.position-relative.form-group.extra-margin {
+  margin-bottom: 0px !important;
+}
+.pagination button {
+  margin: 0 5px;
+  padding: 3px 7px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+.border-slot {
+  margin-right: 9px;
+  margin-bottom: 10px;
+  width: 140px;
+  height: 77px;
+}
+/* extra code for experiment */
+.itinerary-card__travel-item--segment-info {
+  color: var(--grey-600);
+  padding-block: 0;
+  font-size: 12px;
+  line-height: 18px;
+  max-width: 292px;
+  /* Make it full width */
   display: block;
+  /* Ensure children are laid out properly */
+  flex-wrap: wrap;
+  /* Allow wrapping of content if needed */
+  padding: 1rem;
+  /* Optional: Add padding for better spacing */
+  box-sizing: border-box;
+  /* Include padding in width calculation */
+  justify-content: space-around;
 }
+.single-line-info {
+  display: flex !important;
+  flex-wrap: nowrap;
+  gap: 6px !important;
+  align-items: center;
+  width: 66px;
+  margin-right: 5px;
+}
+.single-line-info p, small{
+  margin: 0;
+  /* margin-right: 10px; */
+  white-space: nowrap;
+}
+.logo-stack {
+  position: relative;
+  display: flex;
+  grid-gap: -20px;
+  gap: -20px;
+  align-items: center;
+  margin-block: 1px;
+}
+.extra-info {
+  display: flex !important;
+  flex-wrap: nowrap;
+  gap: 6px !important;
+  align-items: center;
+}
+.extra-info p, small{
+  margin-left: 0px;
+  /* margin-right: 8px; */
+}
+/* .col-sm-6 {
+  flex: 1 0 30.66667%; 
+  max-width: 60.66667%;
+  
+} */
+.newcss{
+  max-width: 169px;
+
+}
+.traveler-text{
+  font-size: small;
+  display: flex;
+}
+p.heading-text {
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
+  .col-12.col-md-6.col-lg-4.col-xl-3.col-sm-12.col-xs-12.space-info {
+      height: 45px;
+  }
+}
+.newcss{
+  max-width: 251px;
+
 }
 /* .block {
   display: block;
