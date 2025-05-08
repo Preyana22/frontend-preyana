@@ -10,7 +10,7 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import "./contact-grid.css";
 import { useLocation } from "react-router-dom";
-import flightimage from "../../assets/images/flightimage.svg";
+import flightimage from "../../assets/images/undraw_departing.png";
 import axios from "axios";
 import moment from "moment"; // Import Moment.js
 import { Link } from "react-router-dom";
@@ -68,10 +68,10 @@ const Contacts = (props) => {
   };
 
   const location = useLocation();
-
-  const origincity = location.state.flights.slices[0].origin.city_name;
+console.log(location);
+  const origincity = location.state.flights.slices[0].origin.iata_city_code;
   const destinationcity =
-    location.state.flights.slices[0].destination.city_name;
+    location.state.flights.slices[0].destination.iata_city_code;
 
   const baseAmount = Number(location.state.flights.base_amount);
   const markup = baseAmount * 0.15;

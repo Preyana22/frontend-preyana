@@ -155,11 +155,17 @@ const Filters = ({ flights, onFiltersChange ,onSearch}) => {
   const [selectedDepartureTime, setSelectedDepartureTime] = useState('');
   const [selectedArrivalTime, setSelectedArrivalTime] = useState('');
 
+  // const timeFilters = [
+  //   { label: 'Early Morning', value: 'earlyMorning', icon: '🌅', time: '00:00 - 04:59' },
+  //   { label: 'Morning', value: 'morning', icon: '☀️', time: '05:00 - 11:59' },
+  //   { label: 'Afternoon', value: 'afternoon', icon: '🌤️', time: '12:00 - 17:59' },
+  //   { label: 'Evening', value: 'evening', icon: '🌙', time: '18:00 - 23:59' },
+  // ];
   const timeFilters = [
-    { label: 'Early Morning', value: 'earlyMorning', icon: '🌅', time: '00:00 - 04:59' },
-    { label: 'Morning', value: 'morning', icon: '☀️', time: '05:00 - 11:59' },
-    { label: 'Afternoon', value: 'afternoon', icon: '🌤️', time: '12:00 - 17:59' },
-    { label: 'Evening', value: 'evening', icon: '🌙', time: '18:00 - 23:59' },
+    { label: 'Early Morning', value: 'earlyMorning', image: '/assets/images/Early Morning.svg', time: '00:00 - 04:59' },
+    { label: 'Morning', value: 'morning', image: '/assets/images/Morning.svg', time: '05:00 - 11:59' },
+    { label: 'Afternoon', value: 'afternoon', image: '/assets/images/Afternoon.svg', time: '12:00 - 17:59' },
+    { label: 'Evening', value: 'evening', image: '/assets/images/Evening.svg', time: '18:00 - 23:59' },
   ];
   const [selectedDepartureTimes, setSelectedDepartureTimes] = useState([]);
   const [selectedArrivalTimes, setSelectedArrivalTimes] = useState([]);
@@ -473,7 +479,7 @@ if (flightData?.length) {
           `}
           title={!isAvailable ? 'Not available' : ''}
         >
-          <span className="text-2xl">{filter.icon}</span>
+          <span className="text-2xl"> <img src={filter.image} alt={filter.label} style={{ width: 24, height: 24 }} /></span>
           <p>{filter.label}</p>
           <p className="text-sm">{filter.time}</p>
         </button>
@@ -501,7 +507,7 @@ if (flightData?.length) {
           `}
           title={!isAvailable ? 'Not available' : ''}
         >
-          <span className="text-2xl">{filter.icon}</span>
+          <span className="text-2xl"><img src={filter.image} alt={filter.label} style={{ width: 24, height: 24 }} /></span>
           <p>{filter.label}</p>
           <p className="text-sm">{filter.time}</p>
         </button>

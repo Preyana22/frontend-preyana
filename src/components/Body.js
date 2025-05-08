@@ -578,7 +578,7 @@ export const Body = (props) => {
                                    <img
                                 style={{width: "100%",height: "150px", display: "block",   // Optional rounded corners
                                 }}
-                            src={`/assets/images/${flight?.slices?.[0]?.destination?.city_name}.webp`}
+                            src={`/assets/images/${flight?.slices?.[0]?.destination?.city_name}.png`}
                             className="img-fluid"
                             alt={flight?.slices?.[0]?.destination?.city_name || "flight-img"}
                             onError={(e) => {
@@ -722,7 +722,7 @@ export const Body = (props) => {
                               `${flight.slices[0].origin.iata_city_code}-${flight.slices[0].destination.iata_code}`) ===
                             route
                         );
-
+                        {console.log(flight)}
                         // Render the flight if found
                         return (
                           flight && (
@@ -741,7 +741,7 @@ export const Body = (props) => {
                                    <img
                                 style={{width: "100%",height: "150px", display: "block",   // Optional rounded corners
                                 }}
-                            src={`/assets/images/${flight?.slices?.[0]?.destination?.city_name}.webp`}
+                            src={`/assets/images/${flight?.slices?.[0]?.destination?.city_name}.png`}
                             className="img-fluid"
                             alt={flight?.slices?.[0]?.destination?.city_name || "flight-img"}
                             onError={(e) => {

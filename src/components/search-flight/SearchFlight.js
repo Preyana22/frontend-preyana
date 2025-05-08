@@ -10,7 +10,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import "../body.css";
 import axios from "axios";
 import flightimage from "../../assets/images/flightimage.svg";
-import sideimage from "../../assets/images/banner.svg";
+import sideimage from "../../assets/images/undraw_departing.png";
 import hotelimage from "../../assets/images/coming-soon.png";
 import planeIcon from "../../assets/images/planeIcon.svg";
 import hotelIcon from "../../assets/images/hotel.svg";
@@ -742,7 +742,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
             src={sideimage}
             className="img-fluid banner-image"
             alt="banner-img"
-            width={600}
+            width={350}
             height={400}
           />
         </div>
