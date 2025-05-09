@@ -486,13 +486,14 @@ const SearchFlight = ({ onSearch, ...props }) => {
       const { data } = await axios.get(apiUrl + `/airlines/airports/` + search);
 
       const airports = data.data
-        ? data.data.map((t) => {
-            const countryName =
-              countryCodeMapping[t.iata_country_code] || "Unknown Country";
+        ? data.data
+        .filter(t => t.city_name != null)
+        .map((t) => {
+            const countryName = countryCodeMapping[t.iata_country_code] || "Unknown Country";
             const cityName = t.city_name || "";
             return t.iata_city_code == null
               ? "abc"
-              : `${t.name}, ${cityName} (${t.iata_code}), ${countryName}`;
+              : `${t.iata_code} - ${t.city_name} - ${countryName} (${t.name})`;
           })
         : [];
 
@@ -575,13 +576,13 @@ const SearchFlight = ({ onSearch, ...props }) => {
 
     const originStateText = origin.state.text;
     const originCode = originStateText
-      ? originStateText.match(/\(([^)]+)\)/)[1]
+      ? originStateText.split(' - ')[0].trim()
       : "";
     const origin_city = originCode;
 
     const destinationStateText = destination.state.text;
     const destinationCode = destinationStateText
-      ? destinationStateText.match(/\(([^)]+)\)/)[1]
+      ? destinationStateText.split(' - ')[0].trim()
       : "";
     const destination_city = destinationCode;
 
@@ -1329,6 +1330,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
     </>
   );
 };
+
 const mapStateToProps = (state) => ({
   flights: state.flights,
 });
