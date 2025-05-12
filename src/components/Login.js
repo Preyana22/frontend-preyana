@@ -18,6 +18,9 @@ const Login = (props) => {
   const [errors, setErrors] = useState({});
   const [login, setLogin] = useState();
   const [hidePassword, sethidePassword] = useState(true);
+  const [otpMode, setOtpMode] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrors({ ...errors, [e.target.name]: "" }); // Clear validation errors when input changes
@@ -183,6 +186,45 @@ const Login = (props) => {
         }
       });
   };
+  const handleSendOtp = async () => {
+  try {
+    await axios.post(`${apiUrl}/authentication/send-otp`, {
+      email: formData.username,
+    });
+    setOtpSent(true);
+    alert("OTP sent to your email");
+  } catch (err) {
+    alert("Failed to send OTP");
+  }
+};
+
+const handleVerifyOtp = async (e) => {
+  e.preventDefault();
+  try {
+    const res = await axios.post(`${apiUrl}/authentication/verify-otp`, {
+      email: formData.username,
+      otp,
+    });
+
+    // Log the response to inspect its structure
+    console.log("OTP response:", res.data.user);
+
+    // Save relevant user data
+  
+    //  if (res.data.user && res.data.user.userName) {
+      localStorage.setItem("userName", res.data.user.userName);
+    // } else {
+    //   console.warn("userName not found in response");
+    // }
+    localStorage.setItem("token", res.data.token);
+    alert("Login successful");
+    navigate("/search");
+  } catch (err) {
+    console.log(err.response); // Inspect server response
+    alert("Invalid or expired OTP");
+  }
+};
+
 
   return (
     <>
@@ -194,7 +236,7 @@ const Login = (props) => {
                 <div className="flex-content container-bg">
                   <div className="custom-form custom-form-fields">
                     <h3>Sign In</h3>
-                    <form onSubmit={handleSubmit}>
+                    <form onSubmit={otpMode ? handleVerifyOtp : handleSubmit}>
                       <div className="form-group">
                         <label className="custom-label">Email</label>
                         <input
@@ -213,8 +255,19 @@ const Login = (props) => {
                           </div>
                         )}
                       </div>
+                        {otpMode && otpSent && (
+                            <div className="form-group">
+                              <label className="custom-label">Enter OTP</label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                value={otp}
+                                onChange={(e) => setOtp(e.target.value)}
+                              />
+                            </div>
+                          )}
 
-                      <div className="form-group">
+                      {/* <div className="form-group">
                         <label className="custom-label">Password</label>
                         <input
                           type={hidePassword ? "password" : "text"}
@@ -241,7 +294,34 @@ const Login = (props) => {
                             {errors.password}
                           </div>
                         )}
-                      </div>
+                      </div> */}
+                      {!otpMode && (
+                          <div className="form-group">
+                            <label className="custom-label">Password</label>
+                            <input
+                              type={hidePassword ? "password" : "text"}
+                              className={`form-control ${errors.password ? "is-invalid" : ""}`}
+                              name="password"
+                              value={formData.password}
+                              onChange={handleChange}
+                            />
+                            <span>
+                              <a
+                                className="bg-transparent text-black"
+                                onClick={managePasswordVisibility}
+                              >
+                                <label className="hide-show-label">
+                                  {hidePassword ? "Show" : "Hide"}
+                                </label>
+                              </a>
+                            </span>
+                            {errors.password && (
+                              <div className="invalid-feedback">
+                                {errors.password}
+                              </div>
+                            )}
+                          </div>
+                        )}
 
                       <div className="checkbox">
                         <label style={{ display: "block" }}>
@@ -260,9 +340,52 @@ const Login = (props) => {
                         </label>
                       </div>
 
-                      <button className="btn btn-orange btn-block">
-                        Login
-                      </button>
+                          
+
+                      {!otpMode ? (
+                          <>
+                            <button type="submit" className="btn btn-orange btn-block">
+                              Login
+                            </button>
+                            <p>
+                              Or{" "}
+                              <span
+                                onClick={() => setOtpMode(true)}
+                                className="link-text"
+                                style={{ cursor: "pointer" }}
+                              >
+                                login with OTP
+                              </span>
+                            </p>
+                          </>
+                        ) : !otpSent ? (
+                          <button
+                            type="button"
+                            className="btn btn-orange btn-block"
+                            onClick={handleSendOtp}
+                          >
+                            Send OTP
+                          </button>
+                        ) : (
+                          <>
+                            <button type="submit" className="btn btn-orange btn-block">
+                              Verify OTP
+                            </button>
+                            <p>
+                              <span
+                                onClick={() => {
+                                  setOtpMode(false);
+                                  setOtp("");
+                                  setOtpSent(false);
+                                }}
+                                className="link-text"
+                                style={{ cursor: "pointer" }}
+                              >
+                                Back to password login
+                              </span>
+                            </p>
+                          </>
+                         )}
 
                       {login === true ? (
                         <p className="text-success">

@@ -232,24 +232,52 @@ export const Body = (props) => {
     return `${month}, ${day}-${year} (${time})`;
   };
 
+  // const formatDuration = (duration) => {
+  //   // Match the duration format P1DT2H20M
+  //   const regex = /P(?:(\d+)D)?T(?:(\d+)H)?(?:(\d+)M)?/;
+  //   const matches = duration.match(regex);
+
+  //   const days = matches[1]
+  //     ? `${matches[1]} day${matches[1] > 1 ? "s" : ""}`
+  //     : "";
+  //   const hours = matches[2]
+  //     ? `${matches[2]} hour${matches[2] > 1 ? "s" : ""}`
+  //     : "";
+  //   const minutes = matches[3]
+  //     ? `${matches[3]} minute${matches[3] > 1 ? "s" : ""}`
+  //     : "";
+
+  //   // Join the parts together
+  //   return [days, hours, minutes].filter(Boolean).join(", ");
+  // };
   const formatDuration = (duration) => {
-    // Match the duration format P1DT2H20M
-    const regex = /P(?:(\d+)D)?T(?:(\d+)H)?(?:(\d+)M)?/;
-    const matches = duration.match(regex);
+  if (!duration || typeof duration !== 'string') {
+    console.warn('Invalid duration input:', duration);
+    return '';
+  }
 
-    const days = matches[1]
-      ? `${matches[1]} day${matches[1] > 1 ? "s" : ""}`
-      : "";
-    const hours = matches[2]
-      ? `${matches[2]} hour${matches[2] > 1 ? "s" : ""}`
-      : "";
-    const minutes = matches[3]
-      ? `${matches[3]} minute${matches[3] > 1 ? "s" : ""}`
-      : "";
+  // Match the duration format P1DT2H20M
+  const regex = /P(?:(\d+)D)?T(?:(\d+)H)?(?:(\d+)M)?/;
+  const matches = duration.match(regex);
 
-    // Join the parts together
-    return [days, hours, minutes].filter(Boolean).join(", ");
-  };
+  if (!matches) {
+    console.warn('Duration format mismatch:', duration);
+    return '';
+  }
+
+  const days = matches[1]
+    ? `${matches[1]} day${parseInt(matches[1]) > 1 ? "s" : ""}`
+    : "";
+  const hours = matches[2]
+    ? `${matches[2]} hour${parseInt(matches[2]) > 1 ? "s" : ""}`
+    : "";
+  const minutes = matches[3]
+    ? `${matches[3]} minute${parseInt(matches[3]) > 1 ? "s" : ""}`
+    : "";
+
+  return [days, hours, minutes].filter(Boolean).join(", ");
+ };
+
 
   const [options, setOptions] = useState({
     adult: 1,

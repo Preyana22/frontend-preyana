@@ -252,6 +252,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
   const [isRotated, setIsRotated] = useState(false);
 
   const handleSearch = async () => {
+    
     if (typeof onSearch === "function") {
       onSearch(); // Call the search function to initiate loading
 

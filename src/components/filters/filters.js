@@ -193,6 +193,7 @@ const Filters = ({ flights, onFiltersChange ,onSearch}) => {
     if (!isNaN(newValue) && newValue >= 0 && newValue <= 5000) {
       const newPrice = [...price];
       newPrice[index] = newValue;
+      // newPrice.sort((a,b)=>a-b)  //keep price[0]<price[1]
       setPrice(newPrice);
   
       // Apply the filter with the new price
@@ -387,6 +388,7 @@ if (flightData?.length) {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
+           zIndex: 20, 
         }}
       >
         <span style={{ color: "white", fontSize: "10px" }}>{price[index]}</span>
@@ -411,6 +413,8 @@ if (flightData?.length) {
       ${price[1]}
     </span>
   </div>
+  
+   
 </div>
   {/* Departure Time */}
 {/* <div className="flex justify-around items-start w-full ">
