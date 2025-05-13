@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { findFlights } from "../../actions";
 import { connect } from "react-redux";
-import flightimage from "../../assets/images/flightimage.svg";
+import flightimage from "../../assets/images/flight-and-stay.svg";
 import moment from "moment"; // Import Moment.js
 
 const apiUrl = process.env.REACT_APP_API_BASE_URL;
@@ -18,9 +18,9 @@ const MyComponent = (props) => {
   const navigate = useNavigate();
   const location = useLocation();
   console.log("location state", location.state);
-  const origincity = location.state.selectedFlight.slices[0].origin.city_name;
+  const origincity = location.state.selectedFlight.slices[0].origin.iata_city_code;
   const destinationcity =
-    location.state.selectedFlight.slices[0].destination.city_name;
+    location.state.selectedFlight.slices[0].destination.iata_city_code;
 
   const baseAmount = Number(location.state.selectedFlight.base_amount);
   const markup = baseAmount * 0.15;
@@ -486,12 +486,13 @@ const MyComponent = (props) => {
                 <div className="container">
                   <div className="card shadow-sm" style={{ width: "22rem;" }}>
                     {/* <!-- Image Section --> */}
-                    <div className="card-header bg-light text-center p-3">
+                    <div className="card-header bg-light text-center p-3" 
+                     style={{ height: "120px" }}>
                       <img
                         src={flightimage}
                         alt="Airplane"
                         className="img-fluid"
-                        style={{ width: "50px;" }}
+                        style={{ width: "150px" }}
                       />
                     </div>
 
