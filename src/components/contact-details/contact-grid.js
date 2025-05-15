@@ -790,7 +790,7 @@ console.log(location);
                                   />
                                 </Form.Group>
                               </div>
-                            </div>
+                            </div> 
                           </div>
                           <div className="row">
                             <div className="col-md-12">

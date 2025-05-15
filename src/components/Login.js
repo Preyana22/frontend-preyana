@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import destination_3 from "../assets/images/destination_3.jpg";
+import destination_3 from "../assets/images/undraw_departing.png";
 
 import { Link, useNavigate } from "react-router-dom";
 import googleimage from "../assets/images/google.png";
@@ -343,21 +343,23 @@ const handleVerifyOtp = async (e) => {
                           
 
                       {!otpMode ? (
-                          <>
+                          < div className="text-center">
                             <button type="submit" className="btn btn-orange btn-block">
                               Login
                             </button>
-                            <p>
-                              Or{" "}
+                           <p className="mt-3 mb-1">
+                              Or
+                            </p>
+                              <p>
                               <span
                                 onClick={() => setOtpMode(true)}
-                                className="link-text"
+                                className="link-text text-primary"
                                 style={{ cursor: "pointer" }}
                               >
-                                login with OTP
+                                Login with OTP
                               </span>
                             </p>
-                          </>
+                          </div>
                         ) : !otpSent ? (
                           <button
                             type="button"
@@ -449,13 +451,29 @@ const handleVerifyOtp = async (e) => {
                       </p>
                     </div>
                   </div>
+                          {/* Inline style block */}
+                    <style>{`
+                      @keyframes slideTopToBottom {
+                        from {
+                          transform: translateY(-100px);
+                          opacity: 0;
+                        }
+                        to {
+                          transform: translateY(0);
+                          opacity: 1;
+                        }
+                      }
 
+                      .image-slide-in {
+                        animation: slideTopToBottom 1s ease-out forwards;
+                      }
+                    `}</style>
                   <div className="flex-content-img custom-form-img">
                     <Carousel controls={false} indicators={false}>
                       <Carousel.Item>
                         <img
-                          className="d-block w-100"
-                          style={{ height: "400px" }}
+                          className="d-block w-100 image-slide-in"
+                          style={{ height: "350px" }}
                           src={destination_3}
                           alt="First slide"
                         />

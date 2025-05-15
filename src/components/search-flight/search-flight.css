@@ -1,6 +1,13 @@
 .interchange-icon img {
   transition: transform 0.3s ease;
 }
+
+
+.interchange-icon {
+    margin-top: 0rem;
+    text-align: center;
+   
+  }
 .rotated {
   transform: rotate(-180deg);
 }
@@ -89,9 +96,10 @@
 .passenger-arrow {
   margin-left: 6px;
 }
-.search-tabs .tab-content .tab-pane .btn {
+.search-tabs .tab-content .tab-pane .searchbtn {
   padding: 8px 30px;
   margin-top: -30px;
+
 }
 .passenger-arrow {
   pointer-events: none;
@@ -103,3 +111,29 @@
 .passenger-arrow {
   pointer-events: none; /* Important! */
 }
+
+.passenger-form-group{
+  width:160px;
+}
+@media (max-width: 576px) {
+  .passenger-form-group {
+    width: 77% !important;
+   
+  }
+}
+@media (max-width: 475px) {
+  .passenger-form-group {
+    width: 100% !important;
+   
+  }
+}
+
+#cabin-class-group{
+  width:120px;
+}
+@media (max-width: 475px) {
+  #cabin-class-group{
+  width:100% !important;
+}
+}
+

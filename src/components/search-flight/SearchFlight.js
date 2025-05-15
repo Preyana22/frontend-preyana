@@ -828,7 +828,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
             
                           {/* Cabin Class Selection */}
                           <div className="col-12 col-md-6 col-lg-4 col-xl-3 col-sm-12 col-xs-12 space-info">
-                            <Form.Group controlId="cabinclass">
+                            <Form.Group controlId="cabinclass " id="cabin-class-group">
                               <div className="select-container">
                                
                               <Select
@@ -850,10 +850,15 @@ const SearchFlight = ({ onSearch, ...props }) => {
                                         backgroundColor: "transparent", // Transparent background
                                         border: "none", // Removes border
                                         boxShadow: "none", // Removes focus ring
+                                        width: "200px",
                                       }),
                                       indicatorsContainer: (base) => ({
                                         ...base,
                                         display: "none", // Hides the dropdown arrow
+                                      }),
+                                       menu: (base) => ({
+                                        ...base,
+                                        width: "200px", // Match dropdown width
                                       }),
                                     }}
                                   />
@@ -876,7 +881,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
 
                           {/* Passengers Options */}
                           <div className="col-12 col-md-6 col-lg-4 col-xl-3 col-sm-12 col-xs-12 space-info">
-                            <div className="form-group">
+                            <div className="form-group passenger-form-group"  >
                               {/* <label
                                 htmlFor="passengers"
                                 className="form-label"
@@ -889,28 +894,37 @@ const SearchFlight = ({ onSearch, ...props }) => {
                                   role="button"
                                   tabIndex={0}
                                   onClick={() => setOpenOptions(!openOptions)}
-                                  className={`headerSearchText d-flex align-items-center ${
+                                  className={`headerSearchText d-flex align-items-center justify-between ${
                                     openOptions ? "optionarrow-up" : "optionarrow-down"
                                   }`}
-                                  style={{ cursor: 'pointer' }}
+                                  style={{ cursor: 'pointer' ,
+                                      display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    padding: "4px 8px",
+                                   
+                                    
+                                  }}
                                  >
+                                  <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
                                   <i className="fa fa-user mr-1" aria-hidden="true"></i>
                                   <span className="traveler-text">
                                     {options.adult + options.children + options.infant === 1
                                       ? ` ${options.adult + options.children + options.infant} Traveler`
                                       : ` ${options.adult + options.children + options.infant} Travelers`}
                                   </span>
+                                  </div>
                                   <i
-                                    className={`ml-2 passenger-arrow ${
+                                    className={`ml-2 mt-1 passenger-arrow ${
                                       openOptions ? "fa fa-chevron-up" : "fa fa-chevron-down"
                                     }`}
                                     aria-hidden="true"
-                                    style={{ pointerEvents: 'none' }} // prevent this icon from blocking the click
+                                    style={{ pointerEvents: 'none'}} // prevent this icon from blocking the click
                                   ></i>
                                 </span>
 
                                 {openOptions && (
-                                  <div className="options">
+                                  <div className="options" style={{ width: "230px" }}>
                                     {/* Adult Counter */}
                                     <div className="optionItem">
                                       <span className="optionText">Adult</span>
@@ -1015,257 +1029,150 @@ const SearchFlight = ({ onSearch, ...props }) => {
                         </div>
 
                         <div className="tab-content">
-                          {isReturn === true && (
-                            <div
-                              id="tab-round-trip"
-                              className="tab-pane in active"
-                            >
-                              <div className="pg-search-form">
-                                <div className="row">
-                                  <div className="col-12 col-md-6 col-lg-3 col-xl-3 col-sm-12 col-xs-12">
-                                    <div className="form-group left-icon">
-                                      <Form.Group controlId="origin">
-                                        {/* <Form.Label>Origin</Form.Label> */}
-                                        <Typeahead
-                                          labelKey="origin"
-                                          options={originAirports}
-                                          placeholder="From"
-                                          ref={(ref) => (origin = ref)}
-                                          selected={selectedOrigin}
-                                          onChange={handleOriginChange}
-                                          onInputChange={(input) => {
-                                            getAirports(input, "origin");
-                                          }} // Calls getAirports when typing
-                                          emptyLabel="Search by city or airport" // Custom message when no matches are found
-                                        />
-                                        {status.origin && (
-                                          <ErrorLabel message="Please enter a valid airport"></ErrorLabel>
-                                        )}
-                                        <img
-                                          src={locationimage}
-                                          alt="from-to-image"
-                                          className="input-icon"
-                                        />
-                                      </Form.Group>
-                                    </div>
-                                  </div>
-                                  {/* Swap Button */}
-                                  <div
-                                    className="col-12 col-md-1 col-lg-1 col-xl-1 col-sm-12 col-xs-12 interchange-icon mb-3 swap-button"
-                                    onClick={handleSwap}
-                                  >
-                                    <img
-                                      src={inoutimage}
-                                      alt="swap icon"
-                                      className={isRotated ? "rotated" : ""}
+                          <div
+                            id={isReturn ? "tab-round-trip" : "tab-one-way"}
+                            className="tab-pane in active"
+                          >
+                          <div className="pg-search-form">
+                            <div className="row">
+                              {/* Shared Fields: Origin */}
+                              <div className="col-12 col-md-6 col-lg-3 col-xl-3 col-sm-12">
+                                <div className="form-group left-icon">
+                                  <Form.Group controlId="origin">
+                                    <Typeahead
+                                      labelKey="origin"
+                                      options={originAirports}
+                                      placeholder="From"
+                                      ref={(ref) => (origin = ref)}
+                                      selected={selectedOrigin}
+                                      onChange={handleOriginChange}
+                                      onInputChange={(input) => {
+                                        getAirports(input, "origin");
+                                      }}
+                                      emptyLabel="Search by city or airport"
                                     />
-                                  </div>
-                                  <div className="col-12 col-md-6 col-lg-3 col-xl-3 col-sm-12 col-xs-12">
-                                    <div className="form-group left-icon">
-                                      <Form.Group controlId="destination">
-                                        {/* <Form.Label>Destination</Form.Label> */}
-                                        <Typeahead
-                                          labelKey="destination"
-                                          options={destinationAirports}
-                                          placeholder="To"
-                                          ref={(ref) => (destination = ref)}
-                                          selected={selectedDestination}
-                                          onChange={handleDestinationChange}
-                                          onInputChange={(input) => {
-                                            getAirports(input, "destination");
-                                          }} // Calls getAirports when typing
-                                          emptyLabel="Search by city or airport" // Custom message when no matches are found
-                                        />
-                                        {status.destination && (
-                                          <ErrorLabel message="Please enter a valid airport"></ErrorLabel>
-                                        )}
-                                        <img
-                                          src={locationimage}
-                                          alt="from-to-image"
-                                          className="input-icon"
-                                        />
-                                      </Form.Group>
-                                    </div>
-                                  </div>
-
-                                  <div className="col-12 col-lg-5 mb-3">
-                                    <div className="row gx-2">
-                                      {/* Departure Date */}
-                                      <div className="col-12 col-sm-6 mb-3">
-                                        <Form.Group controlId="formGriddateOfDep" className="position-relative extra-margin">
-                                          <Form.Control
-                                            type="date"
-                                            className="form-control"
-                                            name="dateOfDep"
-                                            placeholder="Departure Date"
-                                            min={today}
-                                            value={selectedDateOfDep}
-                                            onChange={handleDateOfDepChange}
-                                          />
-                                          {status.dateOfDep && (
-                                            <ErrorLabel message="Please enter a valid departure date" />
-                                          )}
-                                          <img
-                                            src={calendarimage}
-                                            alt="calendar"
-                                            className="input-icon"
-                                          />
-                                        </Form.Group>
-                                      </div>
-
-                                      {/* Return Date */}
-                                      <div className="col-12 col-sm-6 mb-3">
-                                        <Form.Group controlId="formGriddateOfReturn" className="position-relative">
-                                          <Form.Control
-                                            type="date"
-                                            className="form-control"
-                                            name="returnDate"
-                                            placeholder="Return Date"
-                                            min={selectedDateOfDep}
-                                            value={selectedDateOfRet}
-                                            onChange={handleDateOfRetChange}
-                                          />
-                                          {status.returnDate && (
-                                            <ErrorLabel message="Please enter a valid return date" />
-                                          )}
-                                          <img
-                                            src={calendarimage}
-                                            alt="calendar"
-                                            className="input-icon"
-                                          />
-                                        </Form.Group>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  
-                                  <div className="col-12 col-md-12 col-lg-12 col-xl-12">
-                                    <button
-                                      className="btn btn-orange searchbtn"
-                                      onClick={handleSearch}
-                                    >
-                                      Search
-                                    </button>
-                                  </div>
+                                    {status.origin && (
+                                      <ErrorLabel message="Please enter a valid airport" />
+                                    )}
+                                    <img src={locationimage} alt="from-to" className="input-icon" />
+                                  </Form.Group>
                                 </div>
                               </div>
-                            </div>
-                          )}
-                          {isReturn === false && (
-                            <div
-                              id="tab-one-way"
-                              className="tab-pane in active"
-                            >
-                              <div className="pg-search-form">
-                                <div className="row">
-                                  <div className="col-12 col-md-6 col-lg-3 col-xl-3 col-sm-12 col-xs-12">
-                                    <div className="form-group left-icon">
-                                      <Form.Group controlId="origin">
-                                        {/* <Form.Label>Origin</Form.Label> */}
-                                        <Typeahead
-                                          labelKey="origin"
-                                          options={originAirports}
-                                          placeholder="From"
-                                          ref={(ref) => (origin = ref)}
-                                          selected={selectedOrigin} // Find the airport object based on selected IATA code
-                                          onChange={handleOriginChange}
-                                          onInputChange={(input) => {
-                                            getAirports(input, "origin");
-                                          }} // Calls getAirports when typing
-                                          emptyLabel="Search by city or airport" // Custom message when no matches are found
-                                        />
-                                        {status.origin && (
-                                          <ErrorLabel message="Please enter a valid airport"></ErrorLabel>
-                                        )}
-                                        <img
-                                          src={locationimage}
-                                          alt="from-to-image"
-                                          className="input-icon"
-                                        />
-                                      </Form.Group>
-                                    </div>
-                                  </div>
-                                  {/* Swap Button */}
-                                  <div
-                                    className="col-12 col-md-1 col-lg-1 col-xl-1 col-sm-12 col-xs-12 interchange-icon mb-3"
-                                    onClick={handleSwap}
-                                  >
-                                    <img
-                                      src={inoutimage}
-                                      alt="swap icon"
-                                      title="swap icon"
-                                      className={isRotated ? "rotated" : ""}
-                                    />
-                                  </div>
-                                  <div className="col-12 col-md-6 col-lg-3 col-xl-3 col-sm-12 col-xs-12">
-                                    <div className="form-group">
-                                      <Form.Group controlId="destination">
-                                        {/* <Form.Label>Destination</Form.Label> */}
-                                        <Typeahead
-                                          labelKey="destination"
-                                          options={destinationAirports}
-                                          placeholder="To"
-                                          ref={(ref) => (destination = ref)}
-                                          selected={selectedDestination}
-                                          onChange={handleDestinationChange}
-                                          onInputChange={(input) => {
-                                            getAirports(input, "destination");
-                                          }} // Calls getAirports when typing
-                                          emptyLabel="Search by city or airport" // Custom message when no matches are found
-                                        />
-                                        {status.destination && (
-                                          <ErrorLabel message="Please enter a valid airport"></ErrorLabel>
-                                        )}
-                                        {status.sameLocation && (
-                                          <ErrorLabel message="Please select different location"></ErrorLabel>
-                                        )}
-                                        <img
-                                          src={locationimage}
-                                          alt="from-to-image"
-                                          className="input-icon"
-                                        />
-                                      </Form.Group>
-                                    </div>
-                                  </div>
 
-                                  <div className="col-12 col-md-6 col-lg-3 col-xl-3 col-sm-12 col-xs-12">
-                                    <div className="form-group">
-                                      <Form.Group controlId="formGriddateOfDep">
-                                        {/* <Form.Label>Departure Date</Form.Label> */}
+                              {/* Swap Button */}
+                              <div
+                                className="col-12 col-md-1 col-lg-1 col-xl-1 col-sm-12 interchange-icon mb-3"
+                                onClick={handleSwap}
+                              >
+                                <img
+                                  src={inoutimage}
+                                  alt="swap icon"
+                                  className={isRotated ? "rotated" : ""}
+                                />
+                              </div>
+
+                              {/* Shared Fields: Destination */}
+                              <div className="col-12 col-md-6 col-lg-3 col-xl-3 col-sm-12">
+                                <div className="form-group left-icon">
+                                  <Form.Group controlId="destination">
+                                    <Typeahead
+                                      labelKey="destination"
+                                      options={destinationAirports}
+                                      placeholder="To"
+                                      ref={(ref) => (destination = ref)}
+                                      selected={selectedDestination}
+                                      onChange={handleDestinationChange}
+                                      onInputChange={(input) => {
+                                        getAirports(input, "destination");
+                                      }}
+                                      emptyLabel="Search by city or airport"
+                                    />
+                                    {status.destination && (
+                                      <ErrorLabel message="Please enter a valid airport" />
+                                    )}
+                                    {status.sameLocation && (
+                                      <ErrorLabel message="Please select different location" />
+                                    )}
+                                    <img src={locationimage} alt="to-icon" className="input-icon" />
+                                  </Form.Group>
+                                </div>
+                              </div>
+
+                              {/* Conditional Fields */}
+                              {isReturn ? (
+                                <div className="col-12 col-lg-5 m">
+                                  <div className="row gx-2">
+                                    {/* Departure Date */}
+                                    <div className="col-12 col-sm-6 mb-3">
+                                      <Form.Group controlId="formGriddateOfDep" className="position-relative extra-margin">
                                         <Form.Control
                                           type="date"
-                                          className="form-control dpd1"
+                                          className="form-control"
                                           name="dateOfDep"
-                                          placeholder="Departure Date"
-                                          // required
-                                          min={today} // Set the minimum date to today
-                                          value={selectedDateOfDep} // Bind the input value to the state
+                                          min={today}
+                                          value={selectedDateOfDep}
                                           onChange={handleDateOfDepChange}
                                         />
                                         {status.dateOfDep && (
-                                          <ErrorLabel message="Please enter a valid depature date"></ErrorLabel>
+                                          <ErrorLabel message="Please enter a valid departure date" />
                                         )}
-                                        <img
-                                          src={calendarimage}
-                                          alt="from-to-image"
-                                          className="input-icon"
+                                        <img src={calendarimage} alt="calendar" className="input-icon" />
+                                      </Form.Group>
+                                    </div>
+
+                                    {/* Return Date */}
+                                    <div className="col-12 col-sm-6 mb-3">
+                                      <Form.Group controlId="formGriddateOfReturn" className="position-relative">
+                                        <Form.Control
+                                          type="date"
+                                          className="form-control"
+                                          name="returnDate"
+                                          min={selectedDateOfDep}
+                                          value={selectedDateOfRet}
+                                          onChange={handleDateOfRetChange}
                                         />
+                                        {status.returnDate && (
+                                          <ErrorLabel message="Please enter a valid return date" />
+                                        )}
+                                        <img src={calendarimage} alt="calendar" className="input-icon" />
                                       </Form.Group>
                                     </div>
                                   </div>
-                                  <div className="col-12 col-md-12 col-lg-1 col-xl-1">
-                                    <button
-                                      className="btn btn-orange searchbtn"
-                                      onClick={handleSearch}
-                                      style={{ marginTop: "-0.2rem" }}
-                                    >
-                                      Search
-                                    </button>
-                                  </div>
                                 </div>
+                              ) : (
+                                <div className="col-12 col-md-6 col-lg-3 col-xl-3 col-sm-12">
+                                  <Form.Group controlId="formGriddateOfDep">
+                                    <Form.Control
+                                      type="date"
+                                      className="form-control dpd1"
+                                      name="dateOfDep"
+                                      min={today}
+                                      value={selectedDateOfDep}
+                                      onChange={handleDateOfDepChange}
+                                    />
+                                    {status.dateOfDep && (
+                                      <ErrorLabel message="Please enter a valid depature date" />
+                                    )}
+                                    <img src={calendarimage} alt="calendar" className="input-icon" />
+                                  </Form.Group>
+                                </div>
+                                
+                              )}
+
+                              {/* Unified Search Button */}
+                              <div className="col-12 mt-3 text-center">
+                                <button
+                                  className="btn btn-orange searchbtn"
+                                  onClick={handleSearch}
+                                >
+                                  Search
+                                </button>
                               </div>
                             </div>
-                          )}
+                          </div>
                         </div>
+                      </div>
+     
                       </Form>
                     </div>
                   </div>

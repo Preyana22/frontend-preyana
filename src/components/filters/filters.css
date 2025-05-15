@@ -200,3 +200,13 @@ p, ul {
         margin-bottom: 15px;
       }
 }
+
+@media (min-width: 768px) {
+  .filters-header {
+    cursor: default;
+  }
+
+  .filters-header .clear-all {
+    display: inline-block;
+  }
+}

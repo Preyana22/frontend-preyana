@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import sideimage from "../assets/images/flight-1.jpg";
+import sideimage from "../assets/images/undraw_departing.png";
 import destination_1 from "../assets/images/destination_1.jpg";
 import destination_2 from "../assets/images/destination_2.jpg";
 
@@ -250,13 +250,31 @@ const Registration = (props) => {
                   </div>
                 </div>
               </div>
+
+              <style>{`
+                 @keyframes slideTopToBottom{
+                  from{
+                     transform:translateY(-100px);
+                     opacity:0;
+                    }
+                  to{
+                     transform:translateY(0);
+                     opacity:1;
+                  }
+                 }
+
+                .image-slide-in{
+                  animation:slideTopToBottom 1s ease-out forwards;
+                }
+              `}
+                </style>
               <div className="col-12 col-md-7 col-lg-7 col-xl-7 my-auto">
                 <div className="flex-content-img ">
                   <Carousel controls={false} indicators={false}>
                     <Carousel.Item>
                       <img
-                        style={{ height: "500px" }}
-                        className="d-block w-100"
+                        style={{ height: "380px" }}
+                        className="d-block w-100 image-slide-in"
                         src={sideimage}
                         alt="First slide"
                       />

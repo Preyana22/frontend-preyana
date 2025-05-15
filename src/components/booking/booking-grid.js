@@ -1,7 +1,7 @@
 import React from "react";
 import "./booking-grid.css";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState,useRef } from "react";
 import axios from "axios";
 import { findFlights } from "../../actions";
 import { connect } from "react-redux";
@@ -15,6 +15,9 @@ const MyComponent = (props) => {
   const [isFetching, setIsFetching] = useState(false);
   const [isAncillaries, setIsAncillaries] = useState(false);
   const [isPayment, setIsPayment] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [paymentRenderKey, setPaymentRenderKey] = useState(0);
+  const duffelPaymentRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
   console.log("location state", location.state);
@@ -181,6 +184,8 @@ const MyComponent = (props) => {
             alert(
               `Booking error: ${bookData.data.orderResponse.errors[0].message}`
             );
+             setIsLoading(false);
+             return;
           }
 
           // Combine confirm and book responses into one array
@@ -201,6 +206,8 @@ const MyComponent = (props) => {
         }
       } catch (error) {
         console.error("Error in confirmPayment:", error);
+        setIsLoading(false);
+        setPaymentRenderKey(prev => prev + 1);
       }
     }
   };
@@ -358,7 +365,8 @@ const MyComponent = (props) => {
           // if (duffelpaymentsElement && duffelpaymentsElement.parentNode) {
           //   duffelpaymentsElement.parentNode.removeChild(duffelpaymentsElement);
           // }
-
+          setIsLoading(true);
+          setPaymentRenderKey(prev => prev + 1);
           confirmPayment();
         });
 
@@ -435,6 +443,16 @@ const MyComponent = (props) => {
 
     navigate("/results");
   };
+  if (isLoading) {
+  return (
+    <div className="text-center mt-5">
+      <div className="spinner-border text-primary" role="status">
+        <span className="sr-only">Processing Payment...</span>
+      </div>
+      <p className="mt-3">Processing your payment, please wait...</p>
+    </div>
+  );
+}
   return (
     <section className="innerpage-wrapper">
       <div className="innerpage-section-padding mb-5">
@@ -477,7 +495,7 @@ const MyComponent = (props) => {
                 )}
                 <div id="duffelPaymentsContainer  mb-5">
                   {/* Duffel Payments element will be rendered here */}
-                  <duffel-payments />
+                  <duffel-payments ref={duffelPaymentRef} key={paymentRenderKey}/>
                 </div>
               </main>
             </div>
