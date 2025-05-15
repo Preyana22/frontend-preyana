@@ -42,23 +42,54 @@ const Registration = (props) => {
     e.preventDefault();
     // Validate form data
     const newErrors = {};
-    if (formData.username.trim() === "") {
-      newErrors.username = "Username is required";
+    
+    // username validation
+    const username = formData.username.trim();
+    if (!username) {
+      newErrors.username = "Username is required"; // checks if username is empty
     }
-    if (formData.email.trim() === "") {
-      newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Invalid email format";
-    }
-    if (formData.password.trim() === "") {
-      newErrors.password = "Password is required";
-    }
-    if (formData.confirmPassword.trim() === "") {
-      newErrors.confirmPassword = "Confirm Password is required";
-    } else if (formData.confirmPassword !== formData.password) {
-      newErrors.confirmPassword = "Passwords do not match";
+    if (username.length < 5) {
+      newErrors.username = "Username must be at least 5 characters"; // checks if username is less than 5 characters
+    } 
+    if (!/^[a-zA-Z0-9]+$/.test(username)) {
+      newErrors.username = "Username can only contain letters and numbers"; // checks if username contains only letters and numbers
     }
 
+    // email validation
+    if (formData.email.trim() === "") {
+      newErrors.email = "Email is required"; // checks if email is empty
+    }
+    if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Invalid email format"; // checks if email is in valid format
+    }
+
+    // password validation
+    if (formData.password.trim() === "") {
+      newErrors.password = "Password is required"; // checks if password is empty
+    }
+    if (formData.password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters"; // checks if password is less than 8 characters
+    }
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(formData.password)) {
+      newErrors.password = "Password must include at least one special character"; // checks if password contains at least one special character
+    }
+    if (!/\d/.test(formData.password)) {
+      newErrors.password = "Password must include at least one number"; // checks if password contains at least one number
+    }
+    if (formData.confirmPassword.trim() === "") {
+      newErrors.confirmPassword = "Confirm Password is required"; // checks if confirm password is empty
+    }
+    if (formData.confirmPassword !== formData.password) {
+      newErrors.confirmPassword = "Passwords do not match"; // checks if password and confirm password match
+    }
+    if ( formData.username && formData.password && formData.password.includes(formData.username)) {
+      newErrors.password = "Password cannot contain your username"; // checks if password contains username
+    }
+    if (formData.email === formData.password) {
+      newErrors.email = "Email and password cannot be the same"; // checks if email and password are the same
+    }
+
+    // general validation
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
     } else {
@@ -78,6 +109,7 @@ const Registration = (props) => {
       };
       console.log("configuration", configuration);
       await axios(configuration)
+
         .then((result) => {
           console.log("response", result.data);
           setRegister(true);
@@ -106,6 +138,7 @@ const Registration = (props) => {
           }
         });
     }
+
   };
   return (
     <>
