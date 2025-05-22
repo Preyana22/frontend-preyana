@@ -81,13 +81,14 @@ const Contacts = (props) => {
         phone_number: p.phone_number,
         email:       p.email,
         given_name:  p.given_name,
+        middle_name: p.middle_name,
         family_name: p.family_name,
         gender:      p.gender,
         // title:       p.title,
         born_on:     p.born_on,
         id:          p.id,
         address1:    p.address1,
-        address2:    p.address2,
+        // address2:    p.address2,
         city:        p.city,
         region:      p.region,
         postal:      p.postal,
@@ -166,7 +167,7 @@ const Contacts = (props) => {
       loginEmail: localStorage.getItem("email")
         ? localStorage.getItem("email")
         : orderData[1].data.orderResponse.data.passengers[0].email,
-      name: `${orderData[1].data.orderResponse.data.passengers[0].given_name} ${orderData[1].data.orderResponse.data.passengers[0].family_name}`,
+      name: `${orderData[1].data.orderResponse.data.passengers[0].given_name} ${orderData[1].data.orderResponse.data.passengers[0].middle_name} ${orderData[1].data.orderResponse.data.passengers[0].family_name}`,
       booking_reference: orderData[1].data.orderResponse.data.booking_reference,
       offer_id: orderData[1].data.orderResponse.data.offer_id,
       status: orderData[1].data.orderResponse.data.payment_status
@@ -175,7 +176,7 @@ const Contacts = (props) => {
         : "success",
       booking_id: orderData[1].data.orderResponse.data.id,
       address1: location.state.contactDetails[0].address1,
-      address2: location.state.contactDetails[0].address2,
+      // address2: location.state.contactDetails[0].address2,
       city: location.state.contactDetails[0].city,
       region: location.state.contactDetails[0].region,
       postal: location.state.contactDetails[0].postal,
@@ -338,7 +339,7 @@ const Contacts = (props) => {
       const middle_name = `given_middle_name${index}`;
       const email1 = `email${index}`;
       const address1 = `address1${index}`;
-      const address2 = `address2${index}`;
+      // const address2 = `address2${index}`;
       const city = `city${index}`;
       const postal = `postal${index}`;
 
@@ -354,15 +355,15 @@ const Contacts = (props) => {
       //   hasError = true;
       // }
 
-      if (index === 0 && !event.target[middle_name].value) {
-        alert(`Middle name is required for passenger ${index + 1}`);
-        hasError = true;
-      } else if (event.target[middle_name].value.length < 2) {
-        alert(
-          `Middle name must be at least 2 characters for passenger ${index + 1}`
-        );
-        hasError = true;
-      }
+      // if (index === 0 && !event.target[middle_name].value) {
+      //   alert(`Middle name is required for passenger ${index + 1}`);
+      //   hasError = true;
+      // } else if (event.target[middle_name].value.length < 2) {
+      //   alert(
+      //     `Middle name must be at least 2 characters for passenger ${index + 1}`
+      //   );
+      //   hasError = true;
+      // }
 
       if (index === 0 && !event.target[familyname1].value) {
         alert(`Last name is required for passenger ${index + 1}`);
@@ -856,13 +857,6 @@ const Contacts = (props) => {
                           <div className="form-group">
                             <label>
                               {" "}
-                              <sup>
-                                <small>
-                                  <i className="fa fa-asterisk text-secondary mr-1">
-                                    {" "}
-                                  </i>
-                                </small>
-                              </sup>
                               Middle Name
                             </label>
 
@@ -872,7 +866,6 @@ const Contacts = (props) => {
                                 className="form-control"
                                 name={`given_middle_name${index}`}
                                 placeholder="Middle Name"
-                                required
                               />
                             </Form.Group>
                           </div>
