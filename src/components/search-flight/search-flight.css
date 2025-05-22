@@ -1,3 +1,16 @@
+ #banner-sec .banner-image {
+    margin-top: 0.5rem;
+    margin-left: 5rem;
+  } 
+  
+
+
+.banner-image {
+  max-width: 100%;
+  height: auto;
+  max-height: 300px; /* Control max height */
+  object-fit: contain; /* Maintains aspect ratio */
+}
 .interchange-icon img {
   transition: transform 0.3s ease;
 }
@@ -137,3 +150,7 @@
 }
 }
 
+/* Hide the hint text inside the Typeahead input */
+.rbt-input-hint {
+  display: none !important;
+}

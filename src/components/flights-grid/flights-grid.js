@@ -20,10 +20,24 @@ const FlightsGrid = ({ flights, criteria }) => {
     return savedFlights ? JSON.parse(savedFlights) : flights?.[1] || {};
   });
 
+  // const [searchCriteria, setSearchCriteria] = useState(() => {
+  //   const savedCriteria = localStorage.getItem("searchCriteria");
+  //   return savedCriteria ? JSON.parse(savedCriteria) : criteria || {};
+  // });
   const [searchCriteria, setSearchCriteria] = useState(() => {
-    const savedCriteria = localStorage.getItem("searchCriteria");
-    return savedCriteria ? JSON.parse(savedCriteria) : criteria || {};
-  });
+  const savedCriteria = localStorage.getItem("searchCriteria");
+  if (savedCriteria) return JSON.parse(savedCriteria);
+  // fallback defaults
+  return {
+    origin: "",
+    destination: "",
+    origin_city_name: "",
+    destination_city_name: "",
+    date: null,
+    returnDate: null,
+  };
+});
+
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -186,16 +200,27 @@ function getPaginationPages(totalPages, currentPage) {
       setCurrentPage(1); // Reset to the first page
     }
 
-    if (
+    // if (
+    //   criteria &&
+    //   !Object.keys(criteria).origin &&
+    //   !Object.keys(criteria).destination &&
+    //   !Object.keys(searchCriteria).origin &&
+    //   !Object.keys(searchCriteria).destination &&
+    //   searchInitiated
+    // ) {
+    //   setSearchCriteria(criteria);
+    // }
+        if (
       criteria &&
-      !Object.keys(criteria).origin &&
-      !Object.keys(criteria).destination &&
-      !Object.keys(searchCriteria).origin &&
-      !Object.keys(searchCriteria).destination &&
+      !criteria.origin &&
+      !criteria.destination &&
+      !searchCriteria.origin &&
+      !searchCriteria.destination &&
       searchInitiated
     ) {
       setSearchCriteria(criteria);
     }
+
   }, [flights, criteria]);
   const [searchTrigger, setSearchTrigger] = useState(0);
 

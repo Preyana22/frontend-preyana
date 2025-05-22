@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import destination_3 from "../assets/images/undraw_departing.png";
+import destination_3 from "../assets/images/login-signup-signin-img.png";
 
 import { Link, useNavigate } from "react-router-dom";
 import googleimage from "../assets/images/google.png";
@@ -473,7 +473,7 @@ const handleVerifyOtp = async (e) => {
                       <Carousel.Item>
                         <img
                           className="d-block w-100 image-slide-in"
-                          style={{ height: "350px" }}
+                          style={{ height: "380px" }}
                           src={destination_3}
                           alt="First slide"
                         />

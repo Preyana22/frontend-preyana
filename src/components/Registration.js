@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import sideimage from "../assets/images/undraw_departing.png";
+import sideimage from "../assets/images/login-signup-signin-img.png";
 import destination_1 from "../assets/images/destination_1.jpg";
 import destination_2 from "../assets/images/destination_2.jpg";
 
