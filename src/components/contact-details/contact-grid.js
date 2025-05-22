@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect,  useRef, useLayoutEffect } from "react";
 import { useState } from "react";
 import { Typeahead } from "react-bootstrap-typeahead";
 import Form from "react-bootstrap/Form";
@@ -23,6 +23,7 @@ const apiUrl = process.env.REACT_APP_API_BASE_URL;
 var extraBag = 0;
 var seatSelection = 0;
 var formattedTotalAmount = 0;
+
 const Contacts = (props) => {
   const [selectedDay, setSelectedDay] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState([]);
@@ -34,8 +35,13 @@ const Contacts = (props) => {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [isAncillaries, setIsAncillaries] = useState(false);
-
+  const [paymentIntentData, setPaymentIntentData] = useState(null);
+  const [isPayment, setIsPayment] = useState(false);
+  const [paymentRenderKey, setPaymentRenderKey] = useState(0);
+  const [isLoadingPayment, setIsLoadingPayment] = useState(false);
   const user_id = localStorage.getItem("userId");
+  const duffelPaymentRef = useRef(null);
+  const paymentSectionRef = useRef(null);
 
   const toggleTerms = () => {
     setIsOpen(!isOpen);
@@ -60,6 +66,192 @@ const Contacts = (props) => {
     setSelectedMonth(newSelectedMonths);
   };
 
+  const confirmPayment = async () => {
+    // 1) ask user
+    if (!window.confirm("Are you sure you want to confirm and book this flight?"))
+      return setIsPayment(false);
+
+    // 2) pull data out of state
+    const { contactDetails, selectedFlight, data: intentWrapper } = paymentIntentData;
+    const intentId = intentWrapper.paymentIntentResponse.data.id;
+
+    // 3) build passengers exactly like booking.js did
+    const passengers = contactDetails.map(p => {
+      const copy = {
+        phone_number: p.phone_number,
+        email:       p.email,
+        given_name:  p.given_name,
+        middle_name: p.middle_name,
+        family_name: p.family_name,
+        gender:      p.gender,
+        // title:       p.title,
+        born_on:     p.born_on,
+        id:          p.id,
+        address1:    p.address1,
+        // address2:    p.address2,
+        city:        p.city,
+        region:      p.region,
+        postal:      p.postal,
+        country:     p.country,
+      };
+      if (p.type === "infant_without_seat")
+        copy.infant_passenger_id = p.passenger_id;
+      return copy;
+    });
+
+    // 4) define your payments payload
+    const payments = [{
+      type:     "balance",
+      amount:   selectedFlight.total_amount,
+      currency: selectedFlight.total_currency,
+    }];
+
+    try {
+      setIsLoadingPayment(true);
+
+      // 5) confirm
+      await axios.post(
+        `${apiUrl}/airlines/confirm`,
+        { paymentIntent: intentId },
+        { headers:{"Content-Type":"application/json"} }
+      );
+
+      // 6) book
+      const orderData = {
+        type:            "instant",
+        selected_offers: [ contactDetails[0].offer_id ],
+        passengers,
+        payments,
+        metadata: { paymentIntent: intentId },
+      };
+      const bookRes = await axios.post(
+        `${apiUrl}/airlines/book`,
+        orderData,
+        { headers:{"Content-Type":"application/json"} }
+      );
+
+      const errors = bookRes.data.data.orderResponse.errors;
+      if (errors && errors.length) {
+        throw new Error(errors[0].message);
+      }
+
+      // 7) save booking to your DB & redirect
+      await saveBooking([
+        /* we skipped putting confirm data in here but you can if you like */,
+        bookRes.data
+      ]);
+
+    } catch (err) {
+      console.error("Payment/booking error:", err);
+      setIsLoadingPayment(false);
+      // bump the widget in case you want to re‑try
+      setPaymentRenderKey(k => k + 1);
+    }
+  };
+
+  function formatDuration(duration) {
+    const regex = /P(?:(\d+)D)?T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/;
+    const m = duration.match(regex);
+    if (!m) return "Invalid duration";
+    const [ , days=0, hours=0, minutes=0 ] = m.map(x => parseInt(x)||0);
+    const parts = [];
+    if (days) parts.push(`${days} ${days===1?"day":"days"}`);
+    if (hours) parts.push(`${hours} ${hours===1?"hour":"hours"}`);
+    if (minutes) parts.push(`${minutes} ${minutes===1?"min":"mins"}`);
+    return parts.join(", ");
+  }
+
+  const saveBooking = async (orderData) => {
+    const bookingData = {
+      email: orderData[1].data.orderResponse.data.passengers[0].email,
+      loginEmail: localStorage.getItem("email")
+        ? localStorage.getItem("email")
+        : orderData[1].data.orderResponse.data.passengers[0].email,
+      name: `${orderData[1].data.orderResponse.data.passengers[0].given_name} ${orderData[1].data.orderResponse.data.passengers[0].middle_name} ${orderData[1].data.orderResponse.data.passengers[0].family_name}`,
+      booking_reference: orderData[1].data.orderResponse.data.booking_reference,
+      offer_id: orderData[1].data.orderResponse.data.offer_id,
+      status: orderData[1].data.orderResponse.data.payment_status
+        .awaiting_payment
+        ? "pending"
+        : "success",
+      booking_id: orderData[1].data.orderResponse.data.id,
+      address1: location.state.contactDetails[0].address1,
+      // address2: location.state.contactDetails[0].address2,
+      city: location.state.contactDetails[0].city,
+      region: location.state.contactDetails[0].region,
+      postal: location.state.contactDetails[0].postal,
+      country: location.state.contactDetails[0].country,
+      airlines: orderData[1].data.orderResponse.data.owner.name,
+      slices: [], // Initialize an empty array for slices
+    };
+
+    // Iterate through each slice and extract relevant data
+    orderData[1].data.orderResponse.data.slices.forEach((slice) => {
+      const segment = slice.segments[0]; // Assuming you want the first segment
+
+      bookingData.slices.push({
+        travelDate: segment.departing_at,
+        departTime: segment.departing_at,
+        arrivalTime: segment.arriving_at,
+        flightDuration: formatDuration(slice.duration),
+        stops: segment.stops.length === 0 ? null : null,
+        departAirport: slice.origin.iata_code,
+        arrivalAirport: slice.destination.iata_code,
+        departCityName: slice.origin.city_name,
+        arrivalCityName: slice.destination.city_name,
+      });
+    });
+
+    // Now, bookingData contains all the relevant information, including slices
+    console.log(bookingData);
+
+    try {
+      const configuration = {
+        method: "post",
+        url: apiUrl + "/booking/createbooking",
+        data: bookingData,
+      };
+      console.log("configuration createbooking", configuration);
+
+      // Make the API request
+      const result = await axios(configuration);
+      console.log("response", result);
+
+      if (result.status === 201 || result.status === 200) {
+        // Successfully created booking
+        navigate("/success");
+      } else {
+        // Handle unexpected status code
+        console.error(`Unexpected response status: ${result.status}`);
+        alert("There was an issue processing your booking. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error creating booking:", error);
+
+      // Check if error is an Axios error and handle accordingly
+      if (error.response) {
+        // Server responded with a status code outside of the 2xx range
+        console.error("Response data:", error.response.data);
+        console.error("Response status:", error.response.status);
+        alert(
+          `Failed to create booking. Server responded with status code ${
+            error.response.status
+          }: ${error.response.data.message || "Unknown error"}.`
+        );
+      } else if (error.request) {
+        // No response received from the server
+        console.error("No response received:", error.request);
+        alert("Failed to create booking. No response from the server.");
+      } else {
+        // Other errors (network issues, configuration errors, etc.)
+        console.error("Error message:", error.message);
+        alert(
+          "An error occurred while creating the booking. Please try again."
+        );
+      }
+    }
+  };
+
   // Handle change for year
   const handleYearChange = (index, event) => {
     const newSelectedYears = [...selectedYear];
@@ -68,10 +260,9 @@ const Contacts = (props) => {
   };
 
   const location = useLocation();
-console.log(location);
+  console.log(location);
   const origincity = location.state.flights.slices[0].origin.iata_city_code;
-  const destinationcity =
-    location.state.flights.slices[0].destination.iata_city_code;
+  const destinationcity = location.state.flights.slices[0].destination.iata_city_code;
 
   const baseAmount = Number(location.state.flights.base_amount);
   const markup = baseAmount * 0.15;
@@ -120,10 +311,11 @@ console.log(location);
 
   const [isFetching, setIsFetching] = useState(false);
   const navigate = useNavigate();
-  let titles, genderdetails;
+  // let titles, genderdetails;
+  let genderdetails;
   let contactDetails = [];
 
-  const title = ["Mr", "Mrs", "Miss", "Doctor"];
+  // const title = ["Mr", "Mrs", "Miss", "Doctor"];
   const paymenttype =
     location.state.flights.payment_requirements.requires_instant_payment;
   const gender = ["Female", "Male"];
@@ -144,26 +336,34 @@ console.log(location);
     arr.forEach((item, index) => {
       const familyname1 = `familyname${index}`;
       const given_name1 = `given_name${index}`;
+      const middle_name = `given_middle_name${index}`;
       const email1 = `email${index}`;
       const address1 = `address1${index}`;
-      const address2 = `address2${index}`;
+      // const address2 = `address2${index}`;
       const city = `city${index}`;
       const postal = `postal${index}`;
 
       const day = event.target[`dayOfBirth${index}`].value;
       const month = event.target[`monthOfBirth${index}`].value;
       const year = event.target[`yearOfBirth${index}`].value;
-      const dateOfBirth = `${year}-${month.padStart(2, "0")}-${day.padStart(
-        2,
-        "0"
-      )}`; // YYYY-MM-DD format
+      const dateOfBirth = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`; // YYYY-MM-DD format
 
       // **Validation Logic**
 
-      if ((index === 0 && !titles) || !titles.state || !titles.state.text) {
-        alert(`Title is required for passenger ${index + 1}`);
-        hasError = true;
-      }
+      // if ((index === 0 && !titles) || !titles.state || !titles.state.text) {
+      //   alert(`Title is required for passenger ${index + 1}`);
+      //   hasError = true;
+      // }
+
+      // if (index === 0 && !event.target[middle_name].value) {
+      //   alert(`Middle name is required for passenger ${index + 1}`);
+      //   hasError = true;
+      // } else if (event.target[middle_name].value.length < 2) {
+      //   alert(
+      //     `Middle name must be at least 2 characters for passenger ${index + 1}`
+      //   );
+      //   hasError = true;
+      // }
 
       if (index === 0 && !event.target[familyname1].value) {
         alert(`Last name is required for passenger ${index + 1}`);
@@ -200,10 +400,11 @@ console.log(location);
       }
 
       contactDetails.push({
-        title: titles.state.text,
+        // title: titles.state.text,
         offer_id: location.state.flights.id,
         id: location.state.flights.passengers[index].id,
         family_name: event.target[familyname1].value,
+        middle_name: event.target[middle_name].value,
         given_name: event.target[given_name1].value,
         email: event.target[email1].value,
         loginEmail: localStorage.getItem("email")
@@ -214,7 +415,7 @@ console.log(location);
         born_on: dateOfBirth,
         type: item.type,
         address1: index === 0 ? event.target[address1].value : "",
-        address2: index === 0 ? event.target[address2].value : "",
+        // address2: index === 0 ? event.target[address2].value : "",
         city: index === 0 ? event.target[city].value : "",
         region: index === 0 ? region : "",
         postal: index === 0 ? event.target[postal].value : "",
@@ -299,22 +500,24 @@ console.log(location);
       if (data) {
         console.log("payment intent creation", data);
 
-        if (data.paymentIntentResponse.errors) {
-          console.error("Error:", data.paymentIntentResponse.errors[0].message); // Log individual error messages
-          alert(
-            `Booking error: ${data.paymentIntentResponse.errors[0].message}`
-          );
-        }
+        // if (data.paymentIntentResponse.errors) {
+        //   console.error("Error:", data.paymentIntentResponse.errors[0].message); // Log individual error messages
+        //   alert(
+        //     `Booking error: ${data.paymentIntentResponse.errors[0].message}`
+        //   );
+        // }
 
-        navigate("/booking", {
-          state: {
-            contactDetails,
-            data,
-            selectedFlight,
-            extraBag,
-            seatSelection,
-          },
-        });
+        // navigate("/booking", {
+        //   state: {
+        //     contactDetails,
+        //     data,
+        //     selectedFlight,
+        //     extraBag,
+        //     seatSelection,
+        //   },
+        // });
+        setPaymentIntentData({ data, contactDetails, selectedFlight, extraBag, seatSelection });
+        setIsPayment(true);
       } else {
         console.error("Errors:", errors);
       }
@@ -431,6 +634,40 @@ console.log(location);
       }
     }
   }, [phone]); // Validate phone number every time it changes
+
+  useEffect(() => {
+  if (!paymentIntentData) return;
+
+  const { data } = paymentIntentData;
+  const duffelEl = document.querySelector("duffel-payments");
+  if (!duffelEl) return;
+
+  duffelEl.render({
+    paymentIntentClientToken: data.paymentIntentResponse.data.client_token,
+    debug: false,
+    live_mode: false,
+  });
+  duffelEl.addEventListener("onSuccessfulPayment", () => {
+    setIsLoadingPayment(true);
+    confirmPayment();
+  });
+  duffelEl.addEventListener("onFailedPayment", (event) =>
+          console.log("onPayloadReady\n", event.detail)
+        );
+}, [paymentIntentData, paymentRenderKey]);
+
+  useLayoutEffect(() => {
+    console.log("Effect triggered for payment section");
+    if (isPayment && paymentSectionRef.current) {
+      // small delay to let Duffel render inside that container
+      setTimeout(() => {
+        paymentSectionRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
+    }
+  }, [isPayment]);
 
   const getUserDetails = async (userId) => {
     try {
@@ -550,7 +787,7 @@ console.log(location);
               <div className="col-12 col-md-12 col-lg-7 col-xl-8 content-side">
                 <div className="lg-booking-form-heading">
                   <h2 className="font-weight-bold">Checkout</h2>
-                  <h5 className="font-weight-bold">Billing Information</h5>
+                  {/* <h5 className="font-weight-bold">Billing Information</h5> */}
                 </div>
                 {arr.map((item, index) => {
                   return (
@@ -558,7 +795,7 @@ console.log(location);
                       <h6 className="font-weight-bold">
                         <strong>
                           {item.type === "adult"
-                            ? "Adult Information"
+                            ? "Passanger Information"
                             : item.type === "child"
                             ? "Children Information"
                             : "Infant Information"}
@@ -566,7 +803,7 @@ console.log(location);
                       </h6>
 
                       <div className="row">
-                        <div className="col-6 col-md-6">
+                        {/* <div className="col-6 col-md-6">
                           <div className="form-group">
                             <label>
                               <sup>
@@ -588,7 +825,7 @@ console.log(location);
                               />
                             </Form.Group>
                           </div>
-                        </div>
+                        </div> */}
 
                         <div className="col-6 col-md-6">
                           <div className="form-group">
@@ -611,6 +848,24 @@ console.log(location);
                                 name={`given_name${index}`}
                                 placeholder="First Name"
                                 required
+                              />
+                            </Form.Group>
+                          </div>
+                        </div>
+                        
+                        <div className="col-6 col-md-6">
+                          <div className="form-group">
+                            <label>
+                              {" "}
+                              Middle Name
+                            </label>
+
+                            <Form.Group controlId={`given_middle_name${index}`}>
+                              <Form.Control
+                                type="text"
+                                className="form-control"
+                                name={`given_middle_name${index}`}
+                                placeholder="Middle Name"
                               />
                             </Form.Group>
                           </div>
@@ -646,7 +901,17 @@ console.log(location);
 
                         <div className="col-md-6">
                           <div className="form-group">
-                            <label>Gender</label>
+                            <label>
+                            {" "}
+                              <sup>
+                                <small>
+                                  <i className="fa fa-asterisk text-secondary mr-1">
+                                    {" "}
+                                  </i>
+                                </small>
+                              </sup>
+                              Gender
+                            </label>
                             <Form.Group controlId={`genderdetails${index}`}>
                               <Typeahead
                                 labelKey="genderdetails"
@@ -658,33 +923,8 @@ console.log(location);
                             </Form.Group>
                           </div>
                         </div>
-                      </div>
+                      </div>                      
                       <div className="row">
-                        <div className="col-md-6">
-                          <div className="form-group">
-                            <label>
-                              {" "}
-                              <sup>
-                                <small>
-                                  <i className="fa fa-asterisk text-secondary mr-1">
-                                    {" "}
-                                  </i>
-                                </small>
-                              </sup>
-                              Email Address
-                            </label>
-
-                            <Form.Group controlId={`email${index}`}>
-                              <Form.Control
-                                type="email"
-                                className="form-control dpd1"
-                                name={`email${index}`}
-                                placeholder="email"
-                                required
-                              />
-                            </Form.Group>
-                          </div>
-                        </div>
                         <div className="col-md-6">
                           <div className="form-group">
                             <label>
@@ -763,7 +1003,7 @@ console.log(location);
                                       </i>
                                     </small>
                                   </sup>
-                                  Address Line 1
+                                  Billing Address
                                 </label>
 
                                 <Form.Group controlId={`address1${index}`}>
@@ -777,7 +1017,7 @@ console.log(location);
                                 </Form.Group>
                               </div>
                             </div>
-                            <div className="col-md-12">
+                            {/* <div className="col-md-12">
                               <div className="form-group">
                                 <label>Address Line 2</label>
 
@@ -790,7 +1030,7 @@ console.log(location);
                                   />
                                 </Form.Group>
                               </div>
-                            </div> 
+                            </div> */}
                           </div>
                           <div className="row">
                             <div className="col-md-12">
@@ -893,7 +1133,32 @@ console.log(location);
                             </div>
                           </div>
                           <div className="row">
-                            <div className="col-md-12">
+                            <div className="col-md-6">
+                              <div className="form-group">
+                                <label>
+                                  {" "}
+                                  <sup>
+                                    <small>
+                                      <i className="fa fa-asterisk text-secondary mr-1">
+                                        {" "}
+                                      </i>
+                                    </small>
+                                  </sup>
+                                  Email Address
+                                </label>
+
+                                <Form.Group controlId={`email${index}`}>
+                                  <Form.Control
+                                    type="email"
+                                    className="form-control dpd1"
+                                    name={`email${index}`}
+                                    placeholder="email"
+                                    required
+                                  />
+                                </Form.Group>
+                              </div>
+                            </div>
+                            <div className="col-md-6">
                               <div className="form-group">
                                 <label>Phone Number</label>
                                 <Form.Group controlId={`phone${index}`}>
@@ -1051,18 +1316,33 @@ console.log(location);
               </div>
             </div>
           </Form>
-          <div className="col-12 col-md-12 col-lg-7 col-xl-8 content-side p-0">
-            {/* Main Content */}
-            <main className="booking-main">
-              {" "}
-              {isAncillaries && (
-                <h2 className="font-weight-bold mt-3 mb-3">Add Extras</h2>
-              )}
-              <div id="duffelAncillariesContainer mb-5">
-                {/* Duffel Ancillaries element will be rendered here */}
-                <duffel-ancillaries />
-              </div>
-            </main>
+          <div className="col-12 col-md-12 col-lg-7 col-xl-8 content-side p-0">            
+
+            {" "}
+            {isAncillaries && (
+              <h2 className="font-weight-bold mt-3 mb-3">Add Extras</h2>
+            )}
+            <div id="duffelAncillariesContainer mb-5">
+              {/* Duffel Ancillaries element will be rendered here */}
+              <duffel-ancillaries />
+            </div>
+            {/* {isPayment && (
+              <h2 className="font-weight-bold mt-3 mb-3">Payment</h2>
+            )} */}
+
+            {isPayment && (
+              <h2
+                ref={paymentSectionRef}
+                className="font-weight-bold mt-3 mb-3"
+              >
+                Payment
+              </h2>
+            )}
+
+            <div id="duffelPaymentsContainer ref={paymentSectionRef}  mb-5">
+              {/* Duffel Payments element will be rendered here */}
+              <duffel-payments ref={duffelPaymentRef} key={paymentRenderKey}/>
+            </div>
 
             <div className="agreement-section mt-5">
               {/* Agreement of Purchase */}
