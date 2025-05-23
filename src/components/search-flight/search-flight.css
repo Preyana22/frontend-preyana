@@ -1,6 +1,33 @@
+ #banner-sec .banner-image {
+    margin-top: 0.5rem;
+    margin-left: 5rem;
+  } 
+  
+
+
+.banner-image {
+  max-width: 100%;
+  height: auto;
+  max-height: 300px; /* Control max height */
+  object-fit: contain; /* Maintains aspect ratio */
+}
 .interchange-icon img {
   transition: transform 0.3s ease;
 }
+
+
+.interchange-icon {
+    margin-top: -0.2rem;
+    text-align: center;
+   
+  }
+  .interchange-icon2 img {
+    transition: transform 0.3s ease;
+  }
+  .interchange-icon2{
+    margin-top: -0.2rem;
+    text-align: center;
+  }
 .rotated {
   transform: rotate(-180deg);
 }
@@ -68,4 +95,77 @@
 }
 .checktrip {
   margin-top: 7px;
+}
+.select-container {
+  position: relative;
+}
+
+.cabin-arrow {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #555; /* adjust color if needed */
+}
+.headerSearchText {
+  cursor: pointer;
+  user-select: none;
+}
+
+.passenger-arrow {
+  margin-left: 6px;
+}
+.search-tabs .tab-content .tab-pane .searchbtn {
+  padding: 8px 30px;
+  margin-top: 0px;
+
+}
+.passenger-arrow {
+  pointer-events: none;
+}
+.headerSearchText {
+  cursor: pointer;
+  user-select: none;
+}
+.passenger-arrow {
+  pointer-events: none; /* Important! */
+}
+
+.passenger-form-group{
+  width:160px;
+}
+@media (max-width: 576px) {
+  .passenger-form-group {
+    width: 77% !important;
+   
+  }
+  .interchange-icon2{
+    margin-top: 2.5rem;
+    text-align: center;
+  }
+}
+@media (max-width: 475px) {
+  .passenger-form-group {
+    width: 100% !important;
+   
+  }
+  .interchange-icon2{
+    margin-top: 2.5rem;
+    text-align: center;
+  }
+}
+
+#cabin-class-group{
+  width:120px;
+}
+@media (max-width: 475px) {
+  #cabin-class-group{
+  width:100% !important;
+}
+}
+
+/* Hide the hint text inside the Typeahead input */
+.rbt-input-hint {
+  display: none !important;
 }

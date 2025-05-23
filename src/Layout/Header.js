@@ -5,6 +5,7 @@ import headerlogoimage from "../assets/images/Preyana_Logo.svg";
 import userimage from "../assets/images/user.svg";
 
 const Header = ({ onBrandClick }) => {
+    const token = localStorage.getItem("token");
   const email = localStorage.getItem("email");
   const userId = localStorage.getItem("userId");
   const userName = localStorage.getItem("userName");
@@ -42,7 +43,7 @@ const Header = ({ onBrandClick }) => {
     // if (!email || !userId) {
     //   navigate("/");
     // }
-  }, [email, userId, userName]);
+  }, [email, userId, userName,token]);
 
   return (
     <Navbar expand="lg" sticky="top" className="navbar-custom p-1">
@@ -59,7 +60,7 @@ const Header = ({ onBrandClick }) => {
         </Navbar.Toggle>
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ml-auto align-items-center text-left text-md-center">
-            {email ? (
+            {(email || token) ? (
               <>
                 <Nav.Item className="nav-item-border">
                   <Nav.Item className="nav-item-border">

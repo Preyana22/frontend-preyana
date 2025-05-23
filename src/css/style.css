@@ -6332,7 +6332,9 @@ nav.navbar .container.padding {
 	height: 20px;
 }
 #banner-sec .banner-image{
-	margin-top: -1.5rem;
+	/* margin-top: -1.5rem; */
+	margin-top: -0.5rem;
+    margin-left: 15.5rem;
 }
 .sign-in-label
 {

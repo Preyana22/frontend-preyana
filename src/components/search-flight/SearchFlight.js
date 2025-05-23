@@ -1,5 +1,4 @@
-import React, { useRef } from "react";
-import { useEffect, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { Typeahead } from "react-bootstrap-typeahead";
 import Form from "react-bootstrap/Form";
 import "react-bootstrap-typeahead/css/Typeahead.css";
@@ -10,7 +9,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import "../body.css";
 import axios from "axios";
 import flightimage from "../../assets/images/flightimage.svg";
-import sideimage from "../../assets/images/banner.svg";
+import sideimage from "../../assets/images/login-signup-signin-img.png";
 import hotelimage from "../../assets/images/coming-soon.png";
 import planeIcon from "../../assets/images/planeIcon.svg";
 import hotelIcon from "../../assets/images/hotel.svg";
@@ -21,26 +20,28 @@ import destination_1 from "../../assets/images/destination_1.jpg";
 import destination_2 from "../../assets/images/destination_2.jpg";
 import coming_soon from "../../assets/images/coming_soon.jpg";
 import { Alert, Carousel } from "react-bootstrap";
-import Select from 'react-select';
+import Select from "react-select";
 import "./search-flight.css";
 import { debounce } from "lodash";
+
 const apiUrl = process.env.REACT_APP_API_BASE_URL;
 
 const isDate = (date) => {
   return new Date(date) !== "Invalid Date" && !isNaN(new Date(date));
 };
-// Get today's date in yyyy-mm-dd format
+
 const today = new Date().toISOString().split("T")[0];
 
 const ErrorLabel = (props) => {
   return <label style={{ color: "red" }}>{props.message}</label>;
 };
 
-var cabin_details = ["Economy", "Premium Economy", "Business", "First"];
-const cabinOptions = cabin_details.map((cabin,index) => ({
+const cabin_details = ["Economy", "Premium Economy", "Business", "First"];
+const cabinOptions = cabin_details.map((cabin, index) => ({
   value: index + 1,
   label: cabin,
 }));
+
 const countryCodeMapping = {
   AF: "Afghanistan",
   AL: "Albania",
@@ -235,7 +236,6 @@ const SearchFlight = ({ onSearch, ...props }) => {
   const [airportsData, setAirports] = useState([]);
   const [openOptions, setOpenOptions] = useState(false);
   const [tripOptions, setTripOptions] = useState(false);
-  const [keyword, setKeyword] = useState("IN");
   const [options, setOptions] = useState({
     adult: 1,
     children: 0,
@@ -243,7 +243,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
   });
   const dropdownRef = useRef(null);
   const dropdownSearchRef = useRef(null);
-  const [selectedCabinClass, setSelectedCabinClass] = useState();
+  const [selectedCabinClass, setSelectedCabinClass] = useState(1);
   const [selectedOrigin, setSelectedOrigin] = useState([]);
   const [selectedDestination, setSelectedDestination] = useState([]);
   const [selectedDateOfDep, setSelectedDateOfDep] = useState("");
@@ -251,42 +251,20 @@ const SearchFlight = ({ onSearch, ...props }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
 
-  const handleSearch = async () => {
-    if (typeof onSearch === "function") {
-      onSearch(); // Call the search function to initiate loading
+  const [originAirports, setOriginAirports] = useState([]);
+  const [destinationAirports, setDestinationAirports] = useState([]);
 
-      // Simulate a delay to mimic fetching data
-      await new Promise((resolve) => {
-        // alert();
-        setTimeout(resolve, 4000);
-      });
-      // You would replace this with actual API call and handle results
-    } else {
-      console.error("onSearch is not a function", onSearch);
-    }
-  };
+  const [isReturn, setIsReturn] = useState(true);
+  const [status, setFormValid] = useState({ isValid: false });
 
-  // Toggle dropdown open/close
-  const toggleDropdown = (isOpen) => {
-    setIsDropdownOpen(isOpen);
-  };
+  const originRef = useRef(null);
+  const destinationRef = useRef(null);
 
-  // Handler for swapping origin and destination
-  const handleSwap = () => {
-    const originTemp = selectedOrigin;
-    setSelectedOrigin(selectedDestination);
-    setSelectedDestination(originTemp);
-
-    // Toggle rotation state
-    setIsRotated(!isRotated);
-  };
-
-  // Clear localStorage when navigating to the home page
   const location = useLocation();
+  const navigate = useNavigate();
 
-  // Load saved cabin class from localStorage on component mount
   useEffect(() => {
-    if (location.pathname === "/" || location.pathname === "search") {
+    if (location.pathname === "/" || location.pathname === "/search") {
       localStorage.removeItem("cabinclass");
       localStorage.removeItem("origin");
       localStorage.removeItem("destination");
@@ -303,27 +281,23 @@ const SearchFlight = ({ onSearch, ...props }) => {
     const savedDestination = localStorage.getItem("destination");
     let savedDateOfDep = JSON.parse(localStorage.getItem("dateOfDeparture"));
     let savedDateOfRet = JSON.parse(localStorage.getItem("dateOfReturn"));
-    if(savedDateOfDep==null)
-    {
+    if (savedDateOfDep == null) {
       const today = new Date();
-      // Departure: Day after tomorrow
       const departureDate = new Date();
-      departureDate.setDate(today.getDate() + 2); // 2 days ahead
-      savedDateOfDep =departureDate.toISOString().split("T")[0]; // YYYY-MM-DD format
+      departureDate.setDate(today.getDate() + 2);
+      savedDateOfDep = departureDate.toISOString().split("T")[0];
     }
-    if(savedDateOfRet==null){
+    if (savedDateOfRet == null) {
       const today = new Date();
-  // Departure: Day after tomorrow
-  const departureDate = new Date();
-  departureDate.setDate(today.getDate() + 2); // 2 days ahead
+      const departureDate = new Date();
+      departureDate.setDate(today.getDate() + 2);
       const arrivalDate = new Date(departureDate);
-      arrivalDate.setDate(departureDate.getDate() + 7); // 7 days later
-      savedDateOfRet =arrivalDate.toISOString().split("T")[0]; // YYYY-MM-DD forma
+      arrivalDate.setDate(departureDate.getDate() + 7);
+      savedDateOfRet = arrivalDate.toISOString().split("T")[0];
     }
-    
+
     const storedOptions = localStorage.getItem("options");
     const storedTripType = localStorage.getItem("isReturn");
-
 
     if (storedTripType) {
       setIsReturn(JSON.parse(storedTripType));
@@ -350,17 +324,15 @@ const SearchFlight = ({ onSearch, ...props }) => {
     }
 
     if (savedCabinClass) {
-      setSelectedCabinClass(savedCabinClass);
+      setSelectedCabinClass(Number(savedCabinClass));
     }
   }, [location.pathname]);
 
-  // Handle the change event of the Origin Typeahead
   const handleOriginChange = (selected) => {
     setSelectedOrigin(selected);
     localStorage.setItem("origin", JSON.stringify(selected));
   };
 
-  // Handle the change event of the Destination Typeahead
   const handleDestinationChange = (selected) => {
     setSelectedDestination(selected);
     localStorage.setItem("destination", JSON.stringify(selected));
@@ -368,42 +340,40 @@ const SearchFlight = ({ onSearch, ...props }) => {
 
   const handleCabinClassChange = (event) => {
     const selectedCabin = event.target.value;
-    setSelectedCabinClass(selectedCabin);
+    setSelectedCabinClass(Number(selectedCabin));
     localStorage.setItem("cabinclass", selectedCabin);
-
-    // Update status based on whether a selection was made
     if (selectedCabin) {
-      setFormValid({ isValid: false });
-    } else {
       setFormValid({ isValid: true });
+    } else {
+      setFormValid({ isValid: false });
     }
   };
 
-  const [dateOfDep, setDateOfDep] = useState("");
-  const [returnDate, setDateOfRet] = useState("");
-  // Handle dateOfDep change
   const handleDateOfDepChange = (event) => {
-    const selectedDate = event.target.value; // Get the value directly
-    setDateOfRet(selectedDate);
-    setSelectedDateOfDep(selectedDate); // Set state directly
+    const selectedDate = event.target.value;
+    setSelectedDateOfDep(selectedDate);
+
+    // Calculate 10 days ahead for return date
+    const depDate = new Date(selectedDate);
+    depDate.setDate(depDate.getDate() + 10);
+    const returnDate = depDate.toISOString().split("T")[0];
+
+    setSelectedDateOfRet(returnDate);
+
     localStorage.setItem("dateOfDeparture", JSON.stringify(selectedDate));
   };
 
-  // Handle dateOfRet change
   const handleDateOfRetChange = (event) => {
-    const selectedDate = event.target.value; // Get the value directly
-    setDateOfRet(selectedDate);
-    setSelectedDateOfRet(selectedDate); // Set state directly
+    const selectedDate = event.target.value;
+    setSelectedDateOfRet(selectedDate);
     localStorage.setItem("dateOfReturn", JSON.stringify(selectedDate));
   };
 
   const setFlightType = (value) => {
     setIsReturn(value);
-    // Store the selected trip type in local storage
     localStorage.setItem("isReturn", JSON.stringify(value));
   };
 
-  // Close the dropdown if clicked outside of it
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -421,15 +391,13 @@ const SearchFlight = ({ onSearch, ...props }) => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [dropdownRef, dropdownSearchRef]);
+  }, []);
 
   const handleOption = (name, operation) => {
     setOptions((prev) => {
       let newValue;
 
-      // Determine the new value based on the operation
       if (operation === "i") {
-        // Increment, but restrict based on max values
         if (name === "adult" && prev[name] < 6) {
           newValue = prev[name] + 1;
         } else if (name === "children" && prev[name] < 5) {
@@ -437,52 +405,44 @@ const SearchFlight = ({ onSearch, ...props }) => {
         } else if (name === "infant" && prev[name] < 4) {
           newValue = prev[name] + 1;
         } else {
-          newValue = prev[name]; // No change if limit is reached
+          newValue = prev[name];
         }
       } else {
-        // Decrement, but restrict adult to minimum 1 and children/infants to minimum 0
         newValue = prev[name] - 1;
       }
 
-      // Make sure the values don't fall below the minimums
       const updatedOptions = {
         ...prev,
-        [name]:
-          name === "adult" ? Math.max(1, newValue) : Math.max(0, newValue),
+        [name]: name === "adult" ? Math.max(1, newValue) : Math.max(0, newValue),
       };
 
-      // Store the updated options in local storage
       localStorage.setItem("options", JSON.stringify(updatedOptions));
 
       return updatedOptions;
     });
   };
 
-  const [originAirports, setOriginAirports] = useState([]);
-  const [destinationAirports, setDestinationAirports] = useState([]);
-
   const getAirports = debounce(async (search, type) => {
+    
     if (!search) {
-      // Clear previous results if search is blank
       type === "origin" ? setOriginAirports([]) : setDestinationAirports([]);
       return;
     }
-
     try {
       const { data } = await axios.get(apiUrl + `/airlines/airports/` + search);
 
       const airports = data.data
-        ? data.data.map((t) => {
-            const countryName =
-              countryCodeMapping[t.iata_country_code] || "Unknown Country";
-            const cityName = t.city_name || "";
-            return t.iata_city_code == null
-              ? "abc"
-              : `${t.name}, ${cityName} (${t.iata_code}), ${countryName}`;
-          })
+        ? data.data
+            .filter((t) => t.city_name != null)
+            .map((t) => {
+              const countryName =
+                countryCodeMapping[t.iata_country_code] || "Unknown Country";
+              return t.iata_city_code == null
+                ? "abc"
+                : `${t.iata_code} - ${t.city_name} - ${countryName} (${t.name})`;
+            })
         : [];
 
-      // Set results for origin or destination based on the type parameter
       type === "origin"
         ? setOriginAirports(airports)
         : setDestinationAirports(airports);
@@ -491,35 +451,24 @@ const SearchFlight = ({ onSearch, ...props }) => {
     }
   }, 300);
 
-  const navigate = useNavigate();
-  let origin, destination, cabinclass;
-  let criteria;
-
-  const [isReturn, setIsReturn] = useState(true);
-  const [status, setFormValid] = useState({ isValid: false });
-
-  let invalidFields = {};
-
-  const getCabinClassValue = () => {
-    const cabinClassElement = localStorage.getItem("cabinclass");
-
-    return cabinClassElement;
+  // Swap origin and destination
+  const handleSwap = () => {
+    const originTemp = selectedOrigin;
+    setSelectedOrigin(selectedDestination);
+    setSelectedDestination(originTemp);
+    setIsRotated(!isRotated);
   };
 
-  // Function to extract the second part (after splitting and trimming)
   const getSecondPart = (stateText) => {
-    const parts = stateText.split(","); // Split by commas
+    const parts = stateText.split(",");
     let secondPart = parts[1]
-      ? parts[1].replace(/\s*\(.*\)/, "").trim() // Remove "(IND)" if present
+      ? parts[1].replace(/\s*\(.*\)/, "").trim()
       : "";
 
-    // If secondPart is empty, check for value inside brackets
     if (!secondPart) {
       const match = parts[1] ? parts[1].match(/\(([^)]+)\)/) : null;
       if (match && match[1]) {
-        secondPart = match[1].trim(); // Get the matched value inside parentheses
-      } else {
-        console.log("No match found for second part");
+        secondPart = match[1].trim();
       }
     }
 
@@ -527,82 +476,71 @@ const SearchFlight = ({ onSearch, ...props }) => {
   };
 
   const handleSubmit1 = (event) => {
-    let cabinValue;
-    const cabinClassValue = getCabinClassValue();
-    if(cabinClassValue=="1"){
-      cabinValue = "economy";
-    }else if (cabinClassValue=="2") {
-      cabinValue = "premium_economy";
-    } else if(cabinClassValue=="3"){
-      cabinValue = "business";
-    }else if(cabinClassValue=="4") {
-      cabinValue = "first";
-    }
-  
-// console.log("cabinValue",cabinValue);
-// console.log(typeof(cabinValue));
     event.preventDefault();
-    const { flights } = props;
-    invalidFields = {};
+
+    let cabinValue;
+    switch (selectedCabinClass) {
+      case 1:
+        cabinValue = "economy";
+        break;
+      case 2:
+        cabinValue = "premium_economy";
+        break;
+      case 3:
+        cabinValue = "business";
+        break;
+      case 4:
+        cabinValue = "first";
+        break;
+      default:
+        cabinValue = "economy";
+    }
+
     let Adults = [];
     let adultsData = { type: "adult" };
     let childData = { type: "child" };
     let infantData = { type: "infant_without_seat" };
 
-    for (var i = 1; i <= options.adult; i++) {
+    for (let i = 1; i <= options.adult; i++) {
       Adults.push(adultsData);
     }
-    for (var i = 1; i <= options.children; i++) {
+    for (let i = 1; i <= options.children; i++) {
       Adults.push(childData);
     }
-    for (var i = 1; i <= options.infant; i++) {
+    for (let i = 1; i <= options.infant; i++) {
       Adults.push(infantData);
     }
 
-    const originStateText = origin.state.text;
-    const originCode = originStateText
-      ? originStateText.match(/\(([^)]+)\)/)[1]
-      : "";
-    const origin_city = originCode;
+    const originStateText = selectedOrigin[0]?.split(" - ")[1] || "";
+    const originCode = selectedOrigin[0]?.split(" - ")[0] || "";
+    const destinationStateText = selectedDestination[0]?.split(" - ")[1] || "";
+    const destinationCode = selectedDestination[0]?.split(" - ")[0] || "";
 
-    const destinationStateText = destination.state.text;
-    const destinationCode = destinationStateText
-      ? destinationStateText.match(/\(([^)]+)\)/)[1]
-      : "";
-    const destination_city = destinationCode;
-
-    const originparts = originStateText.split(","); // Split by commas
-
-    // Get the second part for origin and destination
     const originSecondPart = getSecondPart(originStateText);
     const destinationSecondPart = getSecondPart(destinationStateText);
 
-    if (isReturn === false) {
-      criteria = {
-        origin: origin_city,
-        destination: destination_city,
-        departureDate: event.target.dateOfDep.value,
-        numOfPassengers: Adults,
-        cabin_class: cabinValue,
-        origin_city_name: originSecondPart,
-        destination_city_name: destinationSecondPart,
-      };
-    } else {
-      criteria = {
-        origin: origin_city,
-        destination: destination_city,
-        departureDate: event.target.dateOfDep.value,
-        returnDate: event.target.returnDate.value,
-        numOfPassengers: Adults,
-        cabin_class: cabinValue,
-        origin_city_name: originSecondPart,
-        destination_city_name: destinationSecondPart,
-      };
-    }
+    const criteria = isReturn
+      ? {
+          origin: originCode,
+          destination: destinationCode,
+          departureDate: event.target.dateOfDep.value,
+          returnDate: event.target.returnDate.value,
+          numOfPassengers: Adults,
+          cabin_class: cabinValue,
+          origin_city_name: originSecondPart,
+          destination_city_name: destinationSecondPart,
+        }
+      : {
+          origin: originCode,
+          destination: destinationCode,
+          departureDate: event.target.dateOfDep.value,
+          numOfPassengers: Adults,
+          cabin_class: cabinValue,
+          origin_city_name: originSecondPart,
+          destination_city_name: destinationSecondPart,
+        };
 
-    if (cabin_details.includes(cabinClassValue)) {
-      invalidFields.cabinclass = false;
-    }
+    let invalidFields = {};
 
     if (!criteria.departureDate || !isDate(criteria.departureDate)) {
       invalidFields.dateOfDep = true;
@@ -610,22 +548,13 @@ const SearchFlight = ({ onSearch, ...props }) => {
       invalidFields.dateOfDep = false;
     }
 
-    // Check if departure date is selected first
     if (isReturn) {
-      if (!criteria.departureDate) {
-        // Show validation if departure date is not selected
-        invalidFields.dateOfDep =
-          "Please select a departure date before the return date.";
-      } else if (!criteria.returnDate || !isDate(criteria.returnDate)) {
-        // Show validation if return date is invalid or not selected
-        invalidFields.returnDate = "Please select a valid return date.";
+      if (!criteria.returnDate || !isDate(criteria.returnDate)) {
+        invalidFields.returnDate = true;
       } else {
-        // Clear validation if both dates are selected correctly
-        invalidFields.dateOfDep = false;
         invalidFields.returnDate = false;
       }
     } else {
-      // If it's a one-way trip, no need for return date validation
       invalidFields.returnDate = false;
     }
 
@@ -641,18 +570,11 @@ const SearchFlight = ({ onSearch, ...props }) => {
       invalidFields.origin = false;
     }
 
-    if (
-      criteria.origin &&
-      criteria.destination &&
-      criteria.origin === criteria.destination
-    ) {
+    if (criteria.origin && criteria.destination && criteria.origin === criteria.destination) {
       invalidFields.destination = true;
     }
 
-    // Only consider fields where the value is true
-    const hasInvalidFields = Object.values(invalidFields).some(
-      (value) => value
-    );
+    const hasInvalidFields = Object.values(invalidFields).some((value) => value);
 
     if (hasInvalidFields) {
       setFormValid({ isValid: false, ...invalidFields });
@@ -660,55 +582,50 @@ const SearchFlight = ({ onSearch, ...props }) => {
     }
 
     setFormValid({ isValid: true });
-    props.findFlights({ flights, criteria });
-
+    props.findFlights({ flights: props.flights, criteria });
     navigate("/results");
   };
 
   useEffect(() => {
-    const type = "origin";
-    getAirports(keyword, type);
     localStorage.setItem("options", JSON.stringify(options));
-    localStorage.setItem("isReturn", JSON.stringify(isReturn)); // Store isReturn
+    localStorage.setItem("isReturn", JSON.stringify(isReturn));
+    localStorage.setItem("cabinclass", selectedCabinClass.toString());
+  }, [options, isReturn, selectedCabinClass]);
 
-    setSelectedCabinClass(1);
-    localStorage.setItem("cabinclass", '1');
-  }, [cabin_details, openOptions, options, isReturn]);
-  // Handle tab click
   const [activeTab, setActiveTab] = useState("flights");
   const handleTabClick = (e, tabName) => {
     e.preventDefault();
     setActiveTab(tabName);
-    
+
+    const flightInfo = document.querySelector(".flights-info-container.row");
+    const topdeal = document.getElementById("topdeal");
+
     if (tabName === "hotels") {
-      // Hide flights-info-container completely
-      const flightInfo = document.querySelector(".flights-info-container.row");
-      const topdeal = document.getElementById("topdeal");
-      if (topdeal) {
-      
-        topdeal.style.display = "none"; // Hide element completely
-      }
+      if (topdeal) topdeal.style.display = "none";
       if (flightInfo) {
         flightInfo.classList.add("tab-pane", "fade");
-        flightInfo.classList.add("tab-pane", "fade");
-        // flightInfo.classList.add("tab-pane", "fade");
-         flightInfo.style.display = "none"; // Hide element completely
+        flightInfo.style.display = "none";
       }
-      // Navigate to "/"
-    } 
+    }
     if (tabName === "flights") {
-      // Show the flights-info-container when Flights tab is selected
-      const flightInfo = document.querySelector(".flights-info-container.row");
-      const topdeal = document.getElementById("topdeal");
-      if (topdeal) {
-        topdeal.style.display = ""; // Hide element completely
-      }
+      if (topdeal) topdeal.style.display = "";
       if (flightInfo) {
         flightInfo.classList.remove("tab-pane", "fade");
         flightInfo.style.display = "";
       }
     }
-    
+  };
+
+  const handleSearch = async () => {
+    if (typeof onSearch === "function") {
+      onSearch();
+
+      await new Promise((resolve) => {
+        setTimeout(resolve, 40);
+      });
+    } else {
+      console.error("onSearch is not a function", onSearch);
+    }
   };
 
   return (
@@ -716,23 +633,18 @@ const SearchFlight = ({ onSearch, ...props }) => {
       <div className="row pb-5">
         <div className="col-12 col-md-12 col-lg-5 col-xl-5 my-auto">
           <h2 className="font-weight-bold">
-            Plan hassle-free travels to <br></br>your dream destinations
+            Plan hassle-free travels to <br />
+            your dream destinations
           </h2>
           <h4 className="font-weight-light sub-title-text">
-            Preyana strives to ensure that your journey begins with genuine
-            connections and authentic experiences.
+            Preyana strives to ensure that your journey begins with genuine connections and authentic experiences.
           </h4>
         </div>
         <div className="col-12 col-md-12 col-lg-7 col-xl-7" id="banner-sec">
-          <img
-            src={sideimage}
-            className="img-fluid banner-image"
-            alt="banner-img"
-            width={600}
-            height={400}
-          />
+          <img src={sideimage} className="img-fluid banner-image" alt="banner-img" />
         </div>
       </div>
+
       <section className="flexslider-container mt-5">
         <div className="search-tabs" id="search-tabs-1">
           <div className="container">
@@ -741,588 +653,466 @@ const SearchFlight = ({ onSearch, ...props }) => {
                 <ul className="nav nav-tabs justify-content-left">
                   <li className="nav-item">
                     <a
-                      className="nav-link active"
+                      className={`nav-link ${activeTab === "flights" ? "active" : ""}`}
                       href="#flights"
                       onClick={(e) => handleTabClick(e, "flights")}
                       data-bs-toggle="tab"
                     >
                       <span>
-                        <img
-                          src={planeIcon}
-                          className="img-fluid plane_hotel_icon"
-                          alt="plane-img"
-                        />
+                        <img src={planeIcon} className="img-fluid plane_hotel_icon" alt="plane-img" />
                       </span>
-                      <span className="d-md-inline-flex d-none st-text">
-                        Flights
-                      </span>
+                      <span className="d-md-inline-flex d-none st-text">Flights</span>
                     </a>
                   </li>
                   <li className="nav-item">
-                    <a className="nav-link" 
-                      href="#hotels"  
-                      onClick={(e) => handleTabClick(e, "hotels")} 
-                      data-bs-toggle="tab">
+                    <a
+                      className={`nav-link ${activeTab === "hotels" ? "active" : ""}`}
+                      href="#hotels"
+                      onClick={(e) => handleTabClick(e, "hotels")}
+                      data-bs-toggle="tab"
+                    >
                       <span>
-                        <img
-                          src={hotelIcon}
-                          className="img-fluid plane_hotel_icon"
-                          alt="plane-img"
-                        />
+                        <img src={hotelIcon} className="img-fluid plane_hotel_icon" alt="hotel-img" />
                       </span>
-                      <span className="d-md-inline-flex d-none st-text">
-                        Hotels
-                      </span>
+                      <span className="d-md-inline-flex d-none st-text">Stays</span>
                     </a>
                   </li>
                 </ul>
+
                 <div className="tab-content">
-                  <div id="flights" className="tab-pane in active">
-                    <div className="page-search-form">
-                      <Form onSubmit={handleSubmit1}>
-                        <div className="row mt-0">
-                          {/* Trip Type Selection */}
-                          <div className="col-12 col-md-6 col-lg-4 col-xl-3 col-sm-12 col-xs-12">
-                          <div className="form-group">
+                  {activeTab === "flights" && (
+                    <div id="flights" className="tab-pane in active">
+                      <div className="page-search-form">
+                        <Form onSubmit={handleSubmit1}>
+                          <div className="row mt-0">
+                            {/* Trip Type Selection */}
+                            <div className="col-12 col-md-6 col-lg-4 col-xl-3 col-sm-12 col-xs-12 space-info">
+                              <Form.Group className="mb-0 checktrip">
+                                <Form.Check
+                                  inline
+                                  checked={isReturn}
+                                  type="radio"
+                                  label="Round Trip"
+                                  name="flightType"
+                                  id="formHorizontalRadios2"
+                                  onChange={() => setFlightType(true)}
+                                />
+                                <Form.Check
+                                  inline
+                                  style={{ marginLeft: "20px" }}
+                                  checked={!isReturn}
+                                  type="radio"
+                                  label="One Way"
+                                  name="flightType"
+                                  id="formHorizontalRadios1"
+                                  onChange={() => setFlightType(false)}
+                                />
+                              </Form.Group>
+                            </div>
 
-                          <Form.Group className="mb-0 checktrip" >
-                            <Form.Check
-                              inline
-                              checked={isReturn}
-                              type="radio"
-                              label="Round Trip"
-                              name="flightType"
-                              id="formHorizontalRadios2"
-                              onChange={() => setFlightType(true)}
-                            />
-                            <Form.Check
-                              inline
-                              style={{ marginLeft: '20px' }}
-                              checked={!isReturn}
-                              type="radio"
-                              label="One Way"
-                              name="flightType"
-                              id="formHorizontalRadios1"
-                              onChange={() => setFlightType(false)}
-                            />
-                          </Form.Group>
-                        </div>
-
-                          </div>
-
-                          {/* Cabin Class Selection */}
-                          <div className="col-12 col-md-6 col-lg-4 col-xl-3 col-sm-12 col-xs-12 ">
-                            <Form.Group controlId="cabinclass">
-                              <div className="select-container">
-                               
-                              <Select
-
-            options={cabinOptions}
-            value={cabinOptions.find((option) => option.value === Number(selectedCabinClass)) || null}
-            onChange={(selectedOption) =>
-              handleCabinClassChange({ target: { value: selectedOption.value } })
-            }
-            onFocus={() => toggleDropdown(true)}
-            onBlur={() => toggleDropdown(false)}
-         className="bg-transparent border-none focus:ring-0 shadow-none text-gray-700"
-            // placeholder="Select Cabin Class"
-            
-            isClearable={false}
-            styles={{
-              control: (base) => ({
-                ...base,
-                backgroundColor: "transparent", // Transparent background
-                border: "none", // Removes border
-                boxShadow: "none", // Removes focus ring
-              }),
-              indicatorsContainer: (base) => ({
-                ...base,
-                display: "none", // Hides the dropdown arrow
-              }),
-            }}
-          />
-                                <i
-                                  className={`cabin-arrow ${
-                                    isDropdownOpen
-                                      ? "fa fa-chevron-up"
-                                      : "fa fa-chevron-down"
-                                  }`}
-                                  aria-hidden="true"
-                                ></i>
-                              </div>
-                              {status?.cabinclass && (
-                                <ErrorLabel message="Please select cabin class" />
-                              )}
-                            </Form.Group>
-                          </div>
-                          
-
-                          {/* Passengers Options */}
-                          <div className="col-12 col-md-6 col-lg-4 col-xl-3 col-sm-12 col-xs-12">
-                            <div className="form-group">
-                              {/* <label
-                                htmlFor="passengers"
-                                className="form-label"
-                              >
-                                Passengers
-                              </label> */}
-                              <div
-                                className="headerSearchItem"
-                                ref={dropdownSearchRef}
-                              >
-                                {/* Passengers Options Arrow */}
-                                <span
-                                  onClick={() => setOpenOptions(!openOptions)}
-                                  className={`headerSearchText ${
-                                    openOptions
-                                      ? "optionarrow-up"
-                                      : "optionarrow-down"
-                                  }`}
-                                >
-                                  <i className="fa fa-user"></i>{" "}
-                                  {options.adult +
-                                    options.children +
-                                    options.infant ===
-                                  1
-                                    ? ` ${
-                                        options.adult +
-                                        options.children +
-                                        options.infant
-                                      } Traveler`
-                                    : ` ${
-                                        options.adult +
-                                        options.children +
-                                        options.infant
-                                      } Travelers`}
+                            {/* Cabin Class Selection */}
+                            <div className="col-12 col-md-6 col-lg-4 col-xl-3 col-sm-12 col-xs-12 space-info">
+                              <Form.Group controlId="cabinclass" style={{ width: "120px" }}>
+                                <div className="select-container">
+                                  <Select
+                                    options={cabinOptions}
+                                    value={
+                                      cabinOptions.find(
+                                        (option) => option.value === Number(selectedCabinClass)
+                                      ) || null
+                                    }
+                                    onChange={(selectedOption) =>
+                                      handleCabinClassChange({
+                                        target: { value: selectedOption.value },
+                                      })
+                                    }
+                                    onMenuOpen={() => setIsDropdownOpen(true)}
+                                    onMenuClose={() => setIsDropdownOpen(false)}
+                                    className="bg-transparent border-none focus:ring-0 shadow-none text-gray-700 zindex"
+                                    isClearable={false}
+                                    styles={{
+                                      control: (base) => ({
+                                        ...base,
+                                        backgroundColor: "transparent",
+                                        border: "none",
+                                        boxShadow: "none",
+                                        width: "200px",
+                                      }),
+                                      indicatorsContainer: (base) => ({
+                                        ...base,
+                                        display: "none",
+                                      }),
+                                      menu: (base) => ({
+                                        ...base,
+                                        width: "200px",
+                                      }),
+                                    }}
+                                  />
                                   <i
-                                    className={`passenger-arrow ${
-                                      openOptions
-                                        ? "fa fa-chevron-up"
-                                        : "fa fa-chevron-down"
+                                    className={`cabin-arrow ${
+                                      isDropdownOpen ? "fa fa-chevron-up" : "fa fa-chevron-down"
                                     }`}
                                     aria-hidden="true"
                                   ></i>
-                                </span>
-                                {openOptions && (
-                                  <div className="options">
-                                    {/* Adult Counter */}
-                                    <div className="optionItem">
-                                      <span className="optionText">Adult</span>
-                                      <div className="optionCounter">
-                                        <button
-                                          type="button"
-                                          disabled={options.adult <= 1}
-                                          className="optionCounterButton"
-                                          onClick={() =>
-                                            handleOption("adult", "d")
-                                          }
-                                        >
-                                          -
-                                        </button>
-                                        <span className="optionCounterNumber">
-                                          {options.adult}
-                                        </span>
-                                        <button
-                                          type="button"
-                                          disabled={options.adult >= 6}
-                                          className="optionCounterButton"
-                                          onClick={() =>
-                                            handleOption("adult", "i")
-                                          }
-                                        >
-                                          +
-                                        </button>
-                                      </div>
-                                    </div>
-
-                                    {/* Children Counter */}
-                                    <div className="optionItem">
-                                      <span className="optionText">
-                                        Children
-                                        <br />
-                                        <small>(Ages 2 to 17)</small>
-                                      </span>
-                                      <div className="optionCounter">
-                                        <button
-                                          type="button"
-                                          disabled={options.children <= 0}
-                                          className="optionCounterButton"
-                                          onClick={() =>
-                                            handleOption("children", "d")
-                                          }
-                                        >
-                                          -
-                                        </button>
-                                        <span className="optionCounterNumber">
-                                          {options.children}
-                                        </span>
-                                        <button
-                                          type="button"
-                                          disabled={options.children >= 5}
-                                          className="optionCounterButton"
-                                          onClick={() =>
-                                            handleOption("children", "i")
-                                          }
-                                        >
-                                          +
-                                        </button>
-                                      </div>
-                                    </div>
-
-                                    {/* Infant Counter */}
-                                    <div className="optionItem">
-                                      <span className="optionText">
-                                        Infant <br />
-                                        <small>(under 2 years)</small>
-                                      </span>
-                                      <div className="optionCounter">
-                                        <button
-                                          type="button"
-                                          disabled={options.infant <= 0}
-                                          className="optionCounterButton"
-                                          onClick={() =>
-                                            handleOption("infant", "d")
-                                          }
-                                        >
-                                          -
-                                        </button>
-                                        <span className="optionCounterNumber">
-                                          {options.infant}
-                                        </span>
-                                        <button
-                                          type="button"
-                                          disabled={options.infant >= 4}
-                                          className="optionCounterButton"
-                                          onClick={() =>
-                                            handleOption("infant", "i")
-                                          }
-                                        >
-                                          +
-                                        </button>
-                                      </div>
-                                    </div>
-                                  </div>
+                                </div>
+                                {status?.cabinclass && (
+                                  <ErrorLabel message="Please select cabin class" />
                                 )}
+                              </Form.Group>
+                            </div>
+
+                            {/* Passengers Options */}
+                            <div className="col-12 col-md-6 col-lg-4 col-xl-3 col-sm-12 col-xs-12 space-info">
+                              <div className="form-group" style={{ width: "160px" }}>
+                                <div
+                                  className="headerSearchItem"
+                                  ref={dropdownSearchRef}
+                                  style={{ cursor: "pointer" }}
+                                  onClick={() => setOpenOptions(!openOptions)}
+                                >
+                                  <span
+                                    className={`headerSearchText d-flex align-items-center justify-between ${
+                                      openOptions ? "optionarrow-up" : "optionarrow-down"
+                                    }`}
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "space-between",
+                                      padding: "4px 8px",
+                                    }}
+                                  >
+                                    <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                                      <i className="fa fa-user mr-1" aria-hidden="true"></i>
+                                      <span className="traveler-text">
+                                        {options.adult + options.children + options.infant === 1
+                                          ? ` ${options.adult + options.children + options.infant} Traveler`
+                                          : ` ${options.adult + options.children + options.infant} Travelers`}
+                                      </span>
+                                    </div>
+                                    <i
+                                      className={`ml-2 passenger-arrow ${
+                                        openOptions ? "fa fa-chevron-up" : "fa fa-chevron-down"
+                                      }`}
+                                      aria-hidden="true"
+                                      style={{ pointerEvents: "none" }}
+                                    ></i>
+                                  </span>
+
+                                  {openOptions && (
+                                    <div className="options" style={{ width: "230px" }}>
+                                      <div className="optionItem">
+                                        <span className="optionText">Adult</span>
+                                        <div className="optionCounter">
+                                          <button
+                                            type="button"
+                                            disabled={options.adult <= 1}
+                                            className="optionCounterButton"
+                                            onClick={() => handleOption("adult", "d")}
+                                          >
+                                            -
+                                          </button>
+                                          <span className="optionCounterNumber">{options.adult}</span>
+                                          <button
+                                            type="button"
+                                            disabled={options.adult >= 6}
+                                            className="optionCounterButton"
+                                            onClick={() => handleOption("adult", "i")}
+                                          >
+                                            +
+                                          </button>
+                                        </div>
+                                      </div>
+
+                                      <div className="optionItem">
+                                        <span className="optionText">
+                                          Children
+                                          <br />
+                                          <small>(Ages 2 to 17)</small>
+                                        </span>
+                                        <div className="optionCounter">
+                                          <button
+                                            type="button"
+                                            disabled={options.children <= 0}
+                                            className="optionCounterButton"
+                                            onClick={() => handleOption("children", "d")}
+                                          >
+                                            -
+                                          </button>
+                                          <span className="optionCounterNumber">{options.children}</span>
+                                          <button
+                                            type="button"
+                                            disabled={options.children >= 5}
+                                            className="optionCounterButton"
+                                            onClick={() => handleOption("children", "i")}
+                                          >
+                                            +
+                                          </button>
+                                        </div>
+                                      </div>
+
+                                      <div className="optionItem">
+                                        <span className="optionText">
+                                          Infant <br />
+                                          <small>(under 2 years)</small>
+                                        </span>
+                                        <div className="optionCounter">
+                                          <button
+                                            type="button"
+                                            disabled={options.infant <= 0}
+                                            className="optionCounterButton"
+                                            onClick={() => handleOption("infant", "d")}
+                                          >
+                                            -
+                                          </button>
+                                          <span className="optionCounterNumber">{options.infant}</span>
+                                          <button
+                                            type="button"
+                                            disabled={options.infant >= 4}
+                                            className="optionCounterButton"
+                                            onClick={() => handleOption("infant", "i")}
+                                          >
+                                            +
+                                          </button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
 
-                        <div className="tab-content">
-                          {isReturn === true && (
-                            <div
-                              id="tab-round-trip"
-                              className="tab-pane in active"
-                            >
-                              <div className="pg-search-form">
-                                <div className="row">
-                                  <div className="col-12 col-md-6 col-lg-3 col-xl-3 col-sm-12 col-xs-12">
-                                    <div className="form-group left-icon">
-                                      <Form.Group controlId="origin">
-                                        {/* <Form.Label>Origin</Form.Label> */}
+                          <div className="tab-content">
+                            {isReturn && (
+                              <div id="tab-round-trip" className="tab-pane in active">
+                                <div className="pg-search-form">
+                                  <div className="row">
+                                    <div className="col-12 col-md-6 col-lg-3 col-xl-3 col-sm-12 col-xs-12">
+                                      <Form.Group controlId="origin" className="form-group left-icon">
                                         <Typeahead
                                           labelKey="origin"
                                           options={originAirports}
                                           placeholder="From"
-                                          ref={(ref) => (origin = ref)}
+                                          ref={originRef}
                                           selected={selectedOrigin}
                                           onChange={handleOriginChange}
                                           onInputChange={(input) => {
                                             getAirports(input, "origin");
-                                          }} // Calls getAirports when typing
-                                          emptyLabel="Search by city or airport" // Custom message when no matches are found
+                                          }}
+                                          onFocus={e => e.target.select()}
+                                          onClick={e => e.target.select()}
+                                          emptyLabel="Search by city or airport"
+                                          //  highlightOnlyResult={false}
+                                          //   selectHintOnEnter={false}
+                                          //   autoHighlight={false}
+                                            hint={false}
                                         />
                                         {status.origin && (
-                                          <ErrorLabel message="Please enter a valid airport"></ErrorLabel>
+                                          <ErrorLabel message="Please enter a valid airport" />
                                         )}
-                                        <img
-                                          src={locationimage}
-                                          alt="from-to-image"
-                                          className="input-icon"
-                                        />
+                                        <img src={locationimage} alt="from-to-image" className="input-icon" />
                                       </Form.Group>
                                     </div>
-                                  </div>
-                                  {/* Swap Button */}
-                                  <div
-                                    className="col-12 col-md-1 col-lg-1 col-xl-1 col-sm-12 col-xs-12 interchange-icon mb-3"
-                                    onClick={handleSwap}
-                                  >
-                                    <img
-                                      src={inoutimage}
-                                      alt="swap icon"
-                                      className={isRotated ? "rotated" : ""}
-                                    />
-                                  </div>
-                                  <div className="col-12 col-md-6 col-lg-3 col-xl-3 col-sm-12 col-xs-12">
-                                    <div className="form-group left-icon">
-                                      <Form.Group controlId="destination">
-                                        {/* <Form.Label>Destination</Form.Label> */}
+
+                                    <div
+                                      className="col-12 col-md-1 col-lg-1 col-xl-1 col-sm-12 col-xs-12 interchange-icon mb-0 swap-button"
+                                      onClick={handleSwap}
+                                    >
+                                      <img src={inoutimage} alt="swap icon" className={isRotated ? "rotated" : ""} />
+                                    </div>
+
+                                    <div className="col-12 col-md-6 col-lg-3 col-xl-3 col-sm-12 col-xs-12">
+                                      <Form.Group controlId="destination" className="form-group left-icon">
                                         <Typeahead
                                           labelKey="destination"
                                           options={destinationAirports}
                                           placeholder="To"
-                                          ref={(ref) => (destination = ref)}
+                                          ref={destinationRef}
                                           selected={selectedDestination}
                                           onChange={handleDestinationChange}
                                           onInputChange={(input) => {
                                             getAirports(input, "destination");
-                                          }} // Calls getAirports when typing
-                                          emptyLabel="Search by city or airport" // Custom message when no matches are found
+                                          }}
+                                          onFocus={e => e.target.select()}
+                                          onClick={e => e.target.select()}
+                                          emptyLabel="Search by city or airport"                                         
                                         />
                                         {status.destination && (
-                                          <ErrorLabel message="Please enter a valid airport"></ErrorLabel>
+                                          <ErrorLabel message="Please enter a valid airport" />
                                         )}
-                                        <img
-                                          src={locationimage}
-                                          alt="from-to-image"
-                                          className="input-icon"
-                                        />
+                                        <img src={locationimage} alt="from-to-image" className="input-icon" />
                                       </Form.Group>
                                     </div>
-                                  </div>
 
-                                  <div className="col-12 col-md-12 col-lg-5 col-xl-5 col-sm-12 col-xs-12">
-                                    <div className="row">
-                                      <div className="col-12 col-md-6 col-lg-6 col-xl-6 col-sm-12 col-xs-12">
-                                        <div className="form-group">
-                                          <Form.Group controlId="formGriddateOfDep">
-                                            {/* <Form.Label>
-                                              Departure Date
-                                            </Form.Label> */}
+                                    <div className="col-12 col-lg-5 mb-0">
+                                      <div className="row align-items-end gx-2">
+                                        <div className="col-12 col-md-4 ">
+                                          <Form.Group controlId="formGriddateOfDep" className="position-relative mb-3">
                                             <Form.Control
                                               type="date"
-                                              className="form-control dpd1"
                                               name="dateOfDep"
                                               placeholder="Departure Date"
-                                              // required
-                                              min={today} // Set the minimum date to today
-                                              value={selectedDateOfDep} // Bind the input value to the state
+                                              min={today}
+                                              value={selectedDateOfDep}
                                               onChange={handleDateOfDepChange}
+                                              style={{minWidth:"150px"}}
                                             />
                                             {status.dateOfDep && (
-                                              <ErrorLabel message="Please enter a valid depature date"></ErrorLabel>
+                                              <ErrorLabel message="Please enter a valid departure date" />
                                             )}
-                                            <img
-                                              src={calendarimage}
-                                              alt="from-to-image"
-                                              className="input-icon"
-                                            />
+                                            <img src={calendarimage} alt="calendar" className="input-icon" />
                                           </Form.Group>
                                         </div>
-                                      </div>
 
-                                      <div className="col-12 col-md-6 col-lg-6 col-xl-6 col-sm-12 col-xs-12">
-                                        <div className="form-group">
-                                          <Form.Group controlId="formGriddateOfReturn">
-                                            {/* <Form.Label>Return Date</Form.Label> */}
+                                        <div className="col-12 col-md-4 ">
+                                          <Form.Group controlId="formGriddateOfReturn" className="position-relative mb-3">
                                             <Form.Control
                                               type="date"
-                                              className="form-control dpd1"
                                               name="returnDate"
-                                              // required
                                               placeholder="Return Date"
-                                              min={selectedDateOfDep} // Set the minimum date to the selected departure date
-                                              value={selectedDateOfRet} // Bind the input value to the state
+                                              min={selectedDateOfDep}
+                                              value={selectedDateOfRet}
                                               onChange={handleDateOfRetChange}
+                                              style={{minWidth:"150px"}}
                                             />
                                             {status.returnDate && (
-                                              <ErrorLabel message="Please enter a valid return date"></ErrorLabel>
+                                              <ErrorLabel message="Please enter a valid return date" />
                                             )}
-                                            <img
-                                              src={calendarimage}
-                                              alt="from-to-image"
-                                              className="input-icon"
-                                            />
+                                            <img src={calendarimage} alt="calendar" className="input-icon" />
                                           </Form.Group>
+                                        </div>
+
+                                        <div className="col-12 col-md-4 d-flex justify-content-md-start justify-content-center mt-2 mt-md-0 mb-3" >
+                                          <button className="btn btn-orange searchbtn "  
+                                                        onClick={handleSearch}  
+                                                        style={{
+                                                          whiteSpace: "nowrap",
+                                                          fontWeight: "bold",
+                                                         
+                                                        }}>
+                                            Search
+                                          </button>
                                         </div>
                                       </div>
                                     </div>
-                                  </div>
-                                  <div className="col-12 col-md-12 col-lg-12 col-xl-12">
-                                    <button
-                                      className="btn btn-orange searchbtn"
-                                      onClick={handleSearch}
-                                    >
-                                      Search
-                                    </button>
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                          )}
-                          {isReturn === false && (
-                            <div
-                              id="tab-one-way"
-                              className="tab-pane in active"
-                            >
-                              <div className="pg-search-form">
-                                <div className="row">
-                                  <div className="col-12 col-md-6 col-lg-3 col-xl-3 col-sm-12 col-xs-12">
-                                    <div className="form-group left-icon">
-                                      <Form.Group controlId="origin">
-                                        {/* <Form.Label>Origin</Form.Label> */}
+                            )}
+
+                            {!isReturn && (
+                              <div id="tab-one-way" className="tab-pane in active">
+                                <div className="pg-search-form">
+                                  <div className="row">
+                                    <div className="col-12 col-md-6 col-lg-3 col-xl-3 col-sm-12 col-xs-12">
+                                      <Form.Group controlId="origin" className="form-group left-icon">
                                         <Typeahead
                                           labelKey="origin"
                                           options={originAirports}
                                           placeholder="From"
-                                          ref={(ref) => (origin = ref)}
-                                          selected={selectedOrigin} // Find the airport object based on selected IATA code
+                                          ref={originRef}
+                                          selected={selectedOrigin}
                                           onChange={handleOriginChange}
                                           onInputChange={(input) => {
                                             getAirports(input, "origin");
-                                          }} // Calls getAirports when typing
-                                          emptyLabel="Search by city or airport" // Custom message when no matches are found
+                                          }}
+                                          emptyLabel="Search by city or airport"
+                                          onFocus={e => e.target.select()}
+                                          onClick={e => e.target.select()}
                                         />
                                         {status.origin && (
-                                          <ErrorLabel message="Please enter a valid airport"></ErrorLabel>
+                                          <ErrorLabel message="Please enter a valid airport" />
                                         )}
-                                        <img
-                                          src={locationimage}
-                                          alt="from-to-image"
-                                          className="input-icon"
-                                        />
+                                        <img src={locationimage} alt="from-to-image" className="input-icon" />
                                       </Form.Group>
                                     </div>
-                                  </div>
-                                  {/* Swap Button */}
-                                  <div
-                                    className="col-12 col-md-1 col-lg-1 col-xl-1 col-sm-12 col-xs-12 interchange-icon mb-3"
-                                    onClick={handleSwap}
-                                  >
-                                    <img
-                                      src={inoutimage}
-                                      alt="swap icon"
-                                      title="swap icon"
-                                      className={isRotated ? "rotated" : ""}
-                                    />
-                                  </div>
-                                  <div className="col-12 col-md-6 col-lg-3 col-xl-3 col-sm-12 col-xs-12">
-                                    <div className="form-group">
-                                      <Form.Group controlId="destination">
-                                        {/* <Form.Label>Destination</Form.Label> */}
+
+                                    <div
+                                      className="col-12 col-md-1 col-lg-1 col-xl-1 col-sm-12 col-xs-12 interchange-icon2 mb-0 swap-button"
+                                      onClick={handleSwap}
+                                    >
+                                      <img src={inoutimage} alt="swap icon" className={isRotated ? "rotated" : ""} />
+                                    </div>
+
+                                    <div className="col-12 col-md-6 col-lg-3 col-xl-3 col-sm-12 col-xs-12">
+                                      <Form.Group controlId="destination" className="form-group">
                                         <Typeahead
                                           labelKey="destination"
                                           options={destinationAirports}
                                           placeholder="To"
-                                          ref={(ref) => (destination = ref)}
+                                          ref={destinationRef}
                                           selected={selectedDestination}
                                           onChange={handleDestinationChange}
                                           onInputChange={(input) => {
                                             getAirports(input, "destination");
-                                          }} // Calls getAirports when typing
-                                          emptyLabel="Search by city or airport" // Custom message when no matches are found
+                                          }}
+                                          onFocus={e => e.target.select()}
+                                          onClick={e => e.target.select()}
+                                          emptyLabel="Search by city or airport"
                                         />
                                         {status.destination && (
-                                          <ErrorLabel message="Please enter a valid airport"></ErrorLabel>
+                                          <ErrorLabel message="Please enter a valid airport" />
                                         )}
-                                        {status.sameLocation && (
-                                          <ErrorLabel message="Please select different location"></ErrorLabel>
-                                        )}
-                                        <img
-                                          src={locationimage}
-                                          alt="from-to-image"
-                                          className="input-icon"
-                                        />
+                                        <img src={locationimage} alt="from-to-image" className="input-icon" />
                                       </Form.Group>
                                     </div>
-                                  </div>
 
-                                  <div className="col-12 col-md-6 col-lg-3 col-xl-3 col-sm-12 col-xs-12">
-                                    <div className="form-group">
+                                    <div className="col-12 col-md-6 col-lg-3 col-xl-3 col-sm-12 col-xs-12">
                                       <Form.Group controlId="formGriddateOfDep">
-                                        {/* <Form.Label>Departure Date</Form.Label> */}
                                         <Form.Control
                                           type="date"
-                                          className="form-control dpd1"
                                           name="dateOfDep"
                                           placeholder="Departure Date"
-                                          // required
-                                          min={today} // Set the minimum date to today
-                                          value={selectedDateOfDep} // Bind the input value to the state
+                                          min={today}
+                                          value={selectedDateOfDep}
                                           onChange={handleDateOfDepChange}
+                                          style={{minWidth:"100px"}}
                                         />
                                         {status.dateOfDep && (
-                                          <ErrorLabel message="Please enter a valid depature date"></ErrorLabel>
+                                          <ErrorLabel message="Please enter a valid departure date" />
                                         )}
-                                        <img
-                                          src={calendarimage}
-                                          alt="from-to-image"
-                                          className="input-icon"
-                                        />
+                                        <img src={calendarimage} alt="from-to-image" className="input-icon" />
                                       </Form.Group>
                                     </div>
-                                  </div>
-                                  <div className="col-12 col-md-12 col-lg-1 col-xl-1">
-                                    <button
-                                      className="btn btn-orange searchbtn"
-                                      onClick={handleSearch}
-                                      style={{ marginTop: "-0.2rem" }}
-                                    >
-                                      Search
-                                    </button>
+
+                                    <div className="col-12 col-md-6 col-lg-2 col-xl-1">
+                                      <button className="btn btn-orange searchbtn" onClick={handleSearch} style={{ marginTop: "-0.2rem", marginLeft:"40px" }}>
+                                        Search
+                                      </button>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                          )}
-                        </div>
-                      </Form>
-                    </div>
-                  </div>
-                  <div id="hotels" className="tab-pane in border-0">
-                    <div className="m-4">
-                      <div className="col-12 col-md-12 col-lg-12 col-xl-12 mb-3">
-                        <h4>
-                          <strong>Coming Soon!!!!</strong>
-                        </h4>
-                        <span>
-                          Stay tuned to discover and book the perfect
-                          accommodations for your next adventure.
-                        </span>
+                            )}
+                          </div>
+                        </Form>
                       </div>
-                      <div className="col-12 col-md-12 col-lg-12 col-xl-12">
-                        <div className="flex-content-img p-0">
-                          <Carousel
-                            controls={false}
-                            indicators={false}
-                            interval={1500}
-                          >
-                            <Carousel.Item>
-                              <img
-                                style={{ height: "500px", width: "1000px" }}
-                                className="d-block w-100"
-                                src={coming_soon}
-                                alt="First slide"
-                              />
-                            </Carousel.Item>
-                            {/* <Carousel.Item>
-                              <img
-                                style={{ height: "500px", width: "1000px" }}
-                                className="d-block"
-                                src={destination_1}
-                                alt="Second slide"
-                              />
-                            </Carousel.Item>
-                            <Carousel.Item>
-                              <img
-                                style={{ height: "500px", width: "1000px" }}
-                                className="d-block"
-                                src={destination_2}
-                                alt="Third slide"
-                              />
-                            </Carousel.Item> */}
-                          </Carousel>
+                    </div>
+                  )}
 
-                          {/* <img
-                      src={sideimage}
-                      className="img-fluid custom-form-img"
-                      alt="registration-img"
-                    /> */}
+                  {activeTab === "hotels" && (
+                    <div id="hotels" className="tab-pane in border-0">
+                      <div className="m-4">
+                        <div className="col-12 col-md-12 col-lg-12 col-xl-12 mb-3">
+                          <h4>
+                            <strong>Coming Soon!!!!</strong>
+                          </h4>
+                          <span>
+                            Stay tuned to discover and book the perfect accommodations for your next adventure.
+                          </span>
+                        </div>
+                        <div className="col-12 col-md-12 col-lg-12 col-xl-12">
+                          <div className="flex-content-img p-0">
+                            <Carousel controls={false} indicators={false} interval={1500}>
+                              <Carousel.Item>
+                                <img style={{ height: "500px", width: "1000px" }} className="d-block w-100" src={coming_soon} alt="Coming soon" />
+                              </Carousel.Item>
+                            </Carousel>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -1332,6 +1122,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
     </>
   );
 };
+
 const mapStateToProps = (state) => ({
   flights: state.flights,
 });

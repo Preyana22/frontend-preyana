@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import destination_3 from "../assets/images/destination_3.jpg";
+import destination_3 from "../assets/images/login-signup-signin-img.png";
 
 import { Link, useNavigate } from "react-router-dom";
 import googleimage from "../assets/images/google.png";
@@ -9,8 +9,7 @@ import { Carousel } from "react-bootstrap";
 import FacebookLogin from "react-facebook-login";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 const apiUrl = process.env.REACT_APP_API_BASE_URL;
-const clientId = "661049864550-seshj8qse9fg074167lb5r188srl5jmm.apps.googleusercontent.com";
-const FACEBOOK_APP_ID = '1177952970046119'; // Replace!
+const clientId = "1095079319599-1vplrl2314aor4nefuvol83km1mbcqfc.apps.googleusercontent.com";
 const Login = (props) => {
   const [formData, setFormData] = useState({
     username: "",
@@ -19,6 +18,9 @@ const Login = (props) => {
   const [errors, setErrors] = useState({});
   const [login, setLogin] = useState();
   const [hidePassword, sethidePassword] = useState(true);
+  const [otpMode, setOtpMode] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrors({ ...errors, [e.target.name]: "" }); // Clear validation errors when input changes
@@ -115,16 +117,14 @@ const Login = (props) => {
         google_id: userObject.sub,
       },
     };
-console.log(configuration);
+     console.log(configuration);
     await axios(configuration)
       .then((result) => {
-        const email = result?.data?.email;
-        const userName = result?.data?.userName;
-        const userId = result?.data?._id;
-        console.log(result?.data);
-        localStorage.setItem("email", email);
-        localStorage.setItem("userName", userName);
-        localStorage.setItem("userId", userId);
+        console.log(result.data);
+        localStorage.setItem("email", result.data.user.email);
+        localStorage.setItem("userName", result.data.user.userName);
+        localStorage.setItem("userId", result.data.id);
+       
         navigate("/search");
       })
       .catch((error) => {
@@ -166,6 +166,7 @@ console.log(configuration);
         localStorage.setItem("userName", result.data.user._doc.userName);
         localStorage.setItem("userId", result.data.user.$__._id);
 
+
         navigate("/search");
       })
       .catch((error) => {
@@ -185,48 +186,46 @@ console.log(configuration);
         }
       });
   };
-  // const handleCallbackFacebookResponse = async (response) => {
-  //   console.log('Facebook Raw Response:', response);
+  const handleSendOtp = async () => {
+  try {
+    await axios.post(`${apiUrl}/authentication/send-otp`, {
+      email: formData.username,
+    });
+    setOtpSent(true);
+    alert("OTP sent to your email");
+  } catch (err) {
+    alert("Failed to send OTP");
+  }
+};
 
-  //   if (response.accessToken) {
-  //     console.log('Got Facebook Access Token:', response.accessToken);
-  //     try {
-  //       // Send the Facebook accessToken to your NestJS backend
-  //       const apiResponse = await axios.post(
-  //         `${apiUrl}/auth/facebook/login`, // Your backend endpoint
-  //         { accessToken: response.accessToken } // Send token in request body
-  //       );
+const handleVerifyOtp = async (e) => {
+  e.preventDefault();
+  try {
+    const res = await axios.post(`${apiUrl}/authentication/verify-otp`, {
+      email: formData.username,
+      otp,
+    });
 
-  //       console.log('Backend Response:', apiResponse.data);
+    // Log the response to inspect its structure
+    console.log("OTP response:", res.data.user);
 
-  //       // Assuming backend sends back { appToken: 'your_jwt_token' }
-  //       const appToken = apiResponse.data.appToken; // Extract your app's token
+    // Save relevant user data
+  
+    //  if (res.data.user && res.data.user.userName) {
+      localStorage.setItem("userName", res.data.user.userName);
+    // } else {
+    //   console.warn("userName not found in response");
+    // }
+    localStorage.setItem("token", res.data.token);
+    alert("Login successful");
+    navigate("/search");
+  } catch (err) {
+    console.log(err.response); // Inspect server response
+    alert("Invalid or expired OTP");
+  }
+};
 
-  //       if (appToken) {
-  //         // SAVE THE TOKEN!
-  //         localStorage.setItem('app_token', appToken);
-  //         console.log('App token saved to localStorage!');
-  //         // TODO: Update UI, redirect, fetch user profile using the appToken, etc.
-  //         alert('Login Successful!'); // Simple feedback
-  //       } else {
-  //         console.error('Backend did not return an appToken.');
-  //          alert('Login Failed (Backend Issue).');
-  //       }
 
-  //     } catch (error) {
-  //       console.error('Error sending token to backend:', error.response?.data || error.message);
-  //        alert('Login Failed (Backend Error).');
-  //     }
-  //   } else {
-  //     console.log('Facebook login failed or was cancelled.');
-  //      alert('Facebook Login Failed or Cancelled.');
-  //   }
-  // };
-
-  // const handleFailure = (error) => {
-  //     console.error('Facebook SDK Load Error:', error);
-  //     alert('Could not load Facebook Login.');
-  // }
   return (
     <>
       <section className="innerpage-wrapper">
@@ -237,7 +236,7 @@ console.log(configuration);
                 <div className="flex-content container-bg">
                   <div className="custom-form custom-form-fields">
                     <h3>Sign In</h3>
-                    <form onSubmit={handleSubmit}>
+                    <form onSubmit={otpMode ? handleVerifyOtp : handleSubmit}>
                       <div className="form-group">
                         <label className="custom-label">Email</label>
                         <input
@@ -256,8 +255,19 @@ console.log(configuration);
                           </div>
                         )}
                       </div>
+                        {otpMode && otpSent && (
+                            <div className="form-group">
+                              <label className="custom-label">Enter OTP</label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                value={otp}
+                                onChange={(e) => setOtp(e.target.value)}
+                              />
+                            </div>
+                          )}
 
-                      <div className="form-group">
+                      {/* <div className="form-group">
                         <label className="custom-label">Password</label>
                         <input
                           type={hidePassword ? "password" : "text"}
@@ -284,7 +294,34 @@ console.log(configuration);
                             {errors.password}
                           </div>
                         )}
-                      </div>
+                      </div> */}
+                      {!otpMode && (
+                          <div className="form-group">
+                            <label className="custom-label">Password</label>
+                            <input
+                              type={hidePassword ? "password" : "text"}
+                              className={`form-control ${errors.password ? "is-invalid" : ""}`}
+                              name="password"
+                              value={formData.password}
+                              onChange={handleChange}
+                            />
+                            <span>
+                              <a
+                                className="bg-transparent text-black"
+                                onClick={managePasswordVisibility}
+                              >
+                                <label className="hide-show-label">
+                                  {hidePassword ? "Show" : "Hide"}
+                                </label>
+                              </a>
+                            </span>
+                            {errors.password && (
+                              <div className="invalid-feedback">
+                                {errors.password}
+                              </div>
+                            )}
+                          </div>
+                        )}
 
                       <div className="checkbox">
                         <label style={{ display: "block" }}>
@@ -303,9 +340,54 @@ console.log(configuration);
                         </label>
                       </div>
 
-                      <button className="btn btn-orange btn-block">
-                        Login
-                      </button>
+                          
+
+                      {!otpMode ? (
+                          < div className="text-center">
+                            <button type="submit" className="btn btn-orange btn-block">
+                              Login
+                            </button>
+                           <p className="mt-3 mb-1">
+                              Or
+                            </p>
+                              <p>
+                              <span
+                                onClick={() => setOtpMode(true)}
+                                className="link-text text-primary"
+                                style={{ cursor: "pointer" }}
+                              >
+                                Login with OTP
+                              </span>
+                            </p>
+                          </div>
+                        ) : !otpSent ? (
+                          <button
+                            type="button"
+                            className="btn btn-orange btn-block"
+                            onClick={handleSendOtp}
+                          >
+                            Send OTP
+                          </button>
+                        ) : (
+                          <>
+                            <button type="submit" className="btn btn-orange btn-block">
+                              Verify OTP
+                            </button>
+                            <p>
+                              <span
+                                onClick={() => {
+                                  setOtpMode(false);
+                                  setOtp("");
+                                  setOtpSent(false);
+                                }}
+                                className="link-text"
+                                style={{ cursor: "pointer" }}
+                              >
+                                Back to password login
+                              </span>
+                            </p>
+                          </>
+                         )}
 
                       {login === true ? (
                         <p className="text-success">
@@ -369,13 +451,29 @@ console.log(configuration);
                       </p>
                     </div>
                   </div>
+                          {/* Inline style block */}
+                    <style>{`
+                      @keyframes slideTopToBottom {
+                        from {
+                          transform: translateY(-100px);
+                          opacity: 0;
+                        }
+                        to {
+                          transform: translateY(0);
+                          opacity: 1;
+                        }
+                      }
 
+                      .image-slide-in {
+                        animation: slideTopToBottom 1s ease-out forwards;
+                      }
+                    `}</style>
                   <div className="flex-content-img custom-form-img">
                     <Carousel controls={false} indicators={false}>
                       <Carousel.Item>
                         <img
-                          className="d-block w-100"
-                          style={{ height: "400px" }}
+                          className="d-block w-100 image-slide-in"
+                          style={{ height: "380px" }}
                           src={destination_3}
                           alt="First slide"
                         />

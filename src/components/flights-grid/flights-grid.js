@@ -22,7 +22,16 @@ const FlightsGrid = ({ flights, criteria }) => {
 
   const [searchCriteria, setSearchCriteria] = useState(() => {
     const savedCriteria = localStorage.getItem("searchCriteria");
-    return savedCriteria ? JSON.parse(savedCriteria) : criteria || {};
+    if (savedCriteria) return JSON.parse(savedCriteria);
+    // fallback defaults
+    return {
+      origin: "",
+      destination: "",
+      origin_city_name: "",
+      destination_city_name: "",
+      date: null,
+      returnDate: null,
+    };
   });
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -75,23 +84,77 @@ const FlightsGrid = ({ flights, criteria }) => {
     }
   };
 
+  function getPaginationPages(totalPages, currentPage) {
+    const maxPagesToShow = 5; // Maximum page buttons to show (excluding first and last if ellipsis needed)
+    // If total pages is less than or equal to maxPagesToShow, return all pages.
+    if (totalPages <= maxPagesToShow) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+    const pages = [];
+    // Always show the first page.
+    pages.push(1);
+    let startPage = Math.max(2, currentPage - 1);
+    let endPage = Math.min(totalPages - 1, currentPage + 1);
+    // Adjust when current page is near the start.
+    if (currentPage <= 3) {
+      startPage = 2;
+      endPage = 4;
+    }
+    // Adjust when current page is near the end.
+    if (currentPage >= totalPages - 2) {
+      startPage = totalPages - 3;
+      endPage = totalPages - 1;
+    }
+
+    // If there's a gap between first page and startPage, add ellipsis.
+    if (startPage > 2) {
+      pages.push("...");
+    }
+
+    // Push the middle page numbers.
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+
+    // If there's a gap between endPage and last page, add ellipsis.
+    if (endPage < totalPages - 1) {
+      pages.push("...");
+    }
+    // Always show the last page.
+    pages.push(totalPages);
+    return pages;
+  }
+
+  useEffect(() => {
+    if (flights?.[1]) {
+      const dataArray = Object.values(flights?.[1]); // Convert to an array
+      const limitedData = dataArray.slice(0, 100); // Get the first 100 items
+
+      setoriginalFlightData(limitedData);
+      setFlightsData(limitedData);
+      setCurrentPage(1); // Reset to the first page
+      setIsLoading(false); // Set loading to false once data is loaded
+    }
+  }, [flights]);
+
+  const handleSearch = () => {
+    if (criteria) {
+      setIsLoading(true); // Set loading to true when search starts
+      setSearchCriteria(criteria);
+      setSearchInitiated(true);
+      setCurrentPage(1); // Reset to the first page
+      setSearchTrigger((prev) => prev + 1);
+      localStorage.setItem("searchCriteria", JSON.stringify(criteria));
+    }
+  };
+
   useEffect(() => {
     if (searchInitiated) {
       setIsLoading(true);
-      setFlightsData([]);
       const timer = setTimeout(() => {
         const updatedFlights = applyFilters(originalFlightData, searchCriteria);
 
         if (updatedFlights) {
-          // console.log("Flights data after filtering:", updatedFlights);
-          // const iataCodes = updatedFlights.map(flight => flight?.owner?.iata_code);
-          // console.log(iataCodes);
-          // console.log(updatedFlights[0].owner.iata_code)
-          // const uniqueIataCodes = [
-          //   ...new Set(updatedFlights.map(flight => flight?.owner?.iata_code).filter(Boolean))
-          // ];
-          
-          // console.log(uniqueIataCodes);
           setFlightsData(updatedFlights); // Update flightsData
         } else {
           console.error("Error: No updated flights data found!");
@@ -101,21 +164,8 @@ const FlightsGrid = ({ flights, criteria }) => {
         setSearchInitiated(false);
       }, 1000);
       return () => clearTimeout(timer);
-    } else {
-      if (flightsCount > 0) {
-        setIsLoading(false);
-      }
     }
-
-    if (
-      searchCriteria &&
-      !searchCriteria.origin &&
-      !searchCriteria.destination
-    ) {
-      setIsLoading(false);
-      setSearchInitiated(false);
-    }
-  }, [searchInitiated, flightsCount, searchCriteria]);
+  }, [searchInitiated, searchCriteria, originalFlightData]);
 
   useEffect(() => {
     if (flightsData) {
@@ -130,21 +180,12 @@ const FlightsGrid = ({ flights, criteria }) => {
   }, [searchCriteria]);
 
   useEffect(() => {
-    if (flights?.[1]) {
-      const dataArray = Object.values(flights?.[1]); // Convert to an array
-      const limitedData = dataArray.slice(0, 100); // Get the first 200 items
-
-      setoriginalFlightData(limitedData);
-      setFlightsData(limitedData);
-      setCurrentPage(1); // Reset to the first page
-    }
-
     if (
       criteria &&
-      !Object.keys(criteria).origin &&
-      !Object.keys(criteria).destination &&
-      !Object.keys(searchCriteria).origin &&
-      !Object.keys(searchCriteria).destination &&
+      !criteria.origin &&
+      !criteria.destination &&
+      !searchCriteria.origin &&
+      !searchCriteria.destination &&
       searchInitiated
     ) {
       setSearchCriteria(criteria);
@@ -152,19 +193,9 @@ const FlightsGrid = ({ flights, criteria }) => {
   }, [flights, criteria]);
   const [searchTrigger, setSearchTrigger] = useState(0);
 
-
-  const handleSearch = () => {
-    if (criteria) {
-      setSearchCriteria(criteria);
-      setSearchInitiated(true);
-      setCurrentPage(1); // Reset to the first page
-      setSearchTrigger((prev) => prev + 1);
-      localStorage.setItem("searchCriteria", JSON.stringify(criteria));
-    }
-  };
-
   const applyFilters = (flights, filterCriteria) => {
-    // console.log(filterCriteria);
+
+     console.log(filterCriteria);
     // Ensure flights is an array or convert it
     const safeFlights = Array.isArray(flights)
       ? flights
@@ -200,6 +231,7 @@ const FlightsGrid = ({ flights, criteria }) => {
       if (!slice.segments || slice.segments.length === 0) {
         return;
       }
+      
       // slice.segments.forEach((segment) => {
         const departureTime = new Date(slice.segments[0].departing_at).getHours();
         const arrivalTime = new Date(slice.segments[0].arriving_at).getHours();
@@ -207,6 +239,8 @@ const FlightsGrid = ({ flights, criteria }) => {
         // ✅ Check Departure Time
         if (filterCriteria.departureTime?.length) {
           isDepartureValid = isDepartureValid || filterCriteria.departureTime.some((time) => {
+            console.log(departureTime);
+            console.log(departureTime >= timeRanges[time][0] && departureTime <= timeRanges[time][1]);
             return departureTime >= timeRanges[time][0] && departureTime <= timeRanges[time][1];
           });
         }
@@ -347,11 +381,11 @@ const FlightsGrid = ({ flights, criteria }) => {
 
         <div className="flights-info-container row">
           <div className="col-12 col-md-3 col-lg-3 col-xl-3 col-xs-12 col-sm-12">
-            <Filters  key={searchTrigger} onFiltersChange={handleFilters} flights={flightsData}  onSearch={handleSearch}/>
+            <Filters key={searchTrigger} onFiltersChange={handleFilters} flights={flightsData} onSearch={handleSearch}/>
           </div>
 
           <div className="col-12 col-md-9 col-lg-9 col-xl-9 col-xs-12 col-sm-12 mt-0">
-            {searchCriteria && (
+            {searchCriteria && !isLoading && (
               <FlightSearchInfo
                 criteria={searchCriteria}
                 count={flightsCount}
@@ -359,8 +393,11 @@ const FlightsGrid = ({ flights, criteria }) => {
               />
             )}
             {isLoading ? (
-              <div className="loader"></div>
-            ) : flightsCount === 0 ? (
+              <div className="loader-container">
+                <div className="loader"></div>
+                {/* <div className="loading-text">Loading flights...</div> */}
+              </div>
+            ) : searchInitiated && flightsCount === 0 ? (
               <FlightNotFound />
             ) : (
               <>
@@ -368,25 +405,25 @@ const FlightsGrid = ({ flights, criteria }) => {
                   <FlightInfo key={index} data={flight} />
                 ))}
                 <div className="pagination sticky-pagination">
-                  <button
-                    onClick={handlePreviousPage}
-                    disabled={currentPage === 1}
-                  >
+                  <button onClick={handlePreviousPage} disabled={currentPage === 1}>
                     Previous
                   </button>
-                  {Array.from({ length: totalPages }, (_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => handlePageChange(idx + 1)}
-                      className={currentPage === idx + 1 ? "active" : ""}
-                    >
-                      {idx + 1}
-                    </button>
-                  ))}
-                  <button
-                    onClick={handleNextPage}
-                    disabled={currentPage === totalPages}
-                  >
+                  
+                  {getPaginationPages(totalPages, currentPage).map((page, idx) =>
+                    page === "..." ? (
+                      <span key={idx} className="px-2">...</span>
+                    ) : (
+                      <button
+                        key={idx}
+                        onClick={() => handlePageChange(page)}
+                        className={currentPage === page ? "active" : ""}
+                      >
+                        {page}
+                      </button>
+                    )
+                  )}
+                  
+                  <button onClick={handleNextPage} disabled={currentPage === totalPages}>
                     Next
                   </button>
                 </div>

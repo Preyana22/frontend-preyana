@@ -231,216 +231,174 @@ export const MultiFlightInfo = (props) => {
   return (
     <>
       <section className="Flight-info-details">
-        {props.data.slices.length > 0 &&
-          props.data.slices.map((slice, sliceIndex) => (
-            <div
-              key={slice.comparison_key}
-              className="itinerary-card__travel-items itinerary-card__travel-items--with-footer"
-            >
-              {/* Render only the first segment of each slice */}
-              {slice.segments.length > 0 && (
-                <div
-                  key={slice.segments[0].id}
-                  className="itinerary-card__travel-item itinerary-card__travel-item--origin d-block pb-0"
-                >
-                  <p className=" mb-0 smaller-text">
-                    <strong className="mr-1">
-                      {sliceIndex === 0
-                        ? "Depart:"
-                        : sliceIndex === 1
-                        ? "Return:"
-                        : `Segment ${sliceIndex + 1}:`}
-                    </strong>{" "}
-                    {new Date(slice.segments[0].departing_at).toLocaleString(
-                      "en-US",
-                      {
-                        weekday: "short",
-                        month: "short",
-                        day: "numeric",
-                      }
-                    )}
-                    {","}
-                    <strong>
-                      {[
-                        ...new Set(
-                          slice.segments.map(
-                            (segment) => segment.operating_carrier.name
-                          )
-                        ),
-                      ].join(" | ")}
-                    </strong>
-                  </p>
-                  <div className="itinerary-card__travel-item itinerary-card__travel-item--segment-info border rounded p-2 mt-3 ml-0 mr-2">
-                    {console.log(slice)}
-                    {/* {sliceIndex === 0 && (
-                      <div className="logo-stack">
-                        {slice.segments.map((segment) => (
-                          <img
-                            key={segment.id}
-                            className={`airline-logo-overlap ${
-                              slice.segments.length === 1 ? "single-logo" : ""
-                            }`}
-                            src={segment.operating_carrier.logo_symbol_url}
-                            alt={`Logo for ${segment.operating_carrier.name}`}
-                            id={`logo-${segment.origin.iata_code}-${segment.operating_carrier.iata_code}`}
-                            phx-update="ignore"
-                          />
-                        ))}
-                      </div>
-                    )} */}
-                    {sliceIndex === 0 && (
-                      <div className="logo-stack">
-                        {[...new Map(
-                          slice.segments.map(segment => [segment.operating_carrier.iata_code, segment])
-                        ).values()].map((segment) => (
-                          <img
-                            key={segment.operating_carrier.iata_code} // Unique key based on airline code
-                            className={`airline-logo-overlap ${slice.segments.length === 1 ? "single-logo" : ""}`}
-                            src={segment.operating_carrier.logo_symbol_url}
-                            alt={`Logo for ${segment.operating_carrier.name}`}
-                            id={`logo-${segment.origin.iata_code}-${segment.operating_carrier.iata_code}`}
-                            phx-update="ignore"
-                          />
-                        ))}
-                      </div>
-                    )}
-                    {sliceIndex !== 0 && (
-                      <div className="logo-stack">
-                      <img
-                        className="airline-logo--medium mr-4"
-                        src={
-                          slice.segments[0].operating_carrier.logo_symbol_url
-                        }
-                        alt={`Logo for ${slice.segments[0].operating_carrier.name}`}
-                        id={`logo-${slice.segments[0].origin.iata_code}-${slice.segments[0].operating_carrier.iata_code}`}
-                        phx-update="ignore"
-                      />
-                     </div>
-                    )}
-                    <div className="d-block">
-                      <p className="mb-0 text-black smaller-text">
-                        <strong>
-                          {new Date(
-                            slice.segments[0].departing_at
-                          ).toLocaleString("en-US", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </strong>
-                      </p>
-                      <p className="mb-0">
-                        <small>
-                          {" "}
-                          {new Date(
-                            slice.segments[0].departing_at
-                          ).toLocaleString("en-US", {
-                            day: "numeric",
-                            month: "short",
-                            year: "numeric",
-                          })}
-                        </small>
-                      </p>
-                      <p className="mb-0">
-                        <small>{slice.segments[0].origin.city_name}</small>
-                      </p>
-                      <p className="mb-0">
-                        <small>{slice.segments[0].origin.iata_code}</small>
-                      </p>
-                    </div>
-                    <div className="d-block">
-                      <p className="mb-0 text-black smaller-text">
-                        {/* Calculate total duration (including layovers) */}
-                        {calculateTotalDurationWithLayovers(slice.segments)}
-                      </p>
-                      <p className="mb-0">
-                        <small>
-                          {slice.segments[0].origin.iata_code}-
-                          {
-                            slice.segments[slice.segments.length - 1]
-                              .destination.iata_code
-                          }
-                        </small>
-                      </p>
-                    </div>
-                    <div className="d-block">
-                      <p className="mb-0 text-black smaller-text">
-                        {getStopText(slice.segments.length)}
-                      </p>
-                      {slice.segments.length > 1 &&
-                        slice.segments.slice(0, -1).map((segment, index) => {
-                          const nextSegment = slice.segments[index + 1];
-                          const layoverTime = calculateLayover(
-                            segment.arriving_at,
-                            nextSegment.departing_at
-                          );
+  {props.data.slices.length > 0 &&
+    props.data.slices.map((slice, sliceIndex) => {
+      const firstSegment = slice.segments[0];
+      const lastSegment = slice.segments[slice.segments.length - 1];
 
-                          return (
-                            <div
-                              key={segment.id}
-                              className="layover-detail d-block"
-                            >
-                              <p className="mb-0 smaller-text">
-                                <small>
-                                  <span className="block">{layoverTime}</span>
-                                  <span className="ml-0 block">
-                                    {segment.destination.city_name}
-                                  </span>
-                                </small>
-                              </p>
-                            </div>
-                          );
-                        })}
-                    </div>
-                    <div className="d-block">
-                      <p className="mb-0 text-black smaller-text">
-                        <strong>
-                          {new Date(
-                            slice.segments[
-                              slice.segments.length - 1
-                            ].arriving_at
-                          ).toLocaleString("en-US", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </strong>
-                      </p>
-                      <p className="mb-0 smaller-text">
-                        <small>
-                          {" "}
-                          {new Date(
-                            slice.segments[
-                              slice.segments.length - 1
-                            ].arriving_at
-                          ).toLocaleString("en-US", {
-                            day: "numeric",
-                            month: "short",
-                            year: "numeric",
-                          })}
-                        </small>
-                      </p>
-                      <p className="mb-0 smaller-text">
-                        <small>
-                          {
-                            slice.segments[slice.segments.length - 1]
-                              .destination.city_name
-                          }
-                        </small>
-                      </p>
-                      <p className="mb-0 smaller-text">
-                        <small>
-                          {
-                            slice.segments[slice.segments.length - 1]
-                              .destination.iata_code
-                          }
-                        </small>
-                      </p>
-                    </div>
+      return (
+        <div
+          key={slice.comparison_key}
+          className="itinerary-card__travel-items itinerary-card__travel-items--with-footer"
+        >
+          {slice.segments.length > 0 && (
+            <div
+              key={firstSegment.id}
+              className="itinerary-card__travel-item itinerary-card__travel-item--origin d-block pb-0"
+            >
+              {/* Header Label */}
+              <p className="mb-0 smaller-text heading-text">
+                <strong className="mr-1">
+                  {sliceIndex === 0
+                    ? "Depart:"
+                    : sliceIndex === 1
+                    ? "Return:"
+                    : `Segment ${sliceIndex + 1}:`}
+                </strong>{" "}
+                {new Date(firstSegment.departing_at).toLocaleString("en-US", {
+                  weekday: "short",
+                  month: "short",
+                  day: "numeric",
+                })}
+                ,{" "}
+                <strong>
+                  {[...new Set(slice.segments.map((seg) => seg.operating_carrier.name))].join(" | ")}
+                </strong>
+              </p>
+
+              {/* Card Info Box */}
+              <div className="itinerary-card__travel-item itinerary-card__travel-item--segment-info border rounded p-2 mt-3 ml-0 mr-2">
+
+                {/* Airline Logo */}
+                <div className="d-block single-line-info">
+                  <div className="logo-stack">
+                    {(() => {
+                      const uniqueAirlines = [
+                        ...new Map(slice.segments.map((seg) => [seg.operating_carrier.iata_code, seg])).values(),
+                      ];
+
+                      if (uniqueAirlines.length > 1) {
+                        return (
+                          <img
+                            className="airline-logo-overlap"
+                            src="/assets/images/multi_logo.png"
+                            alt="Multiple airlines"
+                            id={`logo-${firstSegment.origin.iata_code}-multiple`}
+                            phx-update="ignore"
+                          />
+                        );
+                      } else {
+                        const seg = uniqueAirlines[0];
+                        return (
+                          <img
+                            key={seg.operating_carrier.iata_code}
+                            className="airline-logo-overlap single-logo"
+                            src={seg.operating_carrier.logo_symbol_url}
+                            alt={`Logo for ${seg.operating_carrier.name}`}
+                            id={`logo-${seg.origin.iata_code}-${seg.operating_carrier.iata_code}`}
+                            phx-update="ignore"
+                          />
+                        );
+                      }
+                    })()}
                   </div>
                 </div>
-              )}
+
+                {/* Departure Info */}
+                <div className="d-block extra-info">
+                  <p className="mb-0 text-black smaller-text">
+                    <strong>
+                      {new Date(firstSegment.departing_at).toLocaleTimeString("en-US", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </strong>
+                  </p>
+                  <p className="mb-0">
+                    <small>
+                      {new Date(firstSegment.departing_at).toLocaleDateString("en-US", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </small>
+                  </p>
+                  <p className="mb-0 single-line-info">
+                    <small>{firstSegment.origin.city_name}</small>
+                  </p>
+                  <p className="mb-0 single-line-info">
+                    <small>{firstSegment.origin.iata_code}</small>
+                  </p>
+                </div>
+
+                {/* Duration & Route */}
+                <div className="d-block single-line-info">
+                  <p className="mb-0 text-black smaller-text">
+                    {calculateTotalDurationWithLayovers(slice.segments)}
+                  </p>
+                  <p className="mb-0">
+                    <small className="single-line-info">
+                      {firstSegment.origin.iata_code} - {lastSegment.destination.iata_code}
+                    </small>
+                  </p>
+                </div>
+
+                {/* Stopover Info */}
+                <div className="d-block single-line-info">
+                  <p className="mb-0 text-black smaller-text">
+                    {getStopText(slice.segments.length)}
+                  </p>
+                  {slice.segments.length > 1 &&
+                    slice.segments.slice(0, -1).map((seg, idx) => {
+                      const next = slice.segments[idx + 1];
+                      const layoverTime = calculateLayover(seg.arriving_at, next.departing_at);
+
+                      return (
+                        <div key={seg.id} className="layover-detail d-block">
+                          <p className="mb-0 smaller-text">
+                            <small>
+                              <span className="block">{layoverTime} - {seg.destination.city_name}</span>
+                            </small>
+                          </p>
+                        </div>
+                      );
+                    })}
+                </div>
+
+                {/* Arrival Info */}
+                <div className="d-block single-line-info">
+                  <p className="mb-0 text-black smaller-text">
+                    <strong>
+                      {new Date(lastSegment.arriving_at).toLocaleTimeString("en-US", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </strong>
+                  </p>
+                  <p className="mb-0 smaller-text">
+                    <small>
+                      {new Date(lastSegment.arriving_at).toLocaleDateString("en-US", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </small>
+                  </p>
+                  <p className="mb-0 smaller-text">
+                    <small>{lastSegment.destination.city_name}</small>
+                  </p>
+                  <p className="mb-0 smaller-text">
+                    <small>{lastSegment.destination.iata_code}</small>
+                  </p>
+                </div>
+              </div>
             </div>
-          ))}
-      </section>
+          )}
+        </div>
+      );
+    })}
+</section>
+
     </>
   );
 };

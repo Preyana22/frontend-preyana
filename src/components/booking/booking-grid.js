@@ -1,82 +1,32 @@
 import React from "react";
 import "./booking-grid.css";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState,useRef } from "react";
 import axios from "axios";
 import { findFlights } from "../../actions";
 import { connect } from "react-redux";
-import flightimage from "../../assets/images/flightimage.svg";
-import moment from "moment"; // Import Moment.js
 
 const apiUrl = process.env.REACT_APP_API_BASE_URL;
-var updated = "";
 var formattedTotalAmount = "";
 const MyComponent = (props) => {
-  const [isFetching, setIsFetching] = useState(false);
   const [isAncillaries, setIsAncillaries] = useState(false);
   const [isPayment, setIsPayment] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [paymentRenderKey, setPaymentRenderKey] = useState(0);
+  const duffelPaymentRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
   console.log("location state", location.state);
-  const origincity = location.state.selectedFlight.slices[0].origin.city_name;
-  const destinationcity =
-    location.state.selectedFlight.slices[0].destination.city_name;
-
   const baseAmount = Number(location.state.selectedFlight.base_amount);
   const markup = baseAmount * 0.15;
   const baseprice = baseAmount + markup;
-  const formattedAmount = baseprice.toFixed(2); // Rounds to "1335.37"
   const tax_amount = Number(location.state.selectedFlight.tax_amount);
-
   const price = baseprice + tax_amount;
   formattedTotalAmount = (
     price +
     Number(location.state.extraBag) +
     Number(location.state.seatSelection)
   ).toFixed(2); // Rounds to "1335.37"
-
-  const extraBag = location.state.extraBag;
-
-  const seatSelection = location.state.seatSelection;
-  const date = location.state.selectedFlight.slices[0].segments[0].departing_at;
-  const formattedDate = moment(date).format("dd MMM D, YYYY, hh:mm A");
-  const arrivaldate =
-    location.state.selectedFlight.slices[0].segments[0].arriving_at;
-
-  const time = location.state.selectedFlight.slices[0].segments[0].duration;
-  const stops = location.state.selectedFlight.slices[0].segments[0].stops
-    ? ""
-    : "";
-  const aircraftName = location.state.selectedFlight.slices[0].segments[0]
-    .aircraft
-    ? location.state.selectedFlight.slices[0].segments[0].aircraft.name
-    : null;
-
-  const operating_carrier_flight_number =
-    location.state.selectedFlight.slices[0].segments[0].operating_carrier
-      .iata_code &&
-    location.state.selectedFlight.slices[0].segments[0]
-      .operating_carrier_flight_number
-      ? location.state.selectedFlight.slices[0].segments[0].operating_carrier
-          .iata_code +
-        location.state.selectedFlight.slices[0].segments[0]
-          .operating_carrier_flight_number
-      : null;
-  // Parse the duration using moment.js
-  const momentDuration = moment.duration(time);
-
-  // Extract the components
-  const timedays = momentDuration.days();
-  const hours = momentDuration.hours();
-  const minutes = momentDuration.minutes();
-  const cabin =
-    location.state.selectedFlight.slices[0].segments[0].passengers[0]
-      .cabin_class_marketing_name;
-  const airlinesName = location.state.selectedFlight.slices[0].segments[0]
-    .operating_carrier.name
-    ? location.state.selectedFlight.slices[0].segments[0].operating_carrier.name
-    : "";
-
   useEffect(() => {
     // const errors = location.state?.data?.orderResponse?.errors;
     // if (errors && errors.length > 0) {
@@ -88,11 +38,11 @@ const MyComponent = (props) => {
     // }
   }, [location.state, navigate]);
 
-  let arr = [];
+  let pasarr = [];
   let passengers = [];
-  arr = location.state.contactDetails;
+  pasarr = location.state.contactDetails;
   let payments = [];
-  arr.map((item, index) => {
+  pasarr.map((item, index) => {
     passengers.push({
       phone_number: location.state.contactDetails[index].phone_number,
       email: location.state.contactDetails[index].email,
@@ -143,7 +93,7 @@ const MyComponent = (props) => {
         const orderData = {
           type: "instant",
           selected_offers: [location.state.contactDetails[0].offer_id],
-          passengers: arr,
+          passengers: pasarr,
           payments: [payments],
           metadata: test,
         };
@@ -181,6 +131,8 @@ const MyComponent = (props) => {
             alert(
               `Booking error: ${bookData.data.orderResponse.errors[0].message}`
             );
+             setIsLoading(false);
+             return;
           }
 
           // Combine confirm and book responses into one array
@@ -201,6 +153,8 @@ const MyComponent = (props) => {
         }
       } catch (error) {
         console.error("Error in confirmPayment:", error);
+        setIsLoading(false);
+        setPaymentRenderKey(prev => prev + 1);
       }
     }
   };
@@ -331,18 +285,9 @@ const MyComponent = (props) => {
     }
   };
 
-  const convertToString = (input) => {
-    // Check if the input is an object and not null
-    if (typeof input === "object" && input !== null) {
-      return Object.values(input).join(""); // Convert object to string
-    }
-    return input; // If it's not an object, return it unchanged
-  };
-
   useEffect(() => {
     if (location.state.selectedFlight) {
       const duffelpaymentsElement = document.querySelector("duffel-payments");
-
       if (duffelpaymentsElement) {
         setIsPayment(true);
         duffelpaymentsElement.render({
@@ -354,11 +299,8 @@ const MyComponent = (props) => {
 
         duffelpaymentsElement.addEventListener("onSuccessfulPayment", () => {
           console.log("onPayloadReady\n");
-
-          // if (duffelpaymentsElement && duffelpaymentsElement.parentNode) {
-          //   duffelpaymentsElement.parentNode.removeChild(duffelpaymentsElement);
-          // }
-
+          setIsLoading(true);
+          setPaymentRenderKey(prev => prev + 1);
           confirmPayment();
         });
 
@@ -435,174 +377,37 @@ const MyComponent = (props) => {
 
     navigate("/results");
   };
+  if (isLoading) {
   return (
-    <section className="innerpage-wrapper">
-      <div className="innerpage-section-padding mb-5">
-        <div className="container">
-          <div className="row">
-            <div className="col-12">
-              <nav aria-label="breadcrumb">
-                <ol className="breadcrumb">
-                  <li className="breadcrumb-item">
-                    <span
-                      style={{
-                        color: "#003988",
-                        cursor: "pointer",
-                        textDecoration: "none",
-                      }}
-                      onClick={onSearchResultClick}
-                    >
-                      Search Result
-                    </span>
-                  </li>
-                  <li className="breadcrumb-item">
-                    <label>Booking payment</label>
-                  </li>
-                </ol>
-              </nav>
-            </div>
-            <div className="col-12 col-md-12 col-lg-7 col-xl-8 content-side mb-5">
-              {/* Main Content */}
-              <main className="booking-main">
-                {" "}
-                {isAncillaries && (
-                  <h2 className="font-weight-bold mt-3 mb-3">Add Extras</h2>
-                )}
-                <div id="duffelAncillariesContainer mb-5">
-                  {/* Duffel Ancillaries element will be rendered here */}
-                  <duffel-ancillaries />
-                </div>
-                {isPayment && (
-                  <h2 className="font-weight-bold mt-3 mb-3">Payment</h2>
-                )}
-                <div id="duffelPaymentsContainer  mb-5">
-                  {/* Duffel Payments element will be rendered here */}
-                  <duffel-payments />
-                </div>
-              </main>
-            </div>
-            <div className="col-12 col-md-12 col-lg-5 col-xl-4 side-bar left-side-bar">
-              <div className="row">
-                <div className="container">
-                  <div className="card shadow-sm" style={{ width: "22rem;" }}>
-                    {/* <!-- Image Section --> */}
-                    <div className="card-header bg-light text-center p-3">
-                      <img
-                        src={flightimage}
-                        alt="Airplane"
-                        className="img-fluid"
-                        style={{ width: "50px;" }}
-                      />
-                    </div>
-
-                    {/* <!-- Flight Info Section --> */}
-                    <div className="card-body text-center">
-                      <h5 className="card-title font-weight-bold">
-                        {origincity} {"to"} {destinationcity}
-                      </h5>
-                      <p className="card-text text-muted">
-                        {operating_carrier_flight_number},{" "}
-                        {location.state.selectedFlight.slices.length === 1
-                          ? "One Way Flight"
-                          : "Round Trip Flight"}
-                      </p>
-
-                      <hr />
-
-                      {/* <!-- Flight Details --> */}
-                      <ul className="list-unstyled">
-                        <li className="d-flex justify-content-between">
-                          <strong>Depart:</strong>
-                          <span>{formattedDate}</span>
-                        </li>
-                        <li className="d-flex justify-content-between">
-                          <strong>Flight Duration:</strong>
-                          <span>
-                            {" "}
-                            {`${
-                              timedays > 0
-                                ? `${timedays} day${
-                                    timedays !== 1 ? "s" : ""
-                                  }, `
-                                : ""
-                            }${
-                              hours > 0
-                                ? `${hours} hour${hours !== 1 ? "s" : ""}, `
-                                : ""
-                            }${
-                              minutes > 0
-                                ? `${minutes} minute${minutes !== 1 ? "s" : ""}`
-                                : ""
-                            }`}
-                          </span>
-                        </li>
-                        <li className="d-flex justify-content-between">
-                          <strong>Class Name:</strong>
-                          <span>{cabin}</span>
-                        </li>
-                        <li className="d-flex justify-content-between">
-                          <strong>Stops:</strong>
-                          <span>{stops}</span>
-                        </li>
-                        <li className="d-flex justify-content-between">
-                          <strong>Airlines Name:</strong>
-                          <span>{airlinesName}</span>
-                        </li>
-                        <li className="d-flex justify-content-between">
-                          <strong>Aircraft Type:</strong>
-                          <span>{aircraftName}</span>
-                        </li>
-                      </ul>
-
-                      <hr />
-
-                      {/* <!-- Pricing Section --> */}
-                      <div className="d-flex justify-content-between">
-                        <span>
-                          <strong>Fare:</strong>
-                        </span>
-                        <span>{"$ " + formattedAmount}</span>
-                      </div>
-                      <div className="d-flex justify-content-between">
-                        <span>
-                          <strong>Taxes & Fees:</strong>
-                        </span>
-                        <span>{"$ " + tax_amount}</span>
-                      </div>
-
-                      <div className="d-flex justify-content-between">
-                        <span>
-                          <strong>Additional Checked Baggage:</strong>
-                        </span>
-                        <span>{extraBag && `$ ${extraBag}`}</span>
-                      </div>
-                      <div className="d-flex justify-content-between">
-                        <span>
-                          <strong>Seat Selection:</strong>
-                        </span>
-                        <span>{seatSelection && `$ ${seatSelection}`}</span>
-                      </div>
-
-                      <hr />
-
-                      {/* <!-- Total Due Section --> */}
-                      <div className="d-flex justify-content-between">
-                        <h5 className="font-weight-bold">Total Due:</h5>
-                        <h5 className="font-weight-bold">
-                          {"$ " + formattedTotalAmount}
-                        </h5>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+    <div className="text-center mt-5">
+      <div className="spinner-border text-primary" role="status">
+        <span className="sr-only">Processing Payment...</span>
       </div>
-    </section>
+      <p className="mt-3">Processing your payment, please wait...</p>
+    </div>
+  );
+}
+  return (
+  <main className="booking-main">
+    {" "}
+    {isAncillaries && (
+      <h2 className="font-weight-bold mt-3 mb-3">Add Extras</h2>
+    )}
+    <div id="duffelAncillariesContainer mb-5">
+      {/* Duffel Ancillaries element will be rendered here */}
+      <duffel-ancillaries />
+    </div>
+    {isPayment && (
+      <h2 className="font-weight-bold mt-3 mb-3">Payment</h2>
+    )}
+    <div id="duffelPaymentsContainer  mb-5">
+      {/* Duffel Payments element will be rendered here */}
+      <duffel-payments ref={duffelPaymentRef} key={paymentRenderKey}/>
+    </div>
+  </main>
   );
 };
+
 const mapStateToProps = (state) => ({
   flights: state.flights,
 });
