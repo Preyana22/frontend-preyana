@@ -17,9 +17,16 @@
 
 
 .interchange-icon {
-    margin-top: 0rem;
+    margin-top: -0.2rem;
     text-align: center;
    
+  }
+  .interchange-icon2 img {
+    transition: transform 0.3s ease;
+  }
+  .interchange-icon2{
+    margin-top: -0.2rem;
+    text-align: center;
   }
 .rotated {
   transform: rotate(-180deg);
@@ -111,7 +118,7 @@
 }
 .search-tabs .tab-content .tab-pane .searchbtn {
   padding: 8px 30px;
-  margin-top: -30px;
+  margin-top: 0px;
 
 }
 .passenger-arrow {
@@ -133,11 +140,19 @@
     width: 77% !important;
    
   }
+  .interchange-icon2{
+    margin-top: 2.5rem;
+    text-align: center;
+  }
 }
 @media (max-width: 475px) {
   .passenger-form-group {
     width: 100% !important;
    
+  }
+  .interchange-icon2{
+    margin-top: 2.5rem;
+    text-align: center;
   }
 }
 

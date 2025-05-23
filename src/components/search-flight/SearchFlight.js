@@ -423,6 +423,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
   };
 
   const getAirports = debounce(async (search, type) => {
+    
     if (!search) {
       type === "origin" ? setOriginAirports([]) : setDestinationAirports([]);
       return;
@@ -898,13 +899,13 @@ const SearchFlight = ({ onSearch, ...props }) => {
                                           onInputChange={(input) => {
                                             getAirports(input, "origin");
                                           }}
+                                          onFocus={e => e.target.select()}
+                                          onClick={e => e.target.select()}
                                           emptyLabel="Search by city or airport"
                                           //  highlightOnlyResult={false}
                                           //   selectHintOnEnter={false}
                                           //   autoHighlight={false}
                                             hint={false}
-
-                                            
                                         />
                                         {status.origin && (
                                           <ErrorLabel message="Please enter a valid airport" />
@@ -914,7 +915,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
                                     </div>
 
                                     <div
-                                      className="col-12 col-md-1 col-lg-1 col-xl-1 col-sm-12 col-xs-12 interchange-icon mb-3 swap-button"
+                                      className="col-12 col-md-1 col-lg-1 col-xl-1 col-sm-12 col-xs-12 interchange-icon mb-0 swap-button"
                                       onClick={handleSwap}
                                     >
                                       <img src={inoutimage} alt="swap icon" className={isRotated ? "rotated" : ""} />
@@ -932,7 +933,9 @@ const SearchFlight = ({ onSearch, ...props }) => {
                                           onInputChange={(input) => {
                                             getAirports(input, "destination");
                                           }}
-                                          emptyLabel="Search by city or airport"
+                                          onFocus={e => e.target.select()}
+                                          onClick={e => e.target.select()}
+                                          emptyLabel="Search by city or airport"                                         
                                         />
                                         {status.destination && (
                                           <ErrorLabel message="Please enter a valid airport" />
@@ -941,10 +944,10 @@ const SearchFlight = ({ onSearch, ...props }) => {
                                       </Form.Group>
                                     </div>
 
-                                    <div className="col-12 col-lg-5 mb-3">
+                                    <div className="col-12 col-lg-5 mb-0">
                                       <div className="row align-items-end gx-2">
                                         <div className="col-12 col-md-4 ">
-                                          <Form.Group controlId="formGriddateOfDep" className="position-relative mb-0">
+                                          <Form.Group controlId="formGriddateOfDep" className="position-relative mb-3">
                                             <Form.Control
                                               type="date"
                                               name="dateOfDep"
@@ -962,7 +965,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
                                         </div>
 
                                         <div className="col-12 col-md-4 ">
-                                          <Form.Group controlId="formGriddateOfReturn" className="position-relative mb-0">
+                                          <Form.Group controlId="formGriddateOfReturn" className="position-relative mb-3">
                                             <Form.Control
                                               type="date"
                                               name="returnDate"
@@ -979,7 +982,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
                                           </Form.Group>
                                         </div>
 
-                                        <div className="col-12 col-md-4 d-flex justify-content-md-start justify-content-center mt-2 mt-md-0" >
+                                        <div className="col-12 col-md-4 d-flex justify-content-md-start justify-content-center mt-2 mt-md-0 mb-3" >
                                           <button className="btn btn-orange searchbtn "  
                                                         onClick={handleSearch}  
                                                         style={{
@@ -1014,6 +1017,8 @@ const SearchFlight = ({ onSearch, ...props }) => {
                                             getAirports(input, "origin");
                                           }}
                                           emptyLabel="Search by city or airport"
+                                          onFocus={e => e.target.select()}
+                                          onClick={e => e.target.select()}
                                         />
                                         {status.origin && (
                                           <ErrorLabel message="Please enter a valid airport" />
@@ -1023,7 +1028,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
                                     </div>
 
                                     <div
-                                      className="col-12 col-md-1 col-lg-1 col-xl-1 col-sm-12 col-xs-12 interchange-icon mb-3"
+                                      className="col-12 col-md-1 col-lg-1 col-xl-1 col-sm-12 col-xs-12 interchange-icon2 mb-0 swap-button"
                                       onClick={handleSwap}
                                     >
                                       <img src={inoutimage} alt="swap icon" className={isRotated ? "rotated" : ""} />
@@ -1041,6 +1046,8 @@ const SearchFlight = ({ onSearch, ...props }) => {
                                           onInputChange={(input) => {
                                             getAirports(input, "destination");
                                           }}
+                                          onFocus={e => e.target.select()}
+                                          onClick={e => e.target.select()}
                                           emptyLabel="Search by city or airport"
                                         />
                                         {status.destination && (
@@ -1068,8 +1075,8 @@ const SearchFlight = ({ onSearch, ...props }) => {
                                       </Form.Group>
                                     </div>
 
-                                    <div className="col-12 col-md-12 col-lg-1 col-xl-1">
-                                      <button className="btn btn-orange searchbtn" onClick={handleSearch} style={{ marginTop: "-0.2rem" }}>
+                                    <div className="col-12 col-md-6 col-lg-2 col-xl-1">
+                                      <button className="btn btn-orange searchbtn" onClick={handleSearch} style={{ marginTop: "-0.2rem", marginLeft:"40px" }}>
                                         Search
                                       </button>
                                     </div>
