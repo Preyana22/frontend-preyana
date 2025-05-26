@@ -9,7 +9,8 @@ import SearchFlight from "../search-flight/SearchFlight";
 const FlightsGrid = ({ flights, criteria }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [searchInitiated, setSearchInitiated] = useState(false);
-  const previousFlightsData = useRef(localStorage.getItem("flightsData")); // Store the previous flightsData
+  const previousFlightsData = useRef(localStorage.getItem("flightsData"));
+  const originalOrderRef = useRef(null); // Add this to store original order
 
   const [originalFlightData, setoriginalFlightData] = useState(() => {
     const savedFlights = localStorage.getItem("flightsData");
@@ -128,8 +129,11 @@ const FlightsGrid = ({ flights, criteria }) => {
   useEffect(() => {
     if (flights?.[1]) {
       const dataArray = Object.values(flights?.[1]); // Convert to an array
-      const limitedData = dataArray.slice(0, 100); // Get the first 100 items
-
+      const limitedData = dataArray.slice(0, 100); // Get the first 200 items
+      
+      // Store the original order
+      originalOrderRef.current = [...limitedData];
+      
       setoriginalFlightData(limitedData);
       setFlightsData(limitedData);
       setCurrentPage(1); // Reset to the first page
@@ -153,9 +157,11 @@ const FlightsGrid = ({ flights, criteria }) => {
       setIsLoading(true);
       const timer = setTimeout(() => {
         const updatedFlights = applyFilters(originalFlightData, searchCriteria);
-
+        
         if (updatedFlights) {
-          setFlightsData(updatedFlights); // Update flightsData
+          // Store the new original order after filtering
+          originalOrderRef.current = [...updatedFlights];
+          setFlightsData(updatedFlights);
         } else {
           console.error("Error: No updated flights data found!");
         }
@@ -193,9 +199,55 @@ const FlightsGrid = ({ flights, criteria }) => {
   }, [flights, criteria]);
   const [searchTrigger, setSearchTrigger] = useState(0);
 
-  const applyFilters = (flights, filterCriteria) => {
+  const [sortOption, setSortOption] = useState('recommended');
 
-     console.log(filterCriteria);
+  const sortFlights = (flights, sortOption) => {
+    if (sortOption === 'recommended') {
+      // Return the original order if available, otherwise return current flights
+      return originalOrderRef.current || flights;
+    }
+
+    const sortedFlights = [...flights];
+    
+    switch (sortOption) {
+      case 'price_asc':
+        return sortedFlights.sort((a, b) => {
+          const priceA = Number(a.total_amount) + (Number(a.base_amount) * 0.15);
+          const priceB = Number(b.total_amount) + (Number(b.base_amount) * 0.15);
+          return priceA - priceB;
+        });
+      case 'price_desc':
+        return sortedFlights.sort((a, b) => {
+          const priceA = Number(a.total_amount) + (Number(a.base_amount) * 0.15);
+          const priceB = Number(b.total_amount) + (Number(b.base_amount) * 0.15);
+          return priceB - priceA;
+        });
+      case 'duration_asc':
+        return sortedFlights.sort((a, b) => {
+          const durationA = new Date(a.slices[0].segments[0].arriving_at) - new Date(a.slices[0].segments[0].departing_at);
+          const durationB = new Date(b.slices[0].segments[0].arriving_at) - new Date(b.slices[0].segments[0].departing_at);
+          return durationA - durationB;
+        });
+      case 'duration_desc':
+        return sortedFlights.sort((a, b) => {
+          const durationA = new Date(a.slices[0].segments[0].arriving_at) - new Date(a.slices[0].segments[0].departing_at);
+          const durationB = new Date(b.slices[0].segments[0].arriving_at) - new Date(b.slices[0].segments[0].departing_at);
+          return durationB - durationA;
+        });
+      case 'departure_asc':
+        return sortedFlights.sort((a, b) => {
+          return new Date(a.slices[0].segments[0].departing_at) - new Date(b.slices[0].segments[0].departing_at);
+        });
+      case 'departure_desc':
+        return sortedFlights.sort((a, b) => {
+          return new Date(b.slices[0].segments[0].departing_at) - new Date(a.slices[0].segments[0].departing_at);
+        });
+      default:
+        return sortedFlights;
+    }
+  };
+
+  const applyFilters = (flights, filterCriteria) => {
     // Ensure flights is an array or convert it
     const safeFlights = Array.isArray(flights)
       ? flights
@@ -343,28 +395,17 @@ const FlightsGrid = ({ flights, criteria }) => {
   };
 
   const handleFilters = async (filtersCriteria) => {
-    // Reset current page to 1 whenever filters change
     setCurrentPage(1);
-// console.log(filtersCriteria);
     const storedFlights = localStorage.getItem("flightsData");
   
     if (storedFlights) {
       const flights = JSON.parse(storedFlights);
-      // console.log(flights);
-      if (
-        Object.keys(flights) &&
-        Object.keys(flights).length > 0 &&
-        filtersCriteria
-      ) {
-        
+      if (Object.keys(flights) && Object.keys(flights).length > 0 && filtersCriteria) {
         const filtered = applyFilters(flights, filtersCriteria);
-        // console.log(filtered)
-        setFlightsData(filtered);
-        if (filtered) {
-          localStorage.setItem(
-            "flightsData",
-            JSON.stringify(originalFlightData)
-          );
+        const sorted = sortFlights(filtered, sortOption);
+        setFlightsData(sorted);
+        if (sorted) {
+          localStorage.setItem("flightsData", JSON.stringify(originalFlightData));
         }
       } else {
         console.error("No valid flight data or filter criteria");
@@ -372,6 +413,12 @@ const FlightsGrid = ({ flights, criteria }) => {
     } else {
       console.error("No flight data found in localStorage");
     }
+  };
+
+  const handleSort = (option) => {
+    setSortOption(option);
+    const sorted = sortFlights(flightsData, option);
+    setFlightsData(sorted);
   };
 
   return (
@@ -386,18 +433,45 @@ const FlightsGrid = ({ flights, criteria }) => {
 
           <div className="col-12 col-md-9 col-lg-9 col-xl-9 col-xs-12 col-sm-12 mt-0">
             {searchCriteria && !isLoading && (
-              <FlightSearchInfo
-                criteria={searchCriteria}
-                count={flightsCount}
-                isLoading={isLoading}
-              />
+              <>
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                  <FlightSearchInfo
+                    criteria={searchCriteria}
+                    count={flightsCount}
+                    isLoading={isLoading}
+                  />
+                  <div className="sort-options">
+                  <select
+  className="form-select"
+  style={{
+    width: "250px",
+    padding: "10px",
+    fontSize: "14px",
+    borderRadius: "6px",
+    border: "1px solid #ccc",
+    backgroundColor: "#f8f8f8",
+  }}
+  value={sortOption}
+  onChange={(e) => handleSort(e.target.value)}
+>
+                      <option value="recommended">Recommended</option>
+                      <option value="price_asc">Price:(Lowest to Highest)</option>
+                      <option value="price_desc">Price:(Highest to Lowest)</option>
+                      <option value="duration_asc">Duration:(Shortest First)</option>
+                      <option value="duration_desc">Duration:(Longest First)</option>
+                      <option value="departure_asc">Departure:(Earliest First)</option>
+                      <option value="departure_desc">Departure:(Latest First)</option>
+                    </select>
+                  </div>
+                </div>
+              </>
             )}
             {isLoading ? (
               <div className="loader-container">
                 <div className="loader"></div>
                 {/* <div className="loading-text">Loading flights...</div> */}
               </div>
-            ) : searchInitiated && flightsCount === 0 ? (
+            ) : !searchInitiated && flightsCount === 0 ? (
               <FlightNotFound />
             ) : (
               <>
