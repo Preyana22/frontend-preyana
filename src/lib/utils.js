@@ -1,11 +1,13 @@
 export const transformFlightDates = (flights) => {
-  // console.log(flights);
-  return flights.map((flight) => {
-    // console.log(flight.slices[0].segments[0].arriving_at);
-    return {
-      ...flight,
-    };
-  });
+  if (!Array.isArray(flights)) {
+    console.warn("transformFlightDates expected an array but got:", flights);
+    return [];
+  }
+
+  return flights.map((flight) => ({
+    ...flight,
+    // you can transform flight.slices here if needed
+  }));
 };
 
 export const getTimeDifferece = (timeDiff) => {

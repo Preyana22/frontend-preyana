@@ -45,6 +45,8 @@ function* findFlights(payload) {
     const json1 = yield fetch(apiUrl + "/airlines/test", requestOptions).then(
       (response) => response.json()
     );
+    const flight = Array.isArray(json1) ? json1 : [];
+
     // console.log(JSON.stringify(json1));
 
     /*const json = yield fetch(apiUrl + '/airlines')
@@ -52,9 +54,11 @@ function* findFlights(payload) {
     yield put({ type: "GET_FLIGHTS_SUCCESS", json: json1 });
     yield put({
       type: "GET_FLIGHTS_SUCCESS",
-      json: transformFlightDates(json1),
+      // json: transformFlightDates(json1),
+      json: transformFlightDates(Array.isArray(json1) ? json1 : []),
     });
 
+    
     if (returnDate) {
       listOfFlights.return = findPaths({
         flights,

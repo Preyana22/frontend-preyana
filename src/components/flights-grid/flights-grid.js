@@ -7,6 +7,7 @@ import Filters from "../filters/filters";
 import SearchFlight from "../search-flight/SearchFlight";
 
 const FlightsGrid = ({ flights, criteria }) => {
+  console.log(flights);
   const [isLoading, setIsLoading] = useState(true);
   const [searchInitiated, setSearchInitiated] = useState(false);
   const previousFlightsData = useRef(localStorage.getItem("flightsData"));
@@ -17,23 +18,32 @@ const FlightsGrid = ({ flights, criteria }) => {
     return savedFlights ? JSON.parse(savedFlights) : flights?.[1] || {};
   });
   const [flightsData, setFlightsData] = useState(() => {
-    const savedFlights = localStorage.getItem("flightsData");
-    return savedFlights ? JSON.parse(savedFlights) : flights?.[1] || {};
+    // const savedFlights = localStorage.getItem("flightsData");
+    // return savedFlights ? JSON.parse(savedFlights) : flights?.[1] || {};
+     const savedFlights = localStorage.getItem("flightsData");
+  const parsed = savedFlights ? JSON.parse(savedFlights) : (Array.isArray(flights?.[1]) ? flights[1] : Object.values(flights?.[1] || {}));
+  return parsed;
+  console.log(savedFlights);
   });
 
-  const [searchCriteria, setSearchCriteria] = useState(() => {
-    const savedCriteria = localStorage.getItem("searchCriteria");
-    if (savedCriteria) return JSON.parse(savedCriteria);
-    // fallback defaults
-    return {
-      origin: "",
-      destination: "",
-      origin_city_name: "",
-      destination_city_name: "",
-      date: null,
-      returnDate: null,
-    };
-  });
+ const [searchCriteria, setSearchCriteria] = useState(() => {
+  try {
+    const saved = localStorage.getItem("searchCriteria");
+    if (saved) return JSON.parse(saved);
+  } catch (e) {
+    console.warn("Invalid searchCriteria in localStorage", e);
+  }
+
+  return {
+    origin: "",
+    destination: "",
+    origin_city_name: "",
+    destination_city_name: "",
+    date: null,
+    returnDate: null,
+  };
+});
+
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -45,6 +55,7 @@ const FlightsGrid = ({ flights, criteria }) => {
         : Object.keys(flightsData).length,
     [flightsData]
   );
+  console.log(flightsCount);
 
   const paginatedData = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -130,7 +141,9 @@ const FlightsGrid = ({ flights, criteria }) => {
     if (flights?.[1]) {
       const dataArray = Object.values(flights?.[1]); // Convert to an array
       const limitedData = dataArray.slice(0, 100); // Get the first 200 items
-      
+      console.log("flights prop received:", flights);
+console.log("flights[1]:", flights?.[1]);
+
       // Store the original order
       originalOrderRef.current = [...limitedData];
       
@@ -173,11 +186,20 @@ const FlightsGrid = ({ flights, criteria }) => {
     }
   }, [searchInitiated, searchCriteria, originalFlightData]);
 
+  // console.log(originalFlightData);
   useEffect(() => {
     if (flightsData) {
       localStorage.setItem("flightsData", JSON.stringify(originalFlightData));
     }
   }, [flightsData]);
+
+  useEffect(() => {
+  if (originalFlightData && originalFlightData.length > 0) {
+    localStorage.setItem("originalFlightData", JSON.stringify(originalFlightData));
+  }
+}, [originalFlightData]);
+
+
 
   useEffect(() => {
     if (searchCriteria && Object.keys(searchCriteria).length > 0) {
@@ -305,6 +327,27 @@ const FlightsGrid = ({ flights, criteria }) => {
         }
       // });
     });
+  //   if (Array.isArray(flight?.slices)) {
+  // flight.slices.forEach((slice) => {
+  //   if (!Array.isArray(slice?.segments) || slice.segments.length === 0) return;
+
+  //   const departureTime = new Date(slice.segments[0].departing_at).getHours();
+  //   const arrivalTime = new Date(slice.segments[0].arriving_at).getHours();
+
+  //   if (filterCriteria.departureTime?.length) {
+  //     isDepartureValid = isDepartureValid || filterCriteria.departureTime.some((time) =>
+  //       departureTime >= timeRanges[time][0] && departureTime <= timeRanges[time][1]
+  //     );
+  //   }
+
+  //   if (filterCriteria.arrivalTime?.length) {
+  //     isArrivalValid = isArrivalValid || filterCriteria.arrivalTime.some((time) =>
+  //       arrivalTime >= timeRanges[time][0] && arrivalTime <= timeRanges[time][1]
+  //     );
+  //   }
+  // });
+
+
 
       // Stops filter
       const stops = flight.slices?.[0]?.segments?.length - 1 || 0; // Calculate stops
@@ -404,6 +447,9 @@ const FlightsGrid = ({ flights, criteria }) => {
         const filtered = applyFilters(flights, filtersCriteria);
         const sorted = sortFlights(filtered, sortOption);
         setFlightsData(sorted);
+        console.log("Filtered flights:", filtered);
+        console.log("Filter Criteria:", filtersCriteria);
+
         if (sorted) {
           localStorage.setItem("flightsData", JSON.stringify(originalFlightData));
         }
@@ -471,7 +517,7 @@ const FlightsGrid = ({ flights, criteria }) => {
                 <div className="loader"></div>
                 {/* <div className="loading-text">Loading flights...</div> */}
               </div>
-            ) : !searchInitiated && flightsCount === 0 ? (
+            ) :  flightsCount === 0 ? (
               <FlightNotFound />
             ) : (
               <>

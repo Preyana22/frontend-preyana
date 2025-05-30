@@ -355,23 +355,44 @@ export const Body = (props) => {
     const Adults = []; // Array to hold passenger data
 
     // Passenger data structures
-    const adultsData = { type: "adult" };
-    const childData = { type: "child" };
-    const infantData = { type: "infant_without_seat" };
+    // const adultsData = { type: "adult" };
+    // const childData = { type: "child" };
+    // const infantData = { type: "infant_without_seat" };
+  const options = {
+            adult: 1,       // 1 adult
+            children: [],   // no children
+            infants: []     // no infants
+          };
 
+          const passengerAges = [];
+
+          // Add adults
+          for (let i = 0; i < options.adult; i++) {
+            passengerAges.push(30); // Example adult age
+          }
+
+          // Add children (none in this case)
+          for (const childAge of options.children) {
+            passengerAges.push(childAge);
+          }
+
+          // Add infants (none in this case)
+          for (const infantAge of options.infants) {
+            passengerAges.push(infantAge);
+          }
     // console.log(options); // Log options for debugging
     // console.log(options.adult);
 
     // Populate the Adults array based on the number of each passenger type
-    for (let i = 0; i < options.adult; i++) {
-      Adults.push(adultsData);
-    }
-    for (let i = 0; i < options.children; i++) {
-      Adults.push(childData);
-    }
-    for (let i = 0; i < options.infant; i++) {
-      Adults.push(infantData);
-    }
+    // for (let i = 0; i < options.adult; i++) {
+    //   Adults.push(adultsData);
+    // }
+    // for (let i = 0; i < options.children; i++) {
+    //   Adults.push(childData);
+    // }
+    // for (let i = 0; i < options.infant; i++) {
+    //   Adults.push(infantData);
+    // }
 
     // console.log(Adults); // Log the populated Adults array for debugging
 
@@ -428,7 +449,9 @@ export const Body = (props) => {
       origin: origin_city,
       destination: destination_city,
       departureDate: formattedDate,
-      numOfPassengers: Adults, // List of passengers
+      numOfPassengers: {
+      ages: passengerAges,
+    }, // List of passengers
       cabin_class: cabinclass, // Cabin class (could also be a state or prop)
       origin_city_name: originSecondPart,
       destination_city_name: destinationSecondPart,
@@ -444,7 +467,12 @@ export const Body = (props) => {
     localStorage.setItem("dateOfDeparture", JSON.stringify(formattedDate));
 
     // console.log(criteria); // Log criteria for debugging
-
+     // ✅ ADD THIS: Save relevant flights to localStorage
+  // const selectedFlights = flightsData.filter(flight =>
+  //   flight.slices?.[0]?.origin?.iata_code === slice.origin.iata_code &&
+  //   flight.slices?.[0]?.destination?.iata_code === slice.destination.iata_code
+  // );
+  // localStorage.setItem("flightsData", JSON.stringify(selectedFlights));
     // Call the findFlights function with the gathered criteria
     props.findFlights({ flights, criteria });
 
@@ -460,31 +488,30 @@ export const Body = (props) => {
 
       let Adults = [];
 
-      // Mock options data (since it's not defined in the original code)
-      const options = {
-        adult: 1, // Number of adults
-        children: 0, // Number of children
-        infant: 0, // Number of infants
-      };
+            const options = {
+            adult: 1,       // 1 adult
+            children: [],   // no children
+            infants: []     // no infants
+          };
 
-      // Data for different passenger types
-      const adultsData = { type: "adult" };
-      const childData = { type: "child" };
-      const infantData = { type: "infant_without_seat" };
+          const passengerAges = [];
 
-      // Add adults
-      for (let i = 1; i <= options.adult; i++) {
-        Adults.push(adultsData);
-      }
-      // Add children
-      for (let i = 1; i <= options.children; i++) {
-        Adults.push(childData);
-      }
-      // Add infants
-      for (let i = 1; i <= options.infant; i++) {
-        Adults.push(infantData);
-      }
+          // Add adults
+          for (let i = 0; i < options.adult; i++) {
+            passengerAges.push(30); // Example adult age
+          }
 
+          // Add children (none in this case)
+          for (const childAge of options.children) {
+            passengerAges.push(childAge);
+          }
+
+          // Add infants (none in this case)
+          for (const infantAge of options.infants) {
+            passengerAges.push(infantAge);
+          }
+
+          console.log(passengerAges);
       // Define route pairs with IATA codes
       const routes = [
         { origin: "BOM", destination: "DEL" },
@@ -506,12 +533,15 @@ export const Body = (props) => {
       const fetchRequests = routes.map(async (route) => {
         const { origin, destination } = route;
 
+        const numOfPassengers = {
+          ages: passengerAges, // ✅ properly structured
+        };
         // Construct the search criteria
         const criteria = {
           origin: origin,
           destination: destination,
           departureDate: formattedDate,
-          numOfPassengers: Adults, // List of passengers
+           numOfPassengers: numOfPassengers, // List of passengers
           cabin_class: "Economy",
         };
 
@@ -524,21 +554,31 @@ export const Body = (props) => {
 
         // Perform the fetch request
         const response = await fetch(apiUrl + "/airlines/test", requestOptions);
+        //console.log(response);
         if (!response.ok) {
           throw new Error(`Error: ${response.status} - ${response.statusText}`);
         }
+        console.log("Response",response);
 
         const flightsdata = await response.json();
+        console.log("Data",flightsdata);
+//         if (!flightsdata || !Array.isArray(flightsdata.results)) {
+//         console.warn("No valid results in response:", flightsdata);
+//       return []; // return empty array if invalid
+// }
 
+// return flightsdata.results;
         // Return the flight data for the current route
-        return flightsdata[1]; // Assuming flightsdata[1] contains the required data
+        return flightsdata[1]; 
       });
 
       // Use Promise.all to wait for all requests to complete concurrently
       const allFlightsData = await Promise.all(fetchRequests);
-
+      const filteredFlights = allFlightsData.filter(Boolean);
       // Flatten the results from all routes and update the state
-      setFlightsData((prevData) => [...prevData, ...allFlightsData.flat()]);
+      setFlightsData((prevData) => [...prevData, ...allFlightsData.flat().filter(Boolean)]);
+      // setFlightsData(filteredFlights);
+      localStorage.setItem("flightsData", JSON.stringify(filteredFlights));
     } catch (error) {
       // Log the error if the fetch request fails
       console.error("Error during fetch:", error);
@@ -587,7 +627,79 @@ export const Body = (props) => {
                               `${flight.slices[0].origin.iata_city_code}-${flight.slices[0].destination.iata_code}`) ===
                             route
                         );
-                        {console.log(flight)}
+//                         const flight = flightsData.find((flight) => {
+//   const slice = flight?.slices?.[0];
+//   if (!slice) return false;
+
+//   // Prefer origin/destination on slice level
+//   const originCode = slice.origin?.iata_code?.toUpperCase();
+//   const destinationCode = slice.destination?.iata_code?.toUpperCase();
+
+//   if (originCode && destinationCode) {
+//     return `${originCode}-${destinationCode}` === route.toUpperCase();
+//   }
+
+//   // Fallback to first segment's origin/destination
+//   const segment = slice.segments?.[0];
+//   if (!segment) return false;
+
+//   const segmentOrigin = segment.origin?.iata_code?.toUpperCase();
+//   const segmentDestination = segment.destination?.iata_code?.toUpperCase();
+
+//   if (!segmentOrigin || !segmentDestination) return false;
+  
+
+//   return `${segmentOrigin}-${segmentDestination}` === route.toUpperCase();
+// });
+
+//                         const flight = flightsData.find((flight) => {
+//   const firstSlice = flight?.slices?.[0];
+//   if (!firstSlice || !firstSlice.origin || !firstSlice.destination) return false;
+
+//  const route1 = `${firstSlice.origin.iata_code}-${firstSlice.destination.iata_code}`.toUpperCase().trim();
+//   const route2 = `${(firstSlice.origin.iata_city_code || '').toUpperCase().trim()}-${firstSlice.destination.iata_code.toUpperCase().trim()}`;
+
+//   const normalizedRoute = route.toUpperCase().trim();
+
+//   console.log("Checking flight route:", route1, route2, "against", normalizedRoute);
+
+//   return route1 === normalizedRoute || route2 === normalizedRoute;
+// });
+
+
+
+// const flight = flightsData.find((flight) => {
+//   const segment = flight?.slices?.[0]?.segments?.[0];
+//   if (!segment?.origin?.iata_code || !segment?.destination?.iata_code) return false;
+
+//   const originCodes = [
+//     segment.origin.iata_code?.toUpperCase(),
+//     segment.origin.city?.iata_city_code?.toUpperCase()
+//   ].filter(Boolean);
+
+//   const destinationCodes = [
+//     segment.destination.iata_code?.toUpperCase(),
+//     segment.destination.city?.iata_city_code?.toUpperCase()
+//   ].filter(Boolean);
+
+//   const routeParts = route.toUpperCase().split("-");
+//   const routeOrigin = routeParts[0];
+//   const routeDestination = routeParts[1];
+
+//   const isMatch =
+//     originCodes.includes(routeOrigin) && destinationCodes.includes(routeDestination);
+
+//   if (!isMatch) {
+//     console.warn(
+//       `No match for route ${route} in flight with origin ${originCodes} and destination ${destinationCodes}`
+//     );
+//   }
+
+//   return isMatch;
+// });
+
+
+                        {console.log(`Flight for route ${route}:`, flight);}
                         // Render the flight if found
                         return (
                           flight && (
@@ -742,15 +854,29 @@ export const Body = (props) => {
                       
                       (route) => {
                         // Find the first flight for the current route
-                        const flight = flightsData.find(
-                          (flight) =>
-                            ((flight.slices &&
-                              flight.slices.length > 0 &&
-                              `${flight.slices[0].origin.iata_code}-${flight.slices[0].destination.iata_code}`) ||
-                              `${flight.slices[0].origin.iata_city_code}-${flight.slices[0].destination.iata_code}`) ===
-                            route
-                        );
-                        {console.log(flight)}
+                        // const flight = flightsData.find(
+                        //   (flight) =>
+                        //     ((flight.slices &&
+                        //       flight.slices.length > 0 &&
+                        //       `${flight.slices[0].origin.iata_code}-${flight.slices[0].destination.iata_code}`) ||
+                                    const flight = flightsData.find((flight) => {
+  const firstSlice = flight?.slices?.[0];
+  if (!firstSlice || !firstSlice.origin || !firstSlice.destination) return false;
+
+const route1 = `${firstSlice.origin.iata_code}-${firstSlice.destination.iata_code}`.toUpperCase().trim();
+  const route2 = `${(firstSlice.origin.iata_city_code || '').toUpperCase().trim()}-${firstSlice.destination.iata_code.toUpperCase().trim()}`;
+
+  const normalizedRoute = route.toUpperCase().trim();
+
+  console.log("Checking flight route:", route1, route2, "against", normalizedRoute);
+
+  return route1 === normalizedRoute || route2 === normalizedRoute;
+});
+                        {console.log(`Flight for route ${route}:`, flight);}          //       `${flight.slices[0].origin.iata_city_code}-${flight.slices[0].destination.iata_code}`) ===
+                        //     route
+                        // );
+                        // {console.log(flight)}
+
                         // Render the flight if found
                         return (
                           flight && (

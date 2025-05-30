@@ -18,8 +18,10 @@ const FlightLogo = (props) => {
 export const FlightInfo = (props) => {
   const navigate = useNavigate();
   const flight = props.data;
+  console.log(flight);
   const flightsdata = props.data;
-  //console.log(JSON.stringify(props.data)+"props.data");
+  // console.log(JSON.stringify(props.data)+"props.data");
+
   const name = props.data.slices[0].segments[0].operating_carrier["name"];
   const flightNo =
     props.data.slices[0].segments[0].marketing_carrier_flight_number;
@@ -35,6 +37,10 @@ export const FlightInfo = (props) => {
 
   const date = props.data.updated_at;
   const time = props.data.slices[0].segments[0].duration;
+
+  console.log("Name",name);
+  console.log("No",flightNo);
+  
 
   const isMultiMode = props.isMultiMode;
   const timeDiff = new Date(`${date} ${arrivalTime}`) - new Date(`${date}`);

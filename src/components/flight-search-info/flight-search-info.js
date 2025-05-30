@@ -9,7 +9,7 @@ export const FlightSearchInfo = (props) => {
     returnDate,
     origin_city_name,
     destination_city_name,
-  } = props.criteria;
+  } = props.criteria || {};
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);

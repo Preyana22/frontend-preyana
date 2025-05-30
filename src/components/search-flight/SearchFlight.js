@@ -232,7 +232,7 @@ const countryCodeMapping = {
   ZW: "Zimbabwe",
 };
 
-const SearchFlight = ({ onSearch, ...props }) => {
+const SearchFlight = ({ onSearch =()=>{}, ...props }) => {
   const [airportsData, setAirports] = useState([]);
   const [openOptions, setOpenOptions] = useState(false);
   const [tripOptions, setTripOptions] = useState(false);
@@ -422,7 +422,35 @@ const SearchFlight = ({ onSearch, ...props }) => {
     });
   };
 
-  const getAirports = debounce(async (search, type) => {
+  // const getAirports = debounce(async (search, type) => {
+    
+  //   if (!search) {
+  //     type === "origin" ? setOriginAirports([]) : setDestinationAirports([]);
+  //     return;
+  //   }
+  //   try {
+  //     const { data } = await axios.get(apiUrl + `/airlines/airports/` + search);
+
+  //     console.log({data});
+  //     const airportData = Array.isArray(data) ? data : [data];
+  //     const airports = airportData
+  // .filter((t) => t.city_name != null)
+  // .map((t) => {
+  //   const countryName =
+  //     countryCodeMapping[t.iata_country_code] || "Unknown Country";
+  //   return t.iata_city_code == null
+  //     ? "abc"
+  //     : `${t.iata_code} - ${t.city_name} - ${countryName} (${t.name})`;
+  // });
+
+  //     type === "origin"
+  //       ? setOriginAirports(airports)
+  //       : setDestinationAirports(airports);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }, 300);
+    const getAirports = debounce(async (search, type) => {
     
     if (!search) {
       type === "origin" ? setOriginAirports([]) : setDestinationAirports([]);
@@ -497,19 +525,44 @@ const SearchFlight = ({ onSearch, ...props }) => {
     }
 
     let Adults = [];
-    let adultsData = { type: "adult" };
-    let childData = { type: "child" };
-    let infantData = { type: "infant_without_seat" };
+    // let adultsData = { type: "adult" };
+    // let childData = { type: "child" };
+    // let infantData = { type: "infant_without_seat" };
 
-    for (let i = 1; i <= options.adult; i++) {
-      Adults.push(adultsData);
-    }
-    for (let i = 1; i <= options.children; i++) {
-      Adults.push(childData);
-    }
-    for (let i = 1; i <= options.infant; i++) {
-      Adults.push(infantData);
-    }
+    // for (let i = 1; i <= options.adult; i++) {
+    //   Adults.push(adultsData);
+    // }
+    // for (let i = 1; i <= options.children; i++) {
+    //   Adults.push(childData);
+    // }
+    // for (let i = 1; i <= options.infant; i++) {
+    //   Adults.push(infantData);
+    // }
+
+       const options = {
+            adult: 1,       // 1 adult
+            children: [],   // no children
+            infants: []     // no infants
+          };
+
+          const passengerAges = [];
+
+          // Add adults
+          for (let i = 0; i < options.adult; i++) {
+            passengerAges.push(30); // Example adult age
+          }
+
+          // Add children (none in this case)
+          for (const childAge of options.children) {
+            passengerAges.push(childAge);
+          }
+
+          // Add infants (none in this case)
+          for (const infantAge of options.infants) {
+            passengerAges.push(infantAge);
+          }
+
+          console.log(passengerAges);
 
     const originStateText = selectedOrigin[0]?.split(" - ")[1] || "";
     const originCode = selectedOrigin[0]?.split(" - ")[0] || "";
@@ -518,14 +571,16 @@ const SearchFlight = ({ onSearch, ...props }) => {
 
     const originSecondPart = getSecondPart(originStateText);
     const destinationSecondPart = getSecondPart(destinationStateText);
-
+          const numOfPassengers = {
+          ages: passengerAges, // ✅ properly structured
+        };
     const criteria = isReturn
       ? {
           origin: originCode,
           destination: destinationCode,
           departureDate: event.target.dateOfDep.value,
           returnDate: event.target.returnDate.value,
-          numOfPassengers: Adults,
+          numOfPassengers: numOfPassengers,
           cabin_class: cabinValue,
           origin_city_name: originSecondPart,
           destination_city_name: destinationSecondPart,
@@ -534,7 +589,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
           origin: originCode,
           destination: destinationCode,
           departureDate: event.target.dateOfDep.value,
-          numOfPassengers: Adults,
+          numOfPassengers: numOfPassengers,
           cabin_class: cabinValue,
           origin_city_name: originSecondPart,
           destination_city_name: destinationSecondPart,

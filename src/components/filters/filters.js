@@ -22,7 +22,20 @@ const Filters = ({ flights, onFiltersChange, onSearch }) => {
   });
 
   useEffect(() => {
+    // console.log("localStorage keys:", Object.keys(localStorage));
     const storedFlights = localStorage.getItem("flightsData");
+   
+//     let storedFlights = localStorage.getItem("flightsData");
+
+// if (!storedFlights) {
+ 
+//   if (flights?.length) {
+//     localStorage.setItem("flightsData", JSON.stringify(flights));
+//     storedFlights = JSON.stringify(flights);
+//   }
+// }
+
+    // console.log("Stored Flights",storedFlights);
     // Show filters by default on large screens
       if (window.innerWidth >= 768) {
         setFiltersVisible(true);
@@ -30,6 +43,8 @@ const Filters = ({ flights, onFiltersChange, onSearch }) => {
     if (storedFlights) {
       try {
         const parsedFlights = JSON.parse(storedFlights);
+        console.log("Stored Flights (parsed):", parsedFlights);
+
         setflightData(parsedFlights);
         let uniqueLoyaltyPrograms = new Set();
         let uniqueIataCodes = new Set();

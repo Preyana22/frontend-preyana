@@ -30,7 +30,8 @@ export const MultiFlightInfo = (props) => {
   //   hour: "2-digit",
   //   minute: "2-digit",
   // });
-
+   console.log("props.data:", props.data);
+console.log("props.data.slices:", props.data?.slices);
   const iata_code =
     props.data.slices[0].segments[0].operating_carrier.iata_code;
   const operating_carrier_flight_number =
@@ -39,6 +40,9 @@ export const MultiFlightInfo = (props) => {
   const img =
     props.data.slices[0].segments[0].operating_carrier.logo_symbol_url;
   const name = props.data.slices[0].segments[0].operating_carrier.name;
+
+ 
+
   // const destinationName = props.data.slices[0].destination.name;
   // const OriginName = props.data.slices[0].origin.name;
   const arrivalTimeStamp = new Date(
@@ -231,15 +235,19 @@ export const MultiFlightInfo = (props) => {
   return (
     <>
       <section className="Flight-info-details">
-  {props.data.slices.length > 0 &&
+  { Array.isArray(props.data.slices) && props.data.slices.length > 0 &&
     props.data.slices.map((slice, sliceIndex) => {
       const firstSegment = slice.segments[0];
       const lastSegment = slice.segments[slice.segments.length - 1];
+      
+      
 
       return (
         <div
-          key={slice.comparison_key}
-          className="itinerary-card__travel-items itinerary-card__travel-items--with-footer"
+          // key={slice.comparison_key}
+          // key={`slice-${sliceIndex}-${firstSegment.id}`}
+            key={sliceIndex}
+            className="itinerary-card__travel-items itinerary-card__travel-items--with-footer"
         >
           {slice.segments.length > 0 && (
             <div

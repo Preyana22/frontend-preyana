@@ -37,7 +37,9 @@
     "start": "react-scripts start --no-source-maps",
     "build": "cross-env CI=false react-scripts build --no-source-maps",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "sourceMap": "true"
+
   },
   "eslintConfig": {
     "extends": "react-app"
