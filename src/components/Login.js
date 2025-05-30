@@ -161,7 +161,7 @@ const Login = (props) => {
 
     await axios(configuration)
       .then((result) => {
-        console.log(result);
+        console.log(result.data.user);
         localStorage.setItem("email", result.data.user._doc.email);
         localStorage.setItem("userName", result.data.user._doc.userName);
         localStorage.setItem("userId", result.data.user.$__._id);
@@ -213,6 +213,8 @@ const handleVerifyOtp = async (e) => {
   
     //  if (res.data.user && res.data.user.userName) {
       localStorage.setItem("userName", res.data.user.userName);
+      localStorage.setItem("email", res.data.user.email);
+      localStorage.setItem("userId", res.data.user.$id);
     // } else {
     //   console.warn("userName not found in response");
     // }

@@ -1076,7 +1076,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
                                     </div>
 
                                     <div className="col-12 col-md-6 col-lg-2 col-xl-1">
-                                      <button className="btn btn-orange searchbtn" onClick={handleSearch} style={{ marginTop: "-0.2rem", marginLeft:"40px" }}>
+                                      <button className="btn btn-orange searchbtn" onClick={handleSearch} style={{marginLeft:"40px" }}>
                                         Search
                                       </button>
                                     </div>

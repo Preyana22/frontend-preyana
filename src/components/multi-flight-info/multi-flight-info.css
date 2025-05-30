@@ -145,7 +145,7 @@
   padding-block: 0;
   font-size: 12px;
   line-height: 18px;
-  max-width: 785px;
+  /* max-width: 785px; */
   /* Make it full width */
   display: flex;
   /* Ensure children are laid out properly */
@@ -390,6 +390,12 @@
 }
 
 }
+.border-slot {
+  margin-right: 9px;
+  margin-bottom: 10px;
+  width: 147px;
+  height: 77px;
+}
 @media (min-width:907px) and (max-width: 970px) {
   .itinerary-card__travel-item--segment-info{
     width: 545px;
@@ -401,6 +407,7 @@
     width: 645px;
     margin: 0 auto; /* Center the element */
     }
+   
 }
 /* ipad  */
 @media (min-width:760px) and (max-width: 990px) {
@@ -488,6 +495,24 @@
 }
 /* Mobile - One Line Layout */
 @media (min-width: 300px) and (max-width: 450px) {
+  .headerSearchItem {
+    border-width: 1px;
+    border-style: none;
+    border-color: #d9d4d4;
+    background-color: white;
+    height: 2.4rem;
+    text-align: left;
+    /* text-indent: 10px; */
+    vertical-align: middle;
+    line-height: 1.5;
+    border-radius: 5px;
+    margin-top: 0px !important;
+  }
+  .traveler-text {
+    font-size: small;
+    display: flex;
+    width: 100px;
+ }
   .itinerary-card__travel-item {
     display: flex;
     flex-direction: row; /* Ensures it's in one horizontal line */
@@ -680,6 +705,7 @@ p.heading-text {
   max-width: 251px;
 
 }
+
 /* .block {
   display: block;
 } */

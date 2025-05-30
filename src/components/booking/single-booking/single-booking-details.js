@@ -172,8 +172,7 @@ const SingleBookingDetails = () => {
 
     // Fetch cancellation details
     try {
-      const cancelResult = await axios.get(
-        `${baseURL}/ordercancel/${bookingId}`,
+      const cancelResult = await axios.get(`${baseURL}/ordercancel/${bookingId}`,
         { headers }
       );
       console.log("Single order cancel data:", cancelResult.data);
@@ -283,6 +282,7 @@ const SingleBookingDetails = () => {
       url: apiUrl + `/booking/singleorder/${bookingId}`,
       headers: { "Content-Type": "application/json" },
     };
+    console.log(configuration);
     console.log("configuration");
     try {
       const result = await axios(configuration);
