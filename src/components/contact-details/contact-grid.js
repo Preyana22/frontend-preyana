@@ -66,88 +66,82 @@ const Contacts = (props) => {
     setSelectedMonth(newSelectedMonths);
   };
 
-  const confirmPayment = async () => {
-    // 1) ask user
-    if (!window.confirm("Are you sure you want to confirm and book this flight?"))
-      return setIsPayment(false);
+ 
+const confirmPayment = async () => {
+  console.log("✅ confirmPayment triggered");
 
-    // 2) pull data out of state
-    const { contactDetails, selectedFlight, data: intentWrapper } = paymentIntentData;
-    const intentId = intentWrapper.paymentIntentResponse.data.id;
+  if (!window.confirm("Are you sure you want to confirm and book this flight?"))
+    return setIsPayment(false);
 
-    // 3) build passengers exactly like booking.js did
-    const passengers = contactDetails.map(p => {
-      const copy = {
-        phone_number: p.phone_number,
-        email:       p.email,
-        given_name:  p.given_name,
-        middle_name: p.middle_name,
-        family_name: p.family_name,
-        gender:      p.gender,
-        // title:       p.title,
-        born_on:     p.born_on,
-        id:          p.id,
-        address1:    p.address1,
-        // address2:    p.address2,
-        city:        p.city,
-        region:      p.region,
-        postal:      p.postal,
-        country:     p.country,
-      };
-      if (p.type === "infant_without_seat")
-        copy.infant_passenger_id = p.passenger_id;
-      return copy;
+  const { contactDetails, selectedFlight, data: intentWrapper } = paymentIntentData;
+  const intentId = intentWrapper.paymentIntentResponse.data.id;
+
+  const passengers = contactDetails.map(p => ({
+    phone_number: p.phone_number,
+    email: p.email,
+    given_name: p.given_name,
+    middle_name: p.middle_name,
+    family_name: p.family_name,
+    gender: p.gender,
+    title: p.title,
+    born_on: p.born_on,
+    id: p.id,
+    address1: p.address1,
+    city: p.city,
+    region: p.region,
+    postal: p.postal,
+    country: p.country,
+    ...(p.type === "infant_without_seat" && { infant_passenger_id: p.passenger_id }),
+  }));
+
+  const payments = [{
+    type: "balance",
+    amount: selectedFlight.total_amount,
+    currency: selectedFlight.total_currency,
+  }];
+
+  try {
+    setIsLoadingPayment(true);
+
+    await axios.post(`${apiUrl}/airlines/confirm`, {
+      paymentIntent: intentId
+    }, {
+      headers: { "Content-Type": "application/json" }
     });
 
-    // 4) define your payments payload
-    const payments = [{
-      type:     "balance",
-      amount:   selectedFlight.total_amount,
-      currency: selectedFlight.total_currency,
-    }];
+    const orderData = {
+      type: "instant",
+      selected_offers: [contactDetails[0].offer_id],
+      passengers,
+      payments,
+      metadata: { paymentIntent: intentId }
+    };
 
-    try {
-      setIsLoadingPayment(true);
+    const bookRes = await axios.post(`${apiUrl}/airlines/book`, orderData, {
+      headers: { "Content-Type": "application/json" },
+    });
 
-      // 5) confirm
-      await axios.post(
-        `${apiUrl}/airlines/confirm`,
-        { paymentIntent: intentId },
-        { headers:{"Content-Type":"application/json"} }
-      );
-
-      // 6) book
-      const orderData = {
-        type:            "instant",
-        selected_offers: [ contactDetails[0].offer_id ],
-        passengers,
-        payments,
-        metadata: { paymentIntent: intentId },
-      };
-      const bookRes = await axios.post(
-        `${apiUrl}/airlines/book`,
-        orderData,
-        { headers:{"Content-Type":"application/json"} }
-      );
-
-      const errors = bookRes.data.data.orderResponse.errors;
+    const errors = bookRes.data?.data?.orderResponse?.errors;
       if (errors && errors.length) {
         throw new Error(errors[0].message);
       }
 
-      // 7) save booking to your DB & redirect
-      await saveBooking([
-        /* we skipped putting confirm data in here but you can if you like */,
-        bookRes.data
-      ]);
+    console.log(" Booking API call succeeded");
+    await saveBooking([bookRes.data]); // <- calls working saveBooking
+    console.log("called savebooking...")
 
-    } catch (err) {
-      console.error("Payment/booking error:", err);
-      setIsLoadingPayment(false);
-      // bump the widget in case you want to re‑try
-      setPaymentRenderKey(k => k + 1);
-    }
-  };
+    // if (bookRes.data?.data?.orderResponse) {
+    //   await saveBooking([bookRes.data]);
+    //   console.log("Booking saved successfully");
+    // } else {
+    //   throw new Error("Booking failed: Missing orderResponse");
+    // }
+  } catch (err) {
+    console.error(" Payment/booking error:", err);
+    setIsLoadingPayment(false);
+    setPaymentRenderKey(k => k + 1); // retry render
+  }
+};
 
   function formatDuration(duration) {
     const regex = /P(?:(\d+)D)?T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/;
@@ -162,31 +156,59 @@ const Contacts = (props) => {
   }
 
   const saveBooking = async (orderData) => {
-    const bookingData = {
-      email: orderData[1].data.orderResponse.data.passengers[0].email,
-      loginEmail: localStorage.getItem("email")
-        ? localStorage.getItem("email")
-        : orderData[1].data.orderResponse.data.passengers[0].email,
-      name: `${orderData[1].data.orderResponse.data.passengers[0].given_name} ${orderData[1].data.orderResponse.data.passengers[0].middle_name} ${orderData[1].data.orderResponse.data.passengers[0].family_name}`,
-      booking_reference: orderData[1].data.orderResponse.data.booking_reference,
-      offer_id: orderData[1].data.orderResponse.data.offer_id,
-      status: orderData[1].data.orderResponse.data.payment_status
-        .awaiting_payment
-        ? "pending"
-        : "success",
-      booking_id: orderData[1].data.orderResponse.data.id,
-      address1: location.state.contactDetails[0].address1,
-      // address2: location.state.contactDetails[0].address2,
-      city: location.state.contactDetails[0].city,
-      region: location.state.contactDetails[0].region,
-      postal: location.state.contactDetails[0].postal,
-      country: location.state.contactDetails[0].country,
-      airlines: orderData[1].data.orderResponse.data.owner.name,
-      slices: [], // Initialize an empty array for slices
-    };
+    console.log("OredrData:",orderData);
+  //   const order = orderData?.[0]?.data?.orderResponse?.data;
 
+  // const bookingData = {
+  //   email: order.passengers[0].email,
+  //   loginEmail: localStorage.getItem("email") || order.passengers[0].email,
+  //   name: `${order.passengers[0].given_name} ${order.passengers[0].middle_name ?? ""} ${order.passengers[0].family_name}`,
+  //   booking_reference: order.booking_reference,
+  //   offer_id: order.offer_id,
+  //   status: order.payment_status?.awaiting_payment ? "pending" : "success",
+  //   booking_id: order.id,
+  //   address1: location.state.contactDetails[0].address1,
+  //   city: location.state.contactDetails[0].city,
+  //   region: location.state.contactDetails[0].region,
+  //   postal: location.state.contactDetails[0].postal,
+  //   country: location.state.contactDetails[0].country,
+  //   airlines: order.owner.name,
+  //   slices: [],
+  // };
+const order = orderData?.[0]?.data?.orderResponse?.data;
+
+  if (!order) {
+    console.error("Invalid order data format:", orderData);
+    alert("Something went wrong while saving the booking.");
+    return;
+  }
+
+  const contact = paymentIntentData?.contactDetails?.[0];
+  console.log("Contact: ", contact);
+  if (!contact) {
+    console.error("Missing contact details in location.state");
+    alert("Missing billing information. Please fill out the form again.");
+    return;
+  }
+
+  const bookingData = {
+    email: order.passengers[0].email,
+    loginEmail: localStorage.getItem("email") || order.passengers[0].email,
+    name: `${order.passengers[0].given_name} ${order.passengers[0].middle_name ?? ""} ${order.passengers[0].family_name}`,
+    booking_reference: order.booking_reference,
+    offer_id: order.offer_id,
+    status: order.payment_status?.awaiting_payment ? "pending" : "success",
+    booking_id: order.id,
+    // address1: contact.address1,
+    city: contact.city,
+    region: contact.region,
+    postal: contact.postal,
+    country: contact.country,
+    airlines: order.owner.name,
+    slices: [],
+  };
     // Iterate through each slice and extract relevant data
-    orderData[1].data.orderResponse.data.slices.forEach((slice) => {
+    order.slices.forEach((slice) => {
       const segment = slice.segments[0]; // Assuming you want the first segment
 
       bookingData.slices.push({
@@ -220,6 +242,7 @@ const Contacts = (props) => {
       if (result.status === 201 || result.status === 200) {
         // Successfully created booking
         navigate("/success");
+        // window.location.href = "/success";
       } else {
         // Handle unexpected status code
         console.error(`Unexpected response status: ${result.status}`);
@@ -251,6 +274,54 @@ const Contacts = (props) => {
       }
     }
   };
+//  const saveBooking = async (order) => {
+//   console.log(" saveBooking called");
+//   const bookingData = {
+//     email: order.passengers[0].email,
+//     loginEmail: localStorage.getItem("email") || order.passengers[0].email,
+//     name: `${order.passengers[0].given_name} ${order.passengers[0].middle_name ?? ""} ${order.passengers[0].family_name}`,
+//     booking_reference: order.booking_reference,
+//     offer_id: order.offer_id,
+//     status: order.payment_status?.awaiting_payment ? "pending" : "success",
+//     booking_id: order.id,
+//     address1: location.state.contactDetails[0].address1,
+//     city: location.state.contactDetails[0].city,
+//     region: location.state.contactDetails[0].region,
+//     postal: location.state.contactDetails[0].postal,
+//     country: location.state.contactDetails[0].country,
+//     airlines: order.owner.name,
+//     slices: order.slices.map(slice => {
+//       const segment = slice.segments[0];
+//       return {
+//         travelDate: segment.departing_at,
+//         departTime: segment.departing_at,
+//         arrivalTime: segment.arriving_at,
+//         flightDuration: formatDuration(slice.duration),
+//         stops: segment.stops.length === 0 ? null : null,
+//         departAirport: slice.origin.iata_code,
+//         arrivalAirport: slice.destination.iata_code,
+//         departCityName: slice.origin.city_name,
+//         arrivalCityName: slice.destination.city_name,
+//       };
+//     }),
+//   };
+
+//   try {
+//     const result = await axios.post(`${apiUrl}/booking/createbooking`, bookingData);
+//     if (result.status === 201 || result.status === 200) {
+//       console.log("✅ Booking saved, navigating to success page");
+//       setTimeout(() => navigate("/success"), 100);
+//     } else {
+//       console.error(" Unexpected response code:", result.status);
+//       alert("Booking failed unexpectedly.");
+//     }
+//   } catch (error) {
+//     console.error(" Error saving booking:", error);
+//     alert("There was an error saving your booking. Please try again.");
+//   }
+// };
+
+
 
   // Handle change for year
   const handleYearChange = (index, event) => {
@@ -311,11 +382,11 @@ const Contacts = (props) => {
 
   const [isFetching, setIsFetching] = useState(false);
   const navigate = useNavigate();
-  // let titles, genderdetails;
+  let titles;
   let genderdetails;
   let contactDetails = [];
 
-  // const title = ["Mr", "Mrs", "Miss", "Doctor"];
+  const title = ["Mr", "Mrs", "Miss", "Doctor"];
   const paymenttype =
     location.state.flights.payment_requirements.requires_instant_payment;
   const gender = ["Female", "Male"];
@@ -338,10 +409,10 @@ const Contacts = (props) => {
       const given_name1 = `given_name${index}`;
       const middle_name = `given_middle_name${index}`;
       const email1 = `email${index}`;
-      const address1 = `address1${index}`;
+      const address1 = "address1";
       // const address2 = `address2${index}`;
-      const city = `city${index}`;
-      const postal = `postal${index}`;
+      const city = "city";
+      const postal = "postal";
 
       const day = event.target[`dayOfBirth${index}`].value;
       const month = event.target[`monthOfBirth${index}`].value;
@@ -350,20 +421,20 @@ const Contacts = (props) => {
 
       // **Validation Logic**
 
-      // if ((index === 0 && !titles) || !titles.state || !titles.state.text) {
-      //   alert(`Title is required for passenger ${index + 1}`);
-      //   hasError = true;
-      // }
+      if ((index === 0 && !titles) || !titles.state || !titles.state.text) {
+        alert(`Title is required for passenger ${index + 1}`);
+        hasError = true;
+      }
 
-      // if (index === 0 && !event.target[middle_name].value) {
-      //   alert(`Middle name is required for passenger ${index + 1}`);
-      //   hasError = true;
-      // } else if (event.target[middle_name].value.length < 2) {
-      //   alert(
-      //     `Middle name must be at least 2 characters for passenger ${index + 1}`
-      //   );
-      //   hasError = true;
-      // }
+      if (index === 0 && !event.target[middle_name].value) {
+        alert(`Middle name is required for passenger ${index + 1}`);
+        hasError = true;
+      } else if (event.target[middle_name].value.length < 2) {
+        alert(
+          `Middle name must be at least 2 characters for passenger ${index + 1}`
+        );
+        hasError = true;
+      }
 
       if (index === 0 && !event.target[familyname1].value) {
         alert(`Last name is required for passenger ${index + 1}`);
@@ -400,7 +471,7 @@ const Contacts = (props) => {
       }
 
       contactDetails.push({
-        // title: titles.state.text,
+        title: titles.state.text,
         offer_id: location.state.flights.id,
         id: location.state.flights.passengers[index].id,
         family_name: event.target[familyname1].value,
@@ -637,7 +708,7 @@ const Contacts = (props) => {
 
   useEffect(() => {
   if (!paymentIntentData) return;
-
+    console.log(paymentIntentData);
   const { data } = paymentIntentData;
   const duffelEl = document.querySelector("duffel-payments");
   if (!duffelEl) return;
@@ -647,6 +718,7 @@ const Contacts = (props) => {
     debug: false,
     live_mode: false,
   });
+  console.log();
   duffelEl.addEventListener("onSuccessfulPayment", () => {
     setIsLoadingPayment(true);
     confirmPayment();
@@ -655,6 +727,32 @@ const Contacts = (props) => {
           console.log("onPayloadReady\n", event.detail)
         );
 }, [paymentIntentData, paymentRenderKey]);
+// useEffect(() => {
+//   if (!paymentIntentData) return;
+//   const duffelEl = document.querySelector("duffel-payments");
+//   if (!duffelEl) {
+//     console.error(" <duffel-payments> not found in DOM.");
+//     return;
+//   }
+
+//   console.log("Rendering duffel-payments");
+//   duffelEl.render({
+//     paymentIntentClientToken: paymentIntentData.data.paymentIntentResponse.data.client_token,
+//     debug: false,
+//     live_mode: false,
+//   });
+
+//   duffelEl.addEventListener("onSuccessfulPayment", () => {
+//     console.log("Duffel payment success event fired");
+//     setIsLoadingPayment(true);
+//     confirmPayment(); // this leads to saveBooking
+//   });
+
+//   duffelEl.addEventListener("onFailedPayment", (event) =>
+//     console.log(" Payment failed", event.detail)
+//   );
+// }, [paymentIntentData, paymentRenderKey]);
+
 
   useLayoutEffect(() => {
     console.log("Effect triggered for payment section");
@@ -803,7 +901,7 @@ const Contacts = (props) => {
                       </h6>
 
                       <div className="row">
-                        {/* <div className="col-6 col-md-6">
+                        <div className="col-6 col-md-6">
                           <div className="form-group">
                             <label>
                               <sup>
@@ -825,7 +923,7 @@ const Contacts = (props) => {
                               />
                             </Form.Group>
                           </div>
-                        </div> */}
+                        </div>
 
                         <div className="col-6 col-md-6">
                           <div className="form-group">
@@ -870,9 +968,6 @@ const Contacts = (props) => {
                             </Form.Group>
                           </div>
                         </div>
-                      </div>
-
-                      <div className="row">
                         <div className="col-md-6">
                           <div className="form-group">
                             <label>
@@ -898,6 +993,34 @@ const Contacts = (props) => {
                             </Form.Group>
                           </div>
                         </div>
+                      </div>
+
+                      <div className="row">
+                        {/* <div className="col-md-6">
+                          <div className="form-group">
+                            <label>
+                              {" "}
+                              <sup>
+                                <small>
+                                  <i className="fa fa-asterisk text-secondary mr-1">
+                                    {" "}
+                                  </i>
+                                </small>
+                              </sup>
+                              Last name
+                            </label>
+
+                            <Form.Group controlId={`familyname${index}`}>
+                              <Form.Control
+                                type="text"
+                                className="form-control"
+                                name={`familyname${index}`}
+                                placeholder="Last name"
+                                required
+                              />
+                            </Form.Group>
+                          </div>
+                        </div> */}
 
                         <div className="col-md-6">
                           <div className="form-group">
@@ -923,8 +1046,6 @@ const Contacts = (props) => {
                             </Form.Group>
                           </div>
                         </div>
-                      </div>                      
-                      <div className="row">
                         <div className="col-md-6">
                           <div className="form-group">
                             <label>
@@ -987,6 +1108,70 @@ const Contacts = (props) => {
                             </div>
                           </div>
                         </div>
+                      </div>                      
+                      <div className="row">
+                        {/* <div className="col-md-6">
+                          <div className="form-group">
+                            <label>
+                              {" "}
+                              <sup>
+                                <small>
+                                  <i className="fa fa-asterisk text-secondary mr-1">
+                                    {" "}
+                                  </i>
+                                </small>
+                              </sup>
+                              Date Of Birth
+                            </label>
+                            <div className="row">
+                              <div className="col-4">
+                                <select
+                                  className="form-control"
+                                  name={`dayOfBirth${index}`}
+                                  value={selectedDay[index]}
+                                  onChange={(e) => handleDayChange(index, e)}
+                                >
+                                  <option value="">Day</option>
+                                  {days.map((day) => (
+                                    <option key={day} value={day}>
+                                      {day}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                              <div className="col-4">
+                                <select
+                                  className="form-control"
+                                  name={`monthOfBirth${index}`}
+                                  value={selectedMonth[index]}
+                                  onChange={(e) => handleMonthChange(index, e)}
+                                >
+                                  <option value="">Month</option>
+                                  {months.map((month) => (
+                                    <option key={month} value={month}>
+                                      {month}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                              <div className="col-4">
+                                <select
+                                  className="form-control"
+                                  name={`yearOfBirth${index}`}
+                                  value={selectedYear[index]}
+                                  onChange={(e) => handleYearChange(index, e)}
+                                >
+                                  <option value="">Year</option>
+                                  {years.map((year) => (
+                                    <option key={year} value={year}>
+                                      {year}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                        </div> */}
                       </div>
 
                       {index === 0 && (
@@ -1006,11 +1191,11 @@ const Contacts = (props) => {
                                   Billing Address
                                 </label>
 
-                                <Form.Group controlId={`address1${index}`}>
+                                <Form.Group controlId="address1">
                                   <Form.Control
                                     type="text"
                                     className="form-control"
-                                    name={`address1${index}`}
+                                    name="address1"
                                     placeholder="Address line 1"
                                     required={index === 0} // Conditionally set required
                                   />
@@ -1047,7 +1232,7 @@ const Contacts = (props) => {
                                   Country
                                 </label>
 
-                                <Form.Group controlId={`country${index}`}>
+                                <Form.Group controlId="country">
                                   <CountryDropdown
                                     className="custom-dropdown country-dropdown"
                                     value={country}
@@ -1071,11 +1256,11 @@ const Contacts = (props) => {
                                   City
                                 </label>
 
-                                <Form.Group controlId={`city${index}`}>
+                                <Form.Group controlId="city">
                                   <Form.Control
                                     type="text"
                                     className="form-control"
-                                    name={`city1${index}`}
+                                    name="city"
                                     placeholder="City/Town/Department"
                                     required={index === 0} // Conditionally set required
                                   />
@@ -1096,7 +1281,7 @@ const Contacts = (props) => {
                                   State
                                 </label>
 
-                                <Form.Group controlId={`region${index}`}>
+                                <Form.Group controlId="region">
                                   <RegionDropdown
                                     className="custom-dropdown region-dropdown"
                                     country={country}
@@ -1120,11 +1305,11 @@ const Contacts = (props) => {
                                   Zip Code
                                 </label>
 
-                                <Form.Group controlId={`postal${index}`}>
+                                <Form.Group controlId="postal">
                                   <Form.Control
                                     type="text"
                                     className="form-control"
-                                    name={`postal${index}`}
+                                    name="postal"
                                     placeholder="Zip/Postal Code"
                                     required={index === 0} // Conditionally set required
                                   />

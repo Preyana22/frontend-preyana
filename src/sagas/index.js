@@ -27,19 +27,32 @@ function* findFlights(payload) {
   try {
     yield put({ type: "GET_FILTERS_SUCCESS", json: payload.payload.criteria });
 
+    // const {
+    //   flights,
+    //   criteria: {
+    //     returnDate,
+    //     origin,
+    //     destination,
+    //     // departureDate,
+    //     numOfPassengers,
+    //     // cabinclass,
+    //     origin_city_name,
+    //     destination_city_name,
+    //   },
+    // } = payload.payload;
     const {
       flights,
-      criteria: {
-        returnDate,
-        origin,
-        destination,
-        // departureDate,
-        numOfPassengers,
-        // cabinclass,
-        origin_city_name,
-        destination_city_name,
-      },
-    } = payload.payload;
+      criteria = {},
+    } = payload.payload || {};
+
+    const {
+      returnDate,
+      origin,
+      destination,
+      numOfPassengers,
+      origin_city_name,
+      destination_city_name,
+    } = criteria;
 
     const listOfFlights = {};
     const json1 = yield fetch(apiUrl + "/airlines/test", requestOptions).then(

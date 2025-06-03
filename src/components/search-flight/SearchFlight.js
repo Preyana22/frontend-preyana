@@ -232,7 +232,7 @@ const countryCodeMapping = {
   ZW: "Zimbabwe",
 };
 
-const SearchFlight = ({ onSearch, ...props }) => {
+const SearchFlight = ({onSearch=()=>{}, ...props} ) => {
   const [airportsData, setAirports] = useState([]);
   const [openOptions, setOpenOptions] = useState(false);
   const [tripOptions, setTripOptions] = useState(false);
@@ -256,6 +256,8 @@ const SearchFlight = ({ onSearch, ...props }) => {
 
   const [isReturn, setIsReturn] = useState(true);
   const [status, setFormValid] = useState({ isValid: false });
+
+  const [isMultiCity, setIsMultiCity] = useState(false);
 
   const originRef = useRef(null);
   const destinationRef = useRef(null);
@@ -475,9 +477,9 @@ const SearchFlight = ({ onSearch, ...props }) => {
     return secondPart;
   };
 
-  const handleSubmit1 = (event) => {
+  const handleSubmit1 = async(event) => {
     event.preventDefault();
-
+    console.log("handle submit called..");
     let cabinValue;
     switch (selectedCabinClass) {
       case 1:
@@ -510,7 +512,119 @@ const SearchFlight = ({ onSearch, ...props }) => {
     for (let i = 1; i <= options.infant; i++) {
       Adults.push(infantData);
     }
+    console.log("multicity",isMultiCity);
+   if (isMultiCity) {
+  let segments = [];
+  let invalidFields = [];
+  let hasInvalid = false;
 
+  multiCitySegments.forEach((segment, index) => {
+    const originStr = segment.origin?.label || "";
+    const destinationStr = segment.destination?.label || "";
+
+    const originCode = originStr.split(" - ")[0] || "";
+    const destinationCode = destinationStr.split(" - ")[0] || "";
+    const departureDate = segment.date;
+
+    const originSecondPart = getSecondPart(originStr.split(" - ")[1] || "");
+    const destinationSecondPart = getSecondPart(destinationStr.split(" - ")[1] || "");
+
+    // Validate current segment
+    let segmentInvalid = {
+      origin: !originCode,
+      destination: !destinationCode || originCode === destinationCode,
+      date: !departureDate || !isDate(departureDate),
+    };
+
+    if (Object.values(segmentInvalid).some(Boolean)) hasInvalid = true;
+
+    invalidFields.push(segmentInvalid);
+
+    // Build segment criteria
+    segments.push({
+      origin: originCode,
+      destination: destinationCode,
+      departure_date: departureDate, 
+      origin_city_name: originSecondPart,
+      destination_city_name: destinationSecondPart,
+    });
+  });
+
+  if (hasInvalid) {
+    setFormValid({ isValid: false, multiCityErrors: invalidFields });
+    return;
+  }
+
+  setFormValid({ isValid: true });
+
+  const criteria = {
+    tripType: "multicity",
+    segments,
+    numOfPassengers: Adults,
+    cabin_class: cabinValue,
+  };
+
+  props.findFlights({ criteria, flights: props.flights, multiCity: true });
+  navigate("/results");
+};
+//   if (isMultiCity) {
+//   let criteria = [];
+// let invalidFields = [];
+// let invalid = false;
+
+// try {
+//   multiCitySegments.forEach((segment, index) => {
+//     if (!segment.origin || !segment.destination) {
+//       console.warn(`Segment ${index} missing origin or destination`);
+//     }
+
+//     const originStr = segment.origin?.label || "";
+//     const destinationStr = segment.destination?.label || "";
+
+//     const originCode = originStr.split(" - ")[0] || "";
+//     const originCity = getSecondPart(originStr.split(" - ")[1] || "");
+//     const destinationCode = destinationStr.split(" - ")[0] || "";
+//     const destinationCity = getSecondPart(destinationStr.split(" - ")[1] || "");
+//     const departureDate = segment.date;
+
+//     const segmentInvalid = {
+//       origin: !originCode,
+//       destination: !destinationCode || originCode === destinationCode,
+//       date: !departureDate || !isDate(departureDate),
+//     };
+
+//     invalidFields.push(segmentInvalid);
+
+//     if (Object.values(segmentInvalid).some(Boolean)) invalid = true;
+
+//     criteria.push({
+//       origin: originCode,
+//       destination: destinationCode,
+//       departureDate,
+//       cabin_class: cabinValue,
+//       numOfPassengers: Adults,
+//       origin_city_name: originCity,
+//       destination_city_name: destinationCity,
+//     });
+//   });
+// } catch (e) {
+//   console.error("Error processing multiCitySegments:", e, multiCitySegments);
+//   setFormValid({ isValid: false, multiCityErrors: [{ origin: true, destination: true, date: true }] });
+//   return;
+// }
+
+// if (invalid) {
+//   setFormValid({ isValid: false, multiCityErrors: invalidFields });
+//   return;
+// }
+
+
+// }
+
+
+
+
+    // For One-way and Round trip logic:
     const originStateText = selectedOrigin[0]?.split(" - ")[1] || "";
     const originCode = selectedOrigin[0]?.split(" - ")[0] || "";
     const destinationStateText = selectedDestination[0]?.split(" - ")[1] || "";
@@ -523,8 +637,8 @@ const SearchFlight = ({ onSearch, ...props }) => {
       ? {
           origin: originCode,
           destination: destinationCode,
-          departureDate: event.target.dateOfDep.value,
-          returnDate: event.target.returnDate.value,
+          departureDate: selectedDateOfDep,   
+          returnDate: selectedDateOfRet,      
           numOfPassengers: Adults,
           cabin_class: cabinValue,
           origin_city_name: originSecondPart,
@@ -533,7 +647,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
       : {
           origin: originCode,
           destination: destinationCode,
-          departureDate: event.target.dateOfDep.value,
+          departureDate: selectedDateOfDep,
           numOfPassengers: Adults,
           cabin_class: cabinValue,
           origin_city_name: originSecondPart,
@@ -617,16 +731,94 @@ const SearchFlight = ({ onSearch, ...props }) => {
   };
 
   const handleSearch = async () => {
+    console.log("function called");
     if (typeof onSearch === "function") {
       onSearch();
-
+        console.log("calleedddd.....");
       await new Promise((resolve) => {
         setTimeout(resolve, 40);
       });
     } else {
       console.error("onSearch is not a function", onSearch);
     }
+    if (isMultiCity) {
+    const fakeEvent = { preventDefault: () => {} };
+    handleSubmit1(fakeEvent);
+  }
+
+    
   };
+
+
+
+  const [multiCitySegments, setMultiCitySegments] = useState([
+  { origin: null, destination: null, date: "", isRotated: false },
+  { origin: null, destination: null, date: "", isRotated: false },
+]);
+
+// 🔁 Add this method:
+function handleMultiCityChange(index, field, value) {
+  setMultiCitySegments(prevSegments => {
+    const updatedSegments = [...prevSegments];
+    const parsedValue =
+      field === "date"
+        ? value
+        : typeof value === "string"
+        ? { label: value }
+        : value;
+
+    updatedSegments[index] = {
+      ...updatedSegments[index],
+      [field]: parsedValue,
+    };
+
+    if (field === "destination" && index + 1 < updatedSegments.length) {
+      if (!updatedSegments[index + 1].origin) {
+        updatedSegments[index + 1] = {
+          ...updatedSegments[index + 1],
+          origin: parsedValue,
+        };
+      }
+    }
+
+    return updatedSegments;
+  });
+}
+
+// const addMultiCitySegment = () => {
+//   setMultiCitySegments([
+//     ...multiCitySegments,
+//     { origin: null, destination: null, date: "", isRotated: false },
+//   ]);
+// };
+const addMultiCitySegment = () => {
+  setMultiCitySegments((prevSegments) => {
+    if (prevSegments.length >= 4) return prevSegments; // prevent over-adding
+    return [
+      ...prevSegments,
+      { origin: null, destination: null, date: "", isRotated: false },
+    ];
+  });
+};
+
+
+const removeMultiCitySegment = (index) => {
+  const updated = multiCitySegments.filter((_, i) => i !== index);
+  setMultiCitySegments(updated);
+};
+
+const handleMultiCitySwap = (index) => {
+  const updated = [...multiCitySegments];
+
+  const temp = updated[index].origin;
+  updated[index].origin = updated[index].destination;
+  updated[index].destination = temp;
+
+  updated[index].isRotated = !updated[index].isRotated;
+
+  setMultiCitySegments(updated);
+};
+
 
   return (
     <>
@@ -684,36 +876,54 @@ const SearchFlight = ({ onSearch, ...props }) => {
                     <div id="flights" className="tab-pane in active">
                       <div className="page-search-form">
                         <Form onSubmit={handleSubmit1}>
-                          <div className="row mt-0">
+                          <div className="row mt-0 d-flex align-items-center ">
                             {/* Trip Type Selection */}
-                            <div className="col-12 col-md-6 col-lg-4 col-xl-3 col-sm-12 col-xs-12 space-info">
-                              <Form.Group className="mb-0 checktrip">
+                            <div className="col-12 col-md-4 col-sm-12 space-info">
+                              <Form.Group className="mb-0  d-flex align-items-center  justify-content-between w-100" style={{ overflowX: "auto", whiteSpace: "nowrap" }} >
                                 <Form.Check
                                   inline
-                                  checked={isReturn}
+                                   checked={isReturn && !isMultiCity}
                                   type="radio"
                                   label="Round Trip"
                                   name="flightType"
                                   id="formHorizontalRadios2"
-                                  onChange={() => setFlightType(true)}
+                                  onChange={() => {
+                                    setIsMultiCity(false);
+                                    setFlightType(true);
+                                  }}
                                 />
                                 <Form.Check
                                   inline
                                   style={{ marginLeft: "20px" }}
-                                  checked={!isReturn}
+                                  checked={!isReturn && !isMultiCity}
                                   type="radio"
                                   label="One Way"
                                   name="flightType"
                                   id="formHorizontalRadios1"
-                                  onChange={() => setFlightType(false)}
+                                  onChange={() => {
+                                    setIsMultiCity(false);
+                                    setFlightType(false);
+                                  }}
+                                />
+                                <Form.Check
+                                  inline
+                                  checked={isMultiCity}
+                                  type="radio"
+                                  label="Multi-City"
+                                  name="flightType"
+                                  id="formHorizontalRadios3"
+                                  onChange={() => {
+                                  setIsReturn(false);
+                                  setIsMultiCity(true);
+                                }}
                                 />
                               </Form.Group>
                             </div>
 
                             {/* Cabin Class Selection */}
-                            <div className="col-12 col-md-6 col-lg-4 col-xl-3 col-sm-12 col-xs-12 space-info">
-                              <Form.Group controlId="cabinclass" style={{ width: "120px" }}>
-                                <div className="select-container">
+                            <div className="col-12 col-md-4 col-sm-12 d-flex align-items-center  space-info">
+                              <Form.Group controlId="cabinclass" className="mb-0" style={{ width: "120px" }}>
+                                <div className="select-containerd-flex align-items-center ">
                                   <Select
                                     options={cabinOptions}
                                     value={
@@ -762,8 +972,8 @@ const SearchFlight = ({ onSearch, ...props }) => {
                             </div>
 
                             {/* Passengers Options */}
-                            <div className="col-12 col-md-6 col-lg-4 col-xl-3 col-sm-12 col-xs-12 space-info">
-                              <div className="form-group" style={{ width: "160px" }}>
+                            <div className="col-12 col-md-4 d-flex  align-items-center space-info">
+                              <div className="form-group  " style={{ width: "150px" }}>
                                 <div
                                   className="headerSearchItem"
                                   ref={dropdownSearchRef}
@@ -794,7 +1004,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
                                         openOptions ? "fa fa-chevron-up" : "fa fa-chevron-down"
                                       }`}
                                       aria-hidden="true"
-                                      style={{ pointerEvents: "none" }}
+                                      style={{ pointerEvents: "none",marginTop:"12px" }}
                                     ></i>
                                   </span>
 
@@ -883,7 +1093,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
                           </div>
 
                           <div className="tab-content">
-                            {isReturn && (
+                            {isReturn && !isMultiCity && (
                               <div id="tab-round-trip" className="tab-pane in active">
                                 <div className="pg-search-form">
                                   <div className="row">
@@ -1000,7 +1210,7 @@ const SearchFlight = ({ onSearch, ...props }) => {
                               </div>
                             )}
 
-                            {!isReturn && (
+                            {!isReturn && !isMultiCity &&(
                               <div id="tab-one-way" className="tab-pane in active">
                                 <div className="pg-search-form">
                                   <div className="row">
@@ -1084,6 +1294,142 @@ const SearchFlight = ({ onSearch, ...props }) => {
                                 </div>
                               </div>
                             )}
+                            {/* // 🔁 Render only this block when isMultiCity is true: */}
+                             {isMultiCity && (
+                               <div id="tab-multi-city" className="tab-pane in active">
+                                <div className="pg-search-form">
+                                  <div className="col-12">
+                                    {multiCitySegments.map((segment, index) => (
+                                      
+                                      <div className="row gx-2  align-items-end mb-3" key={index}>
+                                        <div className="col-md-3">
+                                          <Form.Group>
+                                            <Typeahead
+                                              labelKey="label"
+                                              options={originAirports}
+                                              placeholder="From"
+                                              selected={segment.origin ? [segment.origin] : []}
+                                              onChange={(selected) => {
+                                                // const value = typeof selected[0] === "string" ? selected[0] : selected[0]?.label || "";
+                                                handleMultiCityChange(index, "origin",selected[0] || null);
+                                              }}
+                                              onInputChange={(input) => getAirports(input, "origin")}
+                                            />
+                                             <img src={locationimage} alt="from-to" className="input-icon" />
+                                          </Form.Group>
+                                        </div>
+                                       <div
+                                          className="col-md-1 d-flex justify-content-center align-items-center"
+                                          onClick={() => handleMultiCitySwap(index)}
+                                          style={{ cursor: "pointer" }}
+                                         >
+                                          <img
+                                            src={inoutimage}
+                                            alt="swap"
+                                            className={segment.isRotated ? "rotated" : ""}
+                                            style={{ position:"absolute",marginTop:"-80%",transition: "transform 0.3s" }}
+                                          />
+                                        </div>
+
+                                        <div className="col-md-3">
+                                          <Form.Group>
+                                            <Typeahead
+                                              labelKey="label"
+                                              options={destinationAirports}
+                                              placeholder="To"
+                                              selected={segment.destination ? [segment.destination] : []}
+                                              onChange={(selected) => {
+                                                // const value = typeof selected[0] === "string" ? selected[0] : selected[0]?.label || "";
+                                                handleMultiCityChange(index, "destination", selected[0] || null);
+                                              }}
+                                              onInputChange={(input) => getAirports(input, "destination")}
+                                               
+                                            />
+                                             <img src={locationimage} alt="from-to" className="input-icon" />
+                                          </Form.Group>
+                                        </div>
+                                        <div className="col-md-3 position-relative">
+                                          <Form.Group className="position-relative">
+                                            <Form.Control
+                                              placeholder="Departure Date"
+                                              type="date"
+                                              name="dateOfDep"
+                                              min={today}
+                                              value={segment.date}
+                                              onChange={(e) => handleMultiCityChange(index, "date", e.target.value)}
+                                            />
+                                            <img
+                                              src={calendarimage}
+                                              alt="calendar"
+                                              className="input-icon"
+                                              style={{
+                                                position: "absolute",
+                                                top: "50%",
+                                                left: "1rem",
+                                                transform: "translateY(-50%)",
+                                                pointerEvents: "none",
+                                              }}
+                                            />
+                                          </Form.Group>
+                                        </div>
+
+                                      
+                                      {index >= 2 && (
+                                        <div className="col-md-2 d-flex align-items-end">
+                                          <button
+                                            type="button"
+                                            className="btn btn-sm btn-outline-danger w-100"
+                                            onClick={() => removeMultiCitySegment(index)}
+                                          >
+                                            Remove
+                                          </button>
+                                        </div>
+                                   
+                                      )}
+                                    
+                                      </div>
+                                      
+                                    ))}
+
+                                    
+
+                                    <div className="row">
+                                      <div className="col-12 text-start">
+                                        <button
+                                          type="button"
+                                          className="btn p-0 m-0"
+                                          id="add-another-btn"
+                                          onClick={addMultiCitySegment}
+                                          disabled={multiCitySegments.length >= 4}
+                                          style={{
+                                            backgroundColor: "transparent",
+                                            border: "none",
+                                            color: "#007bff", 
+                                            fontWeight: "500",
+                                            fontSize:"15px"
+                                          }}
+                                        >
+                                          + Add Another City
+                                        </button>
+                                      </div>
+                                    </div>
+
+                                  </div>
+                                    <div className="col-12  d-flex  justify-content-center mt-0  mb-3" >
+                                          <button className="btn btn-orange searchbtn "  
+                                                        onClick={handleSubmit1}  
+                                                        style={{
+                                                          whiteSpace: "nowrap",
+                                                          fontWeight: "bold",
+                                                         
+                                                        }}>
+                                            Search
+                                          </button>
+                                        </div>
+                                  </div>
+                                </div>
+                              
+                            )} 
                           </div>
                         </Form>
                       </div>
