@@ -204,7 +204,8 @@ const FlightsGrid = ({ flights, criteria }) => {
   const sortFlights = (flights, sortOption) => {
     if (sortOption === 'recommended') {
       // Return the original order if available, otherwise return current flights
-      return originalOrderRef.current || flights;
+      // return originalOrderRef.current || flights;
+      return  flights;
     }
 
     const sortedFlights = [...flights];
@@ -397,7 +398,7 @@ const FlightsGrid = ({ flights, criteria }) => {
   const handleFilters = async (filtersCriteria) => {
     setCurrentPage(1);
     const storedFlights = localStorage.getItem("flightsData");
-  
+    
     if (storedFlights) {
       const flights = JSON.parse(storedFlights);
       if (Object.keys(flights) && Object.keys(flights).length > 0 && filtersCriteria) {

@@ -92,6 +92,8 @@ const SingleBookingDetails = () => {
         const formattedDate = moment(date).format(
           "dddd MMMM DD, YYYY, hh:mm A"
         );
+  
+        console.log("Raw Date:",firstSegment.departing_at);
         const stops = firstSegment.stops;
         const aircraftName = firstSegment.aircraft
           ? firstSegment.aircraft.name
@@ -381,14 +383,13 @@ const SingleBookingDetails = () => {
                           </div>
                           <div style={{ width: "25%", textAlign: "center" }}>
                             <h5>
-                              {" "}
-                              {new Date(
-                                segment.departure_datetime
-                              ).toLocaleTimeString("en-US")}{" "}
+                             {segment.departure_datetime
+                                ? new Date(segment.departure_datetime).toLocaleTimeString("en-US")
+                                : "Invalid Departure Time"}{" "}
                               -{" "}
-                              {new Date(
-                                segment.arrival_datetime
-                              ).toLocaleTimeString("en-US")}
+                              {segment.arrival_datetime
+                                ? new Date(segment.arrival_datetime).toLocaleTimeString("en-US")
+                                : "Invalid Arrival Time"}
                             </h5>
                             <h6>{segment.operating_carrier.name}</h6>
                           </div>
@@ -410,7 +411,7 @@ const SingleBookingDetails = () => {
                           <div style={{ width: "40%", textAlign: "left" }}>
                             {new Date(
                               segment.departure_datetime
-                            ).toLocaleString("en-US", {
+                            ).toLocaleTimeString("en-US", {
                               weekday: "short",
                               day: "numeric",
                               month: "short",

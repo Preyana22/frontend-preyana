@@ -566,7 +566,7 @@ export const Body = (props) => {
                 <div className="row pb-4 mb-5">
                   <div className="col-12 col-md-12 col-lg-12 col-xl-12">
                     <h3 className="font-weight-bold">
-                      Deals to Top Destinations
+                      Top Destinations
                     </h3>
                   </div>
                 </div>

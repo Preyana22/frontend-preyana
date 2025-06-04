@@ -37,7 +37,11 @@ const MyBookings = (props) => {
     try {
       const result = await axios(configuration);
       // console.log("result.data", result.data);
-      setBookings(result.data); // Store the data in state
+      const filtered = result.data.filter(
+  (booking) => booking.status !== "cancelled" && booking.status !== true
+);
+setBookings(filtered);
+      // setBookings(result.data); 
     } catch (error) {
       console.error("Error fetching bookings:", error);
     }
@@ -173,7 +177,7 @@ const MyBookings = (props) => {
                             slice.arrivalAirport +
                             " | " +
                             moment(slice.arrivalTime).format("hh:mm A")}
-                        </td>
+                        </td>  
                         <td>{slice.flightDuration}</td>
                         <td>{slice.stops == null ? 0 : slice.stops}</td>
                         {sliceIndex === 0 && (
