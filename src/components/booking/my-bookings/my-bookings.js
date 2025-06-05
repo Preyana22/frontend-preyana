@@ -140,26 +140,38 @@ setBookings(filtered);
                 bookings.map((booking, index) => (
                   <React.Fragment key={booking._id}>
                     {booking.slices.map((slice, sliceIndex) => (
-                      <tr
-                        key={slice._id}
-                        id={"flight-booking-" + booking._id}
-                        className={
-                          booking.slices.length > 1 && sliceIndex === 0
-                            ? "disable-border"
-                            : ""
-                        }
-                      >
-                        <td>
-                          {/* <a
-                            href="#"
-                            onClick={(event) => {
-                              event.preventDefault(); // Prevent appending `#` to the URL
-                              getSingleBooking(booking.booking_id, booking._id);
-                            }}
-                          > */}
-                          {booking.airlines}
-                          {/* </a> */}
-                        </td>
+                      // <tr
+                      //   key={slice._id}
+                      //   id={"flight-booking-" + booking._id}
+                      //   className={
+                      //     booking.slices.length > 1 && sliceIndex === 0
+                      //       ? "disable-border"
+                      //       : ""
+                      //   }
+                      // >
+                      //   <td>
+                      //     {/* <a
+                      //       href="#"
+                      //       onClick={(event) => {
+                      //         event.preventDefault(); // Prevent appending `#` to the URL
+                      //         getSingleBooking(booking.booking_id, booking._id);
+                      //       }}
+                      //     > */}
+                      //     {booking.airlines}
+                      //     {/* </a> */}
+                      //   </td>
+                       <tr
+                        key={slice._id}>
+                       {/* Airline (first slice only) */}
+                          {sliceIndex === 0 && (
+                            <td rowSpan={booking.slices.length} className="align-middle text-center font-weight-bold">
+                              {booking.airlines}
+                              {booking.slices.length > 2 && <div className="text-muted">Multi-City</div>}
+                              {booking.slices.length === 2 && <div className="text-muted">Round Trip</div>}
+                              {booking.slices.length === 1 && <div className="text-muted">One Way</div>}
+                            </td>
+                          )}
+
 
                         <td>{moment(slice.travelDate).format("DD-MM-YYYY")}</td>
                         <td>

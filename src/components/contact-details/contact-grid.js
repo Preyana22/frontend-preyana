@@ -628,67 +628,125 @@ const order = orderData?.[0]?.data?.orderResponse?.data;
     return input; // If it's not an object, return it unchanged
   };
 
+  // useEffect(() => {
+  //   extraBag = Number(extraBag).toFixed(2);
+  //   seatSelection = Number(seatSelection).toFixed(2);
+  //   formattedTotalAmount = price.toFixed(2); // Rounds to "1335.37" // Rounds to "1335.37"
+  //   if (location.state.flights) {
+  //     const duffelAncillariesElement =
+  //       document.querySelector("duffel-ancillaries");
+  //     console.log(location.state.flights);
+  //     const client_key = localStorage.getItem("flightkey");
+
+  //     if (duffelAncillariesElement) {
+  //       setIsAncillaries(true);
+  //       duffelAncillariesElement.render({
+  //         debug: true,
+  //         offer_id: location.state.flights.id,
+  //         client_key: client_key,
+  //         seat_maps: [],
+  //         services: ["bags", "seats", "cancel_for_any_reason"],
+  //         passengers: location.state.flights.passengers,
+  //       });
+
+  //       duffelAncillariesElement.addEventListener("onPayloadReady", (event) => {
+  //         console.log("duffelAncillariesElement", event);
+          
+  //         let final_amountdata = Number.parseFloat(
+  //           event.detail.data.payments[0].amount
+  //         ).toFixed(2);
+  //         event.detail.data.payments[0].amount = final_amountdata;
+  //         let body = JSON.stringify({ data: event.detail.data });
+  //         console.log("duffelAncillariesElement body");
+  //         console.log(body);
+
+  //         if (event.detail.metadata.baggage_services.length > 0) {
+  //           extraBag = Number.parseFloat(
+  //             event.detail.metadata.baggage_services[0].serviceInformation
+  //               .total_amount
+  //           ).toFixed(2);
+  //         }
+
+  //         if (event.detail.metadata.seat_services.length > 0) {
+  //           seatSelection = Number.parseFloat(
+  //             event.detail.metadata.seat_services[0].serviceInformation
+  //               .total_amount
+  //           ).toFixed(2);
+  //         }
+  //         // Listen for clicks on the body and use event delegation
+  //         document.body.addEventListener("click", function (event) {
+  //           // Check if the clicked element or its ancestor is the custom element with the correct data-testid
+  //           const clickedElement = event.target.closest(
+  //             '[data-testid="confirm-selection-for-baggage"]'
+  //           );
+
+  //           if (clickedElement) {
+  //             console.log("Element with data-testid clicked");
+  //             // Add your custom logic here
+  //           }
+  //         });
+  //       });
+  //     }
+  //   }
+  // }, []);
   useEffect(() => {
-    extraBag = Number(extraBag).toFixed(2);
-    seatSelection = Number(seatSelection).toFixed(2);
-    formattedTotalAmount = price.toFixed(2); // Rounds to "1335.37" // Rounds to "1335.37"
-    if (location.state.flights) {
-      const duffelAncillariesElement =
-        document.querySelector("duffel-ancillaries");
-      console.log(location.state.flights);
-      const client_key = localStorage.getItem("flightkey");
+  extraBag = Number(extraBag).toFixed(2);
+  seatSelection = Number(seatSelection).toFixed(2);
+  formattedTotalAmount = price.toFixed(2);
 
-      if (duffelAncillariesElement) {
-        setIsAncillaries(true);
-        duffelAncillariesElement.render({
-          debug: true,
-          offer_id: location.state.flights.id,
-          client_key: client_key,
-          seat_maps: [],
-          services: ["bags", "seats", "cancel_for_any_reason"],
-          passengers: location.state.flights.passengers,
-        });
+  if (location.state.flights) {
+    const duffelAncillariesElement = document.querySelector("duffel-ancillaries");
+    const client_key = localStorage.getItem("flightkey");
+    const offerExpiresAt = location.state.flights.expires_at;
 
-        duffelAncillariesElement.addEventListener("onPayloadReady", (event) => {
-          console.log("duffelAncillariesElement", event);
-
-          let final_amountdata = Number.parseFloat(
-            event.detail.data.payments[0].amount
-          ).toFixed(2);
-          event.detail.data.payments[0].amount = final_amountdata;
-          let body = JSON.stringify({ data: event.detail.data });
-          console.log("duffelAncillariesElement body");
-          console.log(body);
-
-          if (event.detail.metadata.baggage_services.length > 0) {
-            extraBag = Number.parseFloat(
-              event.detail.metadata.baggage_services[0].serviceInformation
-                .total_amount
-            ).toFixed(2);
-          }
-
-          if (event.detail.metadata.seat_services.length > 0) {
-            seatSelection = Number.parseFloat(
-              event.detail.metadata.seat_services[0].serviceInformation
-                .total_amount
-            ).toFixed(2);
-          }
-          // Listen for clicks on the body and use event delegation
-          document.body.addEventListener("click", function (event) {
-            // Check if the clicked element or its ancestor is the custom element with the correct data-testid
-            const clickedElement = event.target.closest(
-              '[data-testid="confirm-selection-for-baggage"]'
-            );
-
-            if (clickedElement) {
-              console.log("Element with data-testid clicked");
-              // Add your custom logic here
-            }
-          });
-        });
-      }
+    if (!offerExpiresAt) {
+      console.warn("Offer has no expires_at value.");
+      return;
     }
-  }, []);
+
+    const offerIsExpired = new Date(offerExpiresAt) < new Date();
+    if (offerIsExpired) {
+      console.warn("⏰ Offer has expired. Ancillaries will not be rendered.");
+      return;
+    }
+
+    if (duffelAncillariesElement) {
+      setIsAncillaries(true);
+      duffelAncillariesElement.render({
+        debug: true,
+        offer_id: location.state.flights.id,
+        client_key,
+        seat_maps: [],
+        services: ["bags", "seats", "cancel_for_any_reason"],
+        passengers: location.state.flights.passengers,
+      });
+
+      duffelAncillariesElement.addEventListener("onPayloadReady", (event) => {
+        const data = event?.detail?.data;
+        const metadata = event?.detail?.metadata;
+
+        if (data?.payments?.[0]?.amount) {
+          const finalAmount = Number(data.payments[0].amount).toFixed(2);
+          data.payments[0].amount = finalAmount;
+        }
+
+        if (metadata?.baggage_services?.[0]?.serviceInformation?.total_amount) {
+          extraBag = Number(metadata.baggage_services[0].serviceInformation.total_amount).toFixed(2);
+        }
+
+        if (metadata?.seat_services?.[0]?.serviceInformation?.total_amount) {
+          seatSelection = Number(metadata.seat_services[0].serviceInformation.total_amount).toFixed(2);
+        }
+      });
+    }
+  }
+}, []);
+const isOfferExpired = () => {
+    const exp = location?.state?.flights?.expires_at;
+    if (!exp) return true;
+    return new Date(exp) < new Date();
+  };
+
 
   useEffect(() => {
     if (phone) {
@@ -1386,15 +1444,27 @@ const order = orderData?.[0]?.data?.orderResponse?.data;
 
                       {/* <!-- Flight Info Section --> */}
                       <div className="card-body text-center">
-                        <h5 className="card-title font-weight-bold">
+                        {/* <h5 className="card-title font-weight-bold">
                           {origincity} {"to"} {destinationcity}
+                        </h5> */}
+                        <h5 className="card-title font-weight-bold">
+                          {location.state.flights.slices.length === 1 || location.state.flights.slices.length === 2
+                            ? `${origincity} to ${destinationcity}`
+                            : location.state.flights.slices
+                                 .map(
+                                      (slice) =>
+                                        `${slice.origin.iata_code} to ${slice.destination.iata_code}`
+                                    )
+                                .join(" | ")}
                         </h5>
-                        <p className="card-text text-muted">
-                          {operating_carrier_flight_number},{" "}
-                          {location.state.flights.slices.length === 1
+                         <p>
+                           {operating_carrier_flight_number},{" "}
+                            {location.state.flights.slices.length === 1
                             ? "One Way Flight"
-                            : "Round Trip Flight"}
-                        </p>
+                             : location.state.flights.slices.length === 2
+                              ? "Round Trip Flight"
+                              : "Multi-City Flight"}
+                         </p>
 
                         <hr />
 
@@ -1504,13 +1574,14 @@ const order = orderData?.[0]?.data?.orderResponse?.data;
           <div className="col-12 col-md-12 col-lg-7 col-xl-8 content-side p-0">            
 
             {" "}
-            {isAncillaries && (
+            {isAncillaries && !isOfferExpired() && (
               <h2 className="font-weight-bold mt-3 mb-3">Add Extras</h2>
             )}
             <div id="duffelAncillariesContainer mb-5">
               {/* Duffel Ancillaries element will be rendered here */}
               <duffel-ancillaries />
             </div>
+            
             {/* {isPayment && (
               <h2 className="font-weight-bold mt-3 mb-3">Payment</h2>
             )} */}

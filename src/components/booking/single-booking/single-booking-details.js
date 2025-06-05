@@ -319,7 +319,7 @@ const SingleBookingDetails = () => {
           >
             Download
           </button>
-          {bookingData?.cancellation && bookingData?.cancelled_at ? (
+          {bookingData?.status?.toLowerCase() === "cancelled" || bookingData?.cancelled_at ? (
             <button className="btn btn-secondary" disabled>
               Cancelled
             </button>
@@ -383,13 +383,14 @@ const SingleBookingDetails = () => {
                           </div>
                           <div style={{ width: "25%", textAlign: "center" }}>
                             <h5>
-                             {segment.departure_datetime
-                                ? new Date(segment.departure_datetime).toLocaleTimeString("en-US")
+                             {segment.departing_at
+                                ? new Date(segment.departing_at).toLocaleTimeString("en-US")
                                 : "Invalid Departure Time"}{" "}
                               -{" "}
-                              {segment.arrival_datetime
-                                ? new Date(segment.arrival_datetime).toLocaleTimeString("en-US")
+                              {segment.arriving_at
+                                ? new Date(segment.arriving_at).toLocaleTimeString("en-US")
                                 : "Invalid Arrival Time"}
+                                {console.log(segment)}
                             </h5>
                             <h6>{segment.operating_carrier.name}</h6>
                           </div>
@@ -410,8 +411,8 @@ const SingleBookingDetails = () => {
                         >
                           <div style={{ width: "40%", textAlign: "left" }}>
                             {new Date(
-                              segment.departure_datetime
-                            ).toLocaleTimeString("en-US", {
+                              segment.departing_at
+                            ).toLocaleString("en-US", {
                               weekday: "short",
                               day: "numeric",
                               month: "short",
@@ -436,7 +437,7 @@ const SingleBookingDetails = () => {
                             </h5>
                             <h5>
                               {new Date(
-                                segment.arrival_datetime
+                                segment.arriving_at
                               ).toLocaleString("en-US", {
                                 weekday: "short",
                                 day: "numeric",
@@ -511,11 +512,11 @@ const SingleBookingDetails = () => {
                                 <h5>
                                   {" "}
                                   {new Date(
-                                    segment.departure_datetime
+                                    segment.departing_at
                                   ).toLocaleTimeString("en-US")}{" "}
                                   -{" "}
                                   {new Date(
-                                    segment.arrival_datetime
+                                    segment.arriving_at
                                   ).toLocaleTimeString("en-US")}
                                 </h5>
                                 <h6>{segment.operating_carrier.name}</h6>
@@ -543,7 +544,7 @@ const SingleBookingDetails = () => {
                             >
                               <div style={{ width: "40%", textAlign: "left" }}>
                                 {new Date(
-                                  segment.departure_datetime
+                                  segment.departing_at
                                 ).toLocaleString("en-US", {
                                   weekday: "short",
                                   day: "numeric",
@@ -572,7 +573,7 @@ const SingleBookingDetails = () => {
                                 </h5>
                                 <h5>
                                   {new Date(
-                                    segment.arrival_datetime
+                                    segment.arriving_at
                                   ).toLocaleString("en-US", {
                                     weekday: "short",
                                     day: "numeric",
@@ -758,7 +759,7 @@ const SingleBookingDetails = () => {
                                 {segment.origin.iata_code} {" to "}
                                 {segment.destination.iata_code} on{" "}
                                 {new Date(
-                                  segment.departure_datetime
+                                  segment.departing_at
                                 ).toLocaleString("en-US", {
                                   weekday: "short",
                                   day: "numeric",
@@ -840,7 +841,7 @@ const SingleBookingDetails = () => {
                                     {segment.origin.iata_code} {" to "}
                                     {segment.destination.iata_code} on{" "}
                                     {new Date(
-                                      segment.departure_datetime
+                                      segment.departing_at
                                     ).toLocaleString("en-US", {
                                       weekday: "short",
                                       day: "numeric",
@@ -1032,11 +1033,11 @@ const SingleBookingDetails = () => {
                             <h5>
                               {" "}
                               {new Date(
-                                segment.departure_datetime
+                                segment.departing_at
                               ).toLocaleTimeString("en-US")}{" "}
                               -{" "}
                               {new Date(
-                                segment.arrival_datetime
+                                segment.arriving_at
                               ).toLocaleTimeString("en-US")}
                             </h5>
                             <h6>{segment.operating_carrier.name}</h6>
@@ -1056,7 +1057,7 @@ const SingleBookingDetails = () => {
                         >
                           <div style={{ width: "40%", textAlign: "left" }}>
                             {new Date(
-                              segment.departure_datetime
+                              segment.departing_at
                             ).toLocaleString("en-US", {
                               weekday: "short",
                               day: "numeric",
@@ -1082,7 +1083,7 @@ const SingleBookingDetails = () => {
                             </h5>
                             <h5>
                               {new Date(
-                                segment.arrival_datetime
+                                segment.arriving_at
                               ).toLocaleString("en-US", {
                                 weekday: "short",
                                 day: "numeric",
@@ -1157,11 +1158,11 @@ const SingleBookingDetails = () => {
                                 <h5>
                                   {" "}
                                   {new Date(
-                                    segment.departure_datetime
+                                    segment.departing_at
                                   ).toLocaleTimeString("en-US")}{" "}
                                   -{" "}
                                   {new Date(
-                                    segment.arrival_datetime
+                                    segment.arriving_at
                                   ).toLocaleTimeString("en-US")}
                                 </h5>
                                 <h6>{segment.operating_carrier.name}</h6>
@@ -1189,7 +1190,7 @@ const SingleBookingDetails = () => {
                             >
                               <div style={{ width: "40%", textAlign: "left" }}>
                                 {new Date(
-                                  segment.departure_datetime
+                                  segment.departing_at
                                 ).toLocaleString("en-US", {
                                   weekday: "short",
                                   day: "numeric",
@@ -1218,7 +1219,7 @@ const SingleBookingDetails = () => {
                                 </h5>
                                 <h5>
                                   {new Date(
-                                    segment.arrival_datetime
+                                    segment.arriving_at
                                   ).toLocaleString("en-US", {
                                     weekday: "short",
                                     day: "numeric",
@@ -1404,7 +1405,7 @@ const SingleBookingDetails = () => {
                                 {segment.origin.iata_code} {" to "}
                                 {segment.destination.iata_code} on{" "}
                                 {new Date(
-                                  segment.departure_datetime
+                                  segment.departing_at
                                 ).toLocaleString("en-US", {
                                   weekday: "short",
                                   day: "numeric",
@@ -1486,7 +1487,7 @@ const SingleBookingDetails = () => {
                                     {segment.origin.iata_code} {" to "}
                                     {segment.destination.iata_code} on{" "}
                                     {new Date(
-                                      segment.departure_datetime
+                                      segment.departing_at
                                     ).toLocaleString("en-US", {
                                       weekday: "short",
                                       day: "numeric",

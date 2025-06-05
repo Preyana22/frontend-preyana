@@ -587,7 +587,8 @@ export const Body = (props) => {
                               `${flight.slices[0].origin.iata_city_code}-${flight.slices[0].destination.iata_code}`) ===
                             route
                         );
-                        {console.log(flight)}
+                        // {console.log(flight)}
+                        
                         // Render the flight if found
                         return (
                           flight && (
@@ -750,7 +751,7 @@ export const Body = (props) => {
                               `${flight.slices[0].origin.iata_city_code}-${flight.slices[0].destination.iata_code}`) ===
                             route
                         );
-                        {console.log(flight)}
+                        // {console.log(flight)}
                         // Render the flight if found
                         return (
                           flight && (
