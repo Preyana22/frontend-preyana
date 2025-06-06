@@ -304,12 +304,19 @@ const SearchFlight = ({onSearch=()=>{}, ...props} ) => {
     const storedTripType = localStorage.getItem("isReturn");
     const storedIsMultiCity = localStorage.getItem("isMultiCity");
       const storedMultiCitySegments = localStorage.getItem("multiCitySegments");
-    if (storedTripType) {
-      setIsReturn(JSON.parse(storedTripType));
-    }
-    if (storedIsMultiCity) {
-  setIsMultiCity(JSON.parse(storedIsMultiCity));
-}
+//     if (storedTripType) {
+//       setIsReturn(JSON.parse(storedTripType));
+//     }
+//     if (storedIsMultiCity) {
+//   setIsMultiCity(JSON.parse(storedIsMultiCity));
+// }
+   if (storedTripType === null && storedIsMultiCity === null) {
+     setIsReturn(true);        // default to Round Trip
+     setIsMultiCity(false);
+    } else {
+    if (storedTripType) setIsReturn(JSON.parse(storedTripType));
+    if (storedIsMultiCity) setIsMultiCity(JSON.parse(storedIsMultiCity));
+   }
     if (storedOptions) {
       setOptions(JSON.parse(storedOptions));
     }
@@ -371,6 +378,7 @@ const SearchFlight = ({onSearch=()=>{}, ...props} ) => {
     setSelectedDateOfRet(returnDate);
 
     localStorage.setItem("dateOfDeparture", JSON.stringify(selectedDate));
+    localStorage.setItem("dateOfReturn", JSON.stringify(returnDate));
   };
 
   const handleDateOfRetChange = (event) => {
@@ -595,6 +603,7 @@ const SearchFlight = ({onSearch=()=>{}, ...props} ) => {
 
   props.findFlights({ criteria, flights: props.flights, multiCity: true });
   navigate("/results");
+  return;
 };
 //   if (isMultiCity) {
 //   let criteria = [];
@@ -790,8 +799,9 @@ const SearchFlight = ({onSearch=()=>{}, ...props} ) => {
   }
 
   // Always call handleSubmit1 with a fake event
-  const fakeEvent = { preventDefault: () => {} };
-  handleSubmit1(fakeEvent);
+  setTimeout(() => {
+  handleSubmit1({ preventDefault: () => {} });
+}, 0);
 };
 
 
