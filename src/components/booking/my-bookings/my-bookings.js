@@ -37,7 +37,11 @@ const MyBookings = (props) => {
     try {
       const result = await axios(configuration);
       // console.log("result.data", result.data);
-      setBookings(result.data); // Store the data in state
+      const filtered = result.data.filter(
+  (booking) => booking.status !== "cancelled" && booking.status !== true
+);
+setBookings(filtered);
+      // setBookings(result.data); 
     } catch (error) {
       console.error("Error fetching bookings:", error);
     }
@@ -136,26 +140,38 @@ const MyBookings = (props) => {
                 bookings.map((booking, index) => (
                   <React.Fragment key={booking._id}>
                     {booking.slices.map((slice, sliceIndex) => (
-                      <tr
-                        key={slice._id}
-                        id={"flight-booking-" + booking._id}
-                        className={
-                          booking.slices.length > 1 && sliceIndex === 0
-                            ? "disable-border"
-                            : ""
-                        }
-                      >
-                        <td>
-                          {/* <a
-                            href="#"
-                            onClick={(event) => {
-                              event.preventDefault(); // Prevent appending `#` to the URL
-                              getSingleBooking(booking.booking_id, booking._id);
-                            }}
-                          > */}
-                          {booking.airlines}
-                          {/* </a> */}
-                        </td>
+                      // <tr
+                      //   key={slice._id}
+                      //   id={"flight-booking-" + booking._id}
+                      //   className={
+                      //     booking.slices.length > 1 && sliceIndex === 0
+                      //       ? "disable-border"
+                      //       : ""
+                      //   }
+                      // >
+                      //   <td>
+                      //     {/* <a
+                      //       href="#"
+                      //       onClick={(event) => {
+                      //         event.preventDefault(); // Prevent appending `#` to the URL
+                      //         getSingleBooking(booking.booking_id, booking._id);
+                      //       }}
+                      //     > */}
+                      //     {booking.airlines}
+                      //     {/* </a> */}
+                      //   </td>
+                       <tr
+                        key={slice._id}>
+                       {/* Airline (first slice only) */}
+                          {sliceIndex === 0 && (
+                            <td rowSpan={booking.slices.length} className="align-middle text-center font-weight-bold">
+                              {booking.airlines}
+                              {booking.slices.length > 2 && <div className="text-muted">Multi-City</div>}
+                              {booking.slices.length === 2 && <div className="text-muted">Round Trip</div>}
+                              {booking.slices.length === 1 && <div className="text-muted">One Way</div>}
+                            </td>
+                          )}
+
 
                         <td>{moment(slice.travelDate).format("DD-MM-YYYY")}</td>
                         <td>
@@ -173,7 +189,7 @@ const MyBookings = (props) => {
                             slice.arrivalAirport +
                             " | " +
                             moment(slice.arrivalTime).format("hh:mm A")}
-                        </td>
+                        </td>  
                         <td>{slice.flightDuration}</td>
                         <td>{slice.stops == null ? 0 : slice.stops}</td>
                         {sliceIndex === 0 && (

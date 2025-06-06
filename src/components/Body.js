@@ -210,6 +210,9 @@ const isDate = (date) => {
 export const Body = (props) => {
   const [airportsData, setAirports] = useState([]);
   const [flightsData, setFlightsData] = useState([]);
+  const [originCode, setOriginCode] = useState(null);
+  const [domesticFlights, setDomesticFlights] = useState([]);
+  const [internationalFlights, setInternationalFlights] = useState([]);
 
   const formatFlightDate = (dateString) => {
     const date = new Date(dateString);
@@ -485,19 +488,42 @@ export const Body = (props) => {
         Adults.push(infantData);
       }
 
+      // Request options for the fetch API
+      const requestOptions = {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(criteria),
+        };
+
+      const routes1 = async () => {
+        try {
+          console.log("Fetching nearest airports...");
+          const response = await axios.get(apiUrl + `/airlines/nearestAirports/`, requestOptions);
+          // console.log("--------");
+          // console.log(response.data);
+          // console.log("Nearest airports fetched successfully.");
+          return response.data;
+        } catch (error) {
+          console.error("Error fetching nearest airports:", error);
+        }
+      };
+      const originTopDestinations = await routes1();
+      console.log("originTopDestinations", originTopDestinations.iata_code);
+      setOriginCode(originTopDestinations.iata_code);
+      setDomesticFlights(originTopDestinations.domestic);
+      setInternationalFlights(originTopDestinations.international);
       // Define route pairs with IATA codes
       const routes = [
-        { origin: "BOM", destination: "DEL" },
-        { origin: "DEL", destination: "HYD" },
-        { origin: "DEL", destination: "BLR" },
-        { origin: "HYD", destination: "DEL" },
+        { origin: originTopDestinations.iata_code, destination: originTopDestinations.domestic[0] },
+        { origin: originTopDestinations.iata_code, destination: originTopDestinations.domestic[1] },
+        { origin: originTopDestinations.iata_code, destination: originTopDestinations.domestic[2] },
+        { origin: originTopDestinations.iata_code, destination: originTopDestinations.domestic[3] },
 
-        { origin: "SFO", destination: "HYD" },
-        { origin: "LAX", destination: "BOM" },
-        { origin: "DEL", destination: "LAX" },
-        { origin: "CHI", destination: "HYD" },
+        { origin: originTopDestinations.iata_code, destination: originTopDestinations.international[0] },
+        { origin: originTopDestinations.iata_code, destination: originTopDestinations.international[1] },
+        { origin: originTopDestinations.iata_code, destination: originTopDestinations.international[2] },
+        { origin: originTopDestinations.iata_code, destination: originTopDestinations.international[3] },
       ];
-
       // Format today's date as YYYY-MM-DD
       const today = new Date();
       const formattedDate = today.toISOString().split("T")[0];
@@ -529,7 +555,7 @@ export const Body = (props) => {
         }
 
         const flightsdata = await response.json();
-
+        console.log("flightsdata", flightsdata);
         // Return the flight data for the current route
         return flightsdata[1]; // Assuming flightsdata[1] contains the required data
       });
@@ -566,16 +592,16 @@ export const Body = (props) => {
                 <div className="row pb-4 mb-5">
                   <div className="col-12 col-md-12 col-lg-12 col-xl-12">
                     <h3 className="font-weight-bold">
-                      Deals to Top Destinations
+                      Top Destinations
                     </h3>
                   </div>
                 </div>
                 <div className="row">
                  
-                  {flightsData &&
+                  {flightsData && originCode &&
                   
                     // Group flights by route and map one record per route
-                    ["BOM-DEL", "DEL-HYD", "DEL-BLR", "HYD-DEL"].map(
+                    [`${originCode}-${domesticFlights[0]}`, `${originCode}-${domesticFlights[1]}`, `${originCode}-${domesticFlights[2]}`, `${originCode}-${domesticFlights[3]}`].map(
                
                       (route) => {
                         // Find the first flight for the current route
@@ -587,7 +613,8 @@ export const Body = (props) => {
                               `${flight.slices[0].origin.iata_city_code}-${flight.slices[0].destination.iata_code}`) ===
                             route
                         );
-                        {console.log(flight)}
+                        // {console.log(flight)}
+                        
                         // Render the flight if found
                         return (
                           flight && (
@@ -738,7 +765,7 @@ export const Body = (props) => {
                   {flightsData &&
                   
                     // Group flights by route and map one record per route
-                    ["SFO-HYD", "LAX-BOM", "DEL-LAX", "ORD-HYD"].map(
+                    [`${originCode}-${internationalFlights[0]}`, `${originCode}-${internationalFlights[1]}`, `${originCode}-${internationalFlights[2]}`, `${originCode}-${internationalFlights[3]}`].map(
                       
                       (route) => {
                         // Find the first flight for the current route
@@ -750,7 +777,7 @@ export const Body = (props) => {
                               `${flight.slices[0].origin.iata_city_code}-${flight.slices[0].destination.iata_code}`) ===
                             route
                         );
-                        {console.log(flight)}
+                        // {console.log(flight)}
                         // Render the flight if found
                         return (
                           flight && (

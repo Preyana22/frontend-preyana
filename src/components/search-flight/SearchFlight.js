@@ -258,6 +258,7 @@ const SearchFlight = ({onSearch=()=>{}, ...props} ) => {
   const [status, setFormValid] = useState({ isValid: false });
 
   const [isMultiCity, setIsMultiCity] = useState(false);
+  const [multiCityErrorMessage, setMultiCityErrorMessage] = useState("");
 
   const originRef = useRef(null);
   const destinationRef = useRef(null);
@@ -276,6 +277,7 @@ const SearchFlight = ({onSearch=()=>{}, ...props} ) => {
       localStorage.removeItem("isReturn");
       localStorage.removeItem("flightsData");
       localStorage.removeItem("searchCriteria");
+      localStorage.removeItem("multiCitySegments");
     }
 
     const savedCabinClass = localStorage.getItem("cabinclass");
@@ -300,11 +302,14 @@ const SearchFlight = ({onSearch=()=>{}, ...props} ) => {
 
     const storedOptions = localStorage.getItem("options");
     const storedTripType = localStorage.getItem("isReturn");
-
+    const storedIsMultiCity = localStorage.getItem("isMultiCity");
+      const storedMultiCitySegments = localStorage.getItem("multiCitySegments");
     if (storedTripType) {
       setIsReturn(JSON.parse(storedTripType));
     }
-
+    if (storedIsMultiCity) {
+  setIsMultiCity(JSON.parse(storedIsMultiCity));
+}
     if (storedOptions) {
       setOptions(JSON.parse(storedOptions));
     }
@@ -328,6 +333,9 @@ const SearchFlight = ({onSearch=()=>{}, ...props} ) => {
     if (savedCabinClass) {
       setSelectedCabinClass(Number(savedCabinClass));
     }
+     if (storedMultiCitySegments) {
+    setMultiCitySegments(JSON.parse(storedMultiCitySegments));
+  }
   }, [location.pathname]);
 
   const handleOriginChange = (selected) => {
@@ -516,6 +524,7 @@ const SearchFlight = ({onSearch=()=>{}, ...props} ) => {
    if (isMultiCity) {
   let segments = [];
   let invalidFields = [];
+  let dateOrderInvalid = false;
   let hasInvalid = false;
 
   multiCitySegments.forEach((segment, index) => {
@@ -550,10 +559,30 @@ const SearchFlight = ({onSearch=()=>{}, ...props} ) => {
     });
   });
 
+   // ✅ Chronological date validation
+  for (let i = 1; i < segments.length; i++) {
+    const prevDate = new Date(segments[i - 1].departure_date);
+    const currentDate = new Date(segments[i].departure_date);
+    if (currentDate < prevDate) {
+      hasInvalid = true;
+      dateOrderInvalid = true;
+      if (!invalidFields[i]) invalidFields[i] = {};
+      invalidFields[i].date = true;
+    }
+  }
+
   if (hasInvalid) {
+    if (dateOrderInvalid) {
+      setMultiCityErrorMessage("Please make sure each flight departs after the one before it.");
+    } else {
+      setMultiCityErrorMessage(""); // clear any prior message
+    }
     setFormValid({ isValid: false, multiCityErrors: invalidFields });
     return;
   }
+
+  //  Clear any old message
+  setMultiCityErrorMessage("");
 
   setFormValid({ isValid: true });
 
@@ -704,7 +733,8 @@ const SearchFlight = ({onSearch=()=>{}, ...props} ) => {
     localStorage.setItem("options", JSON.stringify(options));
     localStorage.setItem("isReturn", JSON.stringify(isReturn));
     localStorage.setItem("cabinclass", selectedCabinClass.toString());
-  }, [options, isReturn, selectedCabinClass]);
+    localStorage.setItem("isMultiCity", JSON.stringify(isMultiCity));
+  }, [options, isReturn, selectedCabinClass,isMultiCity]);
 
   const [activeTab, setActiveTab] = useState("flights");
   const handleTabClick = (e, tabName) => {
@@ -730,24 +760,40 @@ const SearchFlight = ({onSearch=()=>{}, ...props} ) => {
     }
   };
 
-  const handleSearch = async () => {
-    console.log("function called");
-    if (typeof onSearch === "function") {
-      onSearch();
-        console.log("calleedddd.....");
-      await new Promise((resolve) => {
-        setTimeout(resolve, 40);
-      });
-    } else {
-      console.error("onSearch is not a function", onSearch);
-    }
-    if (isMultiCity) {
-    const fakeEvent = { preventDefault: () => {} };
-    handleSubmit1(fakeEvent);
-  }
+  // const handleSearch = async () => {
+  //   console.log("function called");
+  //   if (typeof onSearch === "function") {
+  //     onSearch();
+  //       console.log("calleedddd.....");
+  //     await new Promise((resolve) => {
+  //       setTimeout(resolve, 40);
+  //     });
+  //   } else {
+  //     console.error("onSearch is not a function", onSearch);
+  //   }
+  // //   if (isMultiCity) {
+  // //   const fakeEvent = { preventDefault: () => {} };
+  // //   handleSubmit1(fakeEvent);
+  // // }
 
     
-  };
+  // };
+  const handleSearch = async () => {
+  console.log("Search function called. isMultiCity:", isMultiCity);
+
+  if (typeof onSearch === "function") {
+    onSearch();
+    console.log("onSearch callback called");
+    await new Promise((resolve) => setTimeout(resolve, 40));
+  } else {
+    console.error("onSearch is not a function", onSearch);
+  }
+
+  // Always call handleSubmit1 with a fake event
+  const fakeEvent = { preventDefault: () => {} };
+  handleSubmit1(fakeEvent);
+};
+
 
 
 
@@ -772,15 +818,21 @@ function handleMultiCityChange(index, field, value) {
       [field]: parsedValue,
     };
 
+    // if (field === "destination" && index + 1 < updatedSegments.length) {
+    //   if (!updatedSegments[index + 1].origin) {
+    //      updatedSegments[index + 1] = {
+    //     ...updatedSegments[index + 1],
+    //     origin: parsedValue,
+    //   };
+    //   }
+    // }
     if (field === "destination" && index + 1 < updatedSegments.length) {
-      if (!updatedSegments[index + 1].origin) {
-        updatedSegments[index + 1] = {
-          ...updatedSegments[index + 1],
-          origin: parsedValue,
-        };
-      }
+      updatedSegments[index + 1] = {
+        ...updatedSegments[index + 1],
+        origin: parsedValue,
+      };
     }
-
+  localStorage.setItem("multiCitySegments", JSON.stringify(updatedSegments));
     return updatedSegments;
   });
 }
@@ -794,9 +846,10 @@ function handleMultiCityChange(index, field, value) {
 const addMultiCitySegment = () => {
   setMultiCitySegments((prevSegments) => {
     if (prevSegments.length >= 4) return prevSegments; // prevent over-adding
+     const lastSegment = prevSegments[prevSegments.length - 1];
     return [
       ...prevSegments,
-      { origin: null, destination: null, date: "", isRotated: false },
+      { origin: lastSegment?.destination || null, destination: null, date: "", isRotated: false },
     ];
   });
 };
@@ -875,7 +928,7 @@ const handleMultiCitySwap = (index) => {
                   {activeTab === "flights" && (
                     <div id="flights" className="tab-pane in active">
                       <div className="page-search-form">
-                        <Form onSubmit={handleSubmit1}>
+                        <Form onSubmit={(e) => e.preventDefault()}>
                           <div className="row mt-0 d-flex align-items-center ">
                             {/* Trip Type Selection */}
                             <div className="col-12 col-md-4 col-sm-12 space-info">
@@ -995,8 +1048,8 @@ const handleMultiCitySwap = (index) => {
                                       <i className="fa fa-user mr-1" aria-hidden="true"></i>
                                       <span className="traveler-text">
                                         {options.adult + options.children + options.infant === 1
-                                          ? ` ${options.adult + options.children + options.infant} Traveler`
-                                          : ` ${options.adult + options.children + options.infant} Travelers`}
+                                          ? ` ${options.adult + options.children + options.infant} Passenger`
+                                          : ` ${options.adult + options.children + options.infant} Passengers`}
                                       </span>
                                     </div>
                                     <i
@@ -1004,7 +1057,7 @@ const handleMultiCitySwap = (index) => {
                                         openOptions ? "fa fa-chevron-up" : "fa fa-chevron-down"
                                       }`}
                                       aria-hidden="true"
-                                      style={{ pointerEvents: "none",marginTop:"12px" }}
+                                      style={{ pointerEvents: "none",marginTop:"12px",marginRight:"-2px" }}
                                     ></i>
                                   </span>
 
@@ -1297,7 +1350,13 @@ const handleMultiCitySwap = (index) => {
                             {/* // 🔁 Render only this block when isMultiCity is true: */}
                              {isMultiCity && (
                                <div id="tab-multi-city" className="tab-pane in active">
-                                <div className="pg-search-form">
+                                 {/* Show error message here */}
+                                    {multiCityErrorMessage && (
+                                      <div className="alert alert-danger mb-2">
+                                        {multiCityErrorMessage}
+                                      </div>
+                                    )}
+                                 <div className="pg-search-form">
                                   <div className="col-12">
                                     {multiCitySegments.map((segment, index) => (
                                       
@@ -1370,6 +1429,13 @@ const handleMultiCitySwap = (index) => {
                                                 pointerEvents: "none",
                                               }}
                                             />
+                                            {/* {status?.multiCityErrors?.[index]?.date && (
+                                              <div style={{ color: "red", fontSize: "0.8rem", marginTop: "4px" }}>
+                                                {segment.date
+                                                  ? "This date must be after the previous flight"
+                                                  : "Please enter a valid departure date"}
+                                              </div>
+                                            )} */}
                                           </Form.Group>
                                         </div>
 
@@ -1417,7 +1483,7 @@ const handleMultiCitySwap = (index) => {
                                   </div>
                                     <div className="col-12  d-flex  justify-content-center mt-0  mb-3" >
                                           <button className="btn btn-orange searchbtn "  
-                                                        onClick={handleSubmit1}  
+                                                        onClick={handleSearch}  
                                                         style={{
                                                           whiteSpace: "nowrap",
                                                           fontWeight: "bold",
