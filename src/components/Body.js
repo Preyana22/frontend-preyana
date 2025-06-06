@@ -488,17 +488,14 @@ export const Body = (props) => {
         Adults.push(infantData);
       }
 
-      // Request options for the fetch API
-      const requestOptions = {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(criteria),
-        };
-
+      const response = await fetch('https://api.ipify.org?format=json');
+      const data = await response.json();
+      const userIP = data.ip;
+      
       const routes1 = async () => {
         try {
           console.log("Fetching nearest airports...");
-          const response = await axios.get(apiUrl + `/airlines/nearestAirports/`, requestOptions);
+          const response = await axios.get(apiUrl + `/airlines/nearestAirports/${userIP}`);
           // console.log("--------");
           // console.log(response.data);
           // console.log("Nearest airports fetched successfully.");
