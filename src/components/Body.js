@@ -523,7 +523,10 @@ export const Body = (props) => {
       ];
       // Format today's date as YYYY-MM-DD
       const today = new Date();
-      const formattedDate = today.toISOString().split("T")[0];
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      const formattedDate = tomorrow.toISOString().split("T")[0];
 
       // Create an array of promises for all fetch requests
       const fetchRequests = routes.map(async (route) => {
@@ -553,7 +556,7 @@ export const Body = (props) => {
 
         const flightsdata = await response.json();
         console.log("flightsdata", flightsdata);
-        // Return the flight data for the current route
+        // Return the flight data for the current route 
         return flightsdata[1]; // Assuming flightsdata[1] contains the required data
       });
 
