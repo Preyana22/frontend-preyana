@@ -493,7 +493,7 @@ const SearchFlight = ({onSearch=()=>{}, ...props} ) => {
     return secondPart;
   };
 
-  const handleSubmit1 = async(event) => {
+  const handleSubmit1 = async(event,segmentsInput = null) => {
     event.preventDefault();
     console.log("handle submit called..");
     let cabinValue;
@@ -529,82 +529,81 @@ const SearchFlight = ({onSearch=()=>{}, ...props} ) => {
       Adults.push(infantData);
     }
     console.log("multicity",isMultiCity);
-   if (isMultiCity) {
-  let segments = [];
-  let invalidFields = [];
-  let dateOrderInvalid = false;
-  let hasInvalid = false;
+  // ✅ Use the latest segments input
+  const segmentsToUse = segmentsInput || multiCitySegments;
 
-  multiCitySegments.forEach((segment, index) => {
-    const originStr = segment.origin?.label || "";
-    const destinationStr = segment.destination?.label || "";
+  if (isMultiCity) {
+    let segments = [];
+    let invalidFields = [];
+    let dateOrderInvalid = false;
+    let hasInvalid = false;
 
-    const originCode = originStr.split(" - ")[0] || "";
-    const destinationCode = destinationStr.split(" - ")[0] || "";
-    const departureDate = segment.date;
+    segmentsToUse.forEach((segment, index) => {
+      const originStr = segment.origin?.label || "";
+      const destinationStr = segment.destination?.label || "";
 
-    const originSecondPart = getSecondPart(originStr.split(" - ")[1] || "");
-    const destinationSecondPart = getSecondPart(destinationStr.split(" - ")[1] || "");
+      const originCode = originStr.split(" - ")[0] || "";
+      const destinationCode = destinationStr.split(" - ")[0] || "";
+      const departureDate = segment.date;
 
-    // Validate current segment
-    let segmentInvalid = {
-      origin: !originCode,
-      destination: !destinationCode || originCode === destinationCode,
-      date: !departureDate || !isDate(departureDate),
+      const originSecondPart = getSecondPart(originStr.split(" - ")[1] || "");
+      const destinationSecondPart = getSecondPart(destinationStr.split(" - ")[1] || "");
+
+      let segmentInvalid = {
+        origin: !originCode,
+        destination: !destinationCode || originCode === destinationCode,
+        date: !departureDate || !isDate(departureDate),
+      };
+
+      if (Object.values(segmentInvalid).some(Boolean)) hasInvalid = true;
+
+      invalidFields.push(segmentInvalid);
+
+      segments.push({
+        origin: originCode,
+        destination: destinationCode,
+        departure_date: departureDate,
+        origin_city_name: originSecondPart,
+        destination_city_name: destinationSecondPart,
+      });
+    });
+
+    for (let i = 1; i < segments.length; i++) {
+      const prevDate = new Date(segments[i - 1].departure_date);
+      const currentDate = new Date(segments[i].departure_date);
+      if (currentDate < prevDate) {
+        hasInvalid = true;
+        dateOrderInvalid = true;
+        if (!invalidFields[i]) invalidFields[i] = {};
+        invalidFields[i].date = true;
+      }
+    }
+
+    if (hasInvalid) {
+      if (dateOrderInvalid) {
+        setMultiCityErrorMessage("Please make sure each flight departs after the one before it.");
+      } else {
+        setMultiCityErrorMessage("");
+      }
+      setFormValid({ isValid: false, multiCityErrors: invalidFields });
+      return;
+    }
+
+    setMultiCityErrorMessage("");
+    setFormValid({ isValid: true });
+
+    const criteria = {
+      tripType: "multicity",
+      segments,
+      numOfPassengers: Adults,
+      cabin_class: cabinValue,
     };
 
-    if (Object.values(segmentInvalid).some(Boolean)) hasInvalid = true;
-
-    invalidFields.push(segmentInvalid);
-
-    // Build segment criteria
-    segments.push({
-      origin: originCode,
-      destination: destinationCode,
-      departure_date: departureDate, 
-      origin_city_name: originSecondPart,
-      destination_city_name: destinationSecondPart,
-    });
-  });
-
-   // ✅ Chronological date validation
-  for (let i = 1; i < segments.length; i++) {
-    const prevDate = new Date(segments[i - 1].departure_date);
-    const currentDate = new Date(segments[i].departure_date);
-    if (currentDate < prevDate) {
-      hasInvalid = true;
-      dateOrderInvalid = true;
-      if (!invalidFields[i]) invalidFields[i] = {};
-      invalidFields[i].date = true;
-    }
-  }
-
-  if (hasInvalid) {
-    if (dateOrderInvalid) {
-      setMultiCityErrorMessage("Please make sure each flight departs after the one before it.");
-    } else {
-      setMultiCityErrorMessage(""); // clear any prior message
-    }
-    setFormValid({ isValid: false, multiCityErrors: invalidFields });
+    console.log("✅ Final multicity criteria being sent:", criteria);
+    props.findFlights({ criteria, flights: props.flights, multiCity: true });
+    navigate("/results");
     return;
   }
-
-  //  Clear any old message
-  setMultiCityErrorMessage("");
-
-  setFormValid({ isValid: true });
-
-  const criteria = {
-    tripType: "multicity",
-    segments,
-    numOfPassengers: Adults,
-    cabin_class: cabinValue,
-  };
-
-  props.findFlights({ criteria, flights: props.flights, multiCity: true });
-  navigate("/results");
-  return;
-};
 //   if (isMultiCity) {
 //   let criteria = [];
 // let invalidFields = [];
@@ -787,22 +786,35 @@ const SearchFlight = ({onSearch=()=>{}, ...props} ) => {
 
     
   // };
-  const handleSearch = async () => {
+//  const handleSearch = async () => {
+//   console.log("Search function called. isMultiCity:", isMultiCity);
+
+//   if (typeof onSearch === "function") {
+//     onSearch();
+//     console.log("onSearch callback called");
+//   }
+
+//   // Wait for state (multiCitySegments) to stabilize
+//   setTimeout(() => {
+//     handleSubmit1({ preventDefault: () => {} });
+//   }, 150); // 100–200ms to allow state update
+// };
+
+const handleSearch = async () => {
   console.log("Search function called. isMultiCity:", isMultiCity);
+
+  // Wait a short time to ensure latest state is applied (important!)
+  await new Promise((resolve) => setTimeout(resolve, 100)); // or 150ms if needed
 
   if (typeof onSearch === "function") {
     onSearch();
     console.log("onSearch callback called");
-    await new Promise((resolve) => setTimeout(resolve, 40));
-  } else {
-    console.error("onSearch is not a function", onSearch);
   }
 
-  // Always call handleSubmit1 with a fake event
-  setTimeout(() => {
-  handleSubmit1({ preventDefault: () => {} });
-}, 0);
+  // Trigger actual search
+   handleSubmit1({ preventDefault: () => {} }, [...multiCitySegments]);
 };
+
 
 
 
@@ -812,6 +824,9 @@ const SearchFlight = ({onSearch=()=>{}, ...props} ) => {
   { origin: null, destination: null, date: "", isRotated: false },
 ]);
 
+useEffect(() => {
+  localStorage.setItem("multiCitySegments", JSON.stringify(multiCitySegments));
+}, [multiCitySegments]);
 // 🔁 Add this method:
 function handleMultiCityChange(index, field, value) {
   setMultiCitySegments(prevSegments => {
@@ -855,7 +870,7 @@ function handleMultiCityChange(index, field, value) {
 // };
 const addMultiCitySegment = () => {
   setMultiCitySegments((prevSegments) => {
-    if (prevSegments.length >= 4) return prevSegments; // prevent over-adding
+    if (prevSegments.length >= 5) return prevSegments; 
      const lastSegment = prevSegments[prevSegments.length - 1];
     return [
       ...prevSegments,
@@ -1388,13 +1403,14 @@ const handleMultiCitySwap = (index) => {
                                           </Form.Group>
                                         </div>
                                        <div
-                                          className="col-md-1 d-flex justify-content-center align-items-center"
+                                          className="col-md-1 d-flex justify-content-center align-items-center "
                                           onClick={() => handleMultiCitySwap(index)}
                                           style={{ cursor: "pointer" }}
                                          >
                                           <img
                                             src={inoutimage}
                                             alt="swap"
+                                            id="swap-icon"
                                             className={segment.isRotated ? "rotated" : ""}
                                             style={{ position:"absolute",marginTop:"-80%",transition: "transform 0.3s" }}
                                           />
@@ -1454,6 +1470,7 @@ const handleMultiCitySwap = (index) => {
                                         <div className="col-md-2 d-flex align-items-end">
                                           <button
                                             type="button"
+                                            id="remove-btn"
                                             className="btn btn-sm btn-outline-danger w-100"
                                             onClick={() => removeMultiCitySegment(index)}
                                           >
