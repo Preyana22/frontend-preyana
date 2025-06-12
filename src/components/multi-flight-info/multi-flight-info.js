@@ -228,11 +228,24 @@ export const MultiFlightInfo = (props) => {
     return `${hours}h ${minutes}m`;
   };
 
+  const sliceCount = props.data?.slices?.length || 0;
+
+let tripType;
+if (sliceCount === 1) {
+  tripType = "oneway";
+} else if (sliceCount === 2) {
+  tripType = "roundtrip";
+} else {
+  tripType = "multicity";
+}
+
   return (
     <>
       <section className="Flight-info-details">
   {props.data.slices.length > 0 &&
     props.data.slices.map((slice, sliceIndex) => {
+      console.log("Slice Index:", sliceIndex);
+       console.log("Origin:", slice.origin.iata_code, "Destination:", slice.destination.iata_code);
       const firstSegment = slice.segments[0];
       const lastSegment = slice.segments[slice.segments.length - 1];
 
@@ -248,13 +261,18 @@ export const MultiFlightInfo = (props) => {
             >
               {/* Header Label */}
               <p className="mb-0 smaller-text heading-text">
-                <strong className="mr-1">
+                {/* <strong className="mr-1">
                   {sliceIndex === 0
                     ? "Depart:"
                     : sliceIndex === 1
                     ? "Return:"
                     : `Segment ${sliceIndex + 1}:`}
-                </strong>{" "}
+                </strong>{" "} */}
+                  <strong className="mr-1">
+  {tripType === "roundtrip" && sliceIndex === 1
+    ? "Return:"
+    : "Depart:"}
+</strong>
                 {new Date(firstSegment.departing_at).toLocaleString("en-US", {
                   weekday: "short",
                   month: "short",

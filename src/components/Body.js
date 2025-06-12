@@ -488,10 +488,15 @@ export const Body = (props) => {
         Adults.push(infantData);
       }
 
-      const response = await fetch('https://api.ipify.org?format=json');
+      // Request options for the fetch API
+      // const requestOptions = {
+      //     method: "POST",
+      //     headers: { "Content-Type": "application/json" },
+      //     body: JSON.stringify(criteria),
+      //   };
+        const response = await fetch('https://api.ipify.org?format=json');
       const data = await response.json();
       const userIP = data.ip;
-      
       const routes1 = async () => {
         try {
           console.log("Fetching nearest airports...");
@@ -521,6 +526,7 @@ export const Body = (props) => {
         { origin: originTopDestinations.iata_code, destination: originTopDestinations.international[2] },
         { origin: originTopDestinations.iata_code, destination: originTopDestinations.international[3] },
       ];
+
       // Format today's date as YYYY-MM-DD
       const today = new Date();
       const tomorrow = new Date(today);
@@ -573,7 +579,7 @@ export const Body = (props) => {
 
   function calculatePriceWithMarkup(baseAmount, taxAmount) {
     const base_amount = Number(baseAmount);
-    const markup = Number(base_amount) * 0.15;
+    const markup = Number(base_amount) * 0.10;
     const baseprice = base_amount + markup;
     const tax_amount = Number(taxAmount);
     const price = baseprice + tax_amount;
@@ -761,7 +767,7 @@ export const Body = (props) => {
                 </div>
                 
                 <div className="row">
-                
+
                   {flightsData &&
                   
                     // Group flights by route and map one record per route
@@ -773,10 +779,12 @@ export const Body = (props) => {
                           (flight) =>
                             ((flight.slices &&
                               flight.slices.length > 0 &&
-                              `${flight.slices[0].origin.iata_code}-${flight.slices[0].destination.iata_code}`) ||
-                              `${flight.slices[0].origin.iata_city_code}-${flight.slices[0].destination.iata_code}`) ===
+                              `${flight.slices[0].origin.iata_code.toUpperCase()}-${flight.slices[0].destination.iata_code.toUpperCase()}`) ||
+                              `${flight.slices[0].origin.iata_city_code.toUpperCase()}-${flight.slices[0].destination.iata_code.toUpperCase()}`) ===
                             route
                         );
+                        console.log("Origin code",originCode);
+                        console.log("International Flights",internationalFlights);
                         // {console.log(flight)}
                         // Render the flight if found
                         return (

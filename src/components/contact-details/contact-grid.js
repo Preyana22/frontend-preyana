@@ -137,7 +137,20 @@ const confirmPayment = async () => {
     //   throw new Error("Booking failed: Missing orderResponse");
     // }
   } catch (err) {
-    console.error(" Payment/booking error:", err);
+    console.error("Payment/booking error:", err);
+
+
+    let message = "Something went wrong while booking. Please try again.";
+
+  //  Check for Duffel-specific stale offer error
+  if (
+    err?.message?.includes("Please select another offer") ||
+    err?.message?.includes("offer is no longer available")
+  ) {
+    message = " The selected flight is no longer available.Please search again to see the latest options.";
+  }
+
+  alert(message);  
     setIsLoadingPayment(false);
     setPaymentRenderKey(k => k + 1); // retry render
   }
@@ -336,7 +349,7 @@ const order = orderData?.[0]?.data?.orderResponse?.data;
   const destinationcity = location.state.flights.slices[0].destination.iata_city_code;
 
   const baseAmount = Number(location.state.flights.base_amount);
-  const markup = baseAmount * 0.15;
+  const markup = baseAmount * 0.10;
   const baseprice = baseAmount + markup;
   const formattedAmount = baseprice.toFixed(2); // Rounds to "1335.37"
   const tax_amount = Number(location.state.flights.tax_amount);
@@ -500,6 +513,10 @@ const order = orderData?.[0]?.data?.orderResponse?.data;
     }
 
     const email = event.target["email0"].value;
+    const firstname = event.target["given_name0"].value;
+    const lastname = event.target["familyname0"].value;
+
+    const username = (firstname+"_"+lastname).toLowerCase();
     let isNewUser = false;
 
     const extraCharges = (
@@ -524,8 +541,8 @@ const order = orderData?.[0]?.data?.orderResponse?.data;
           apiUrl + "/authentication/register",
           {
             email,
-            userName: email,
-            password: null,
+            userName: username,
+            password:"tempuser@10" ,
           }
         );
         console.log("User registered:", registrationResponse.data.message);
@@ -902,6 +919,8 @@ const isOfferExpired = () => {
   };
 
   return (
+    <>
+   
     <section className="innerpage-wrapper">
       <div id="flight-booking" className="innerpage-section-padding">
         <div className="container">
@@ -1638,6 +1657,7 @@ const isOfferExpired = () => {
         </div>
       </div>
     </section>
+    </>
   );
 };
 
