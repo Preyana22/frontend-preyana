@@ -13,6 +13,7 @@ const SingleBookingDetails = () => {
   const location = useLocation();
   const [bookingData, setBookingData] = useState([]);
   const [bookingOrderId, setBookingOrderId] = useState("");
+  
   const navigate = useNavigate(); // Use navigate for redirecting
   // Create a reference to the hidden div
   const hiddenDivRef = useRef(null);
@@ -194,6 +195,9 @@ const SingleBookingDetails = () => {
       console.error("Error fetching booking details:", error);
     }
   };
+
+
+
 
   // Confirm cancellation
   const confirmCancellation = async (cancelId, email) => {

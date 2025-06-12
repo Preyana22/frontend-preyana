@@ -516,7 +516,7 @@ const order = orderData?.[0]?.data?.orderResponse?.data;
     const firstname = event.target["given_name0"].value;
     const lastname = event.target["familyname0"].value;
 
-    const username = (firstname+"_"+lastname).toLowerCase();
+    const username = (firstname+""+lastname).toLowerCase();
     let isNewUser = false;
 
     const extraCharges = (

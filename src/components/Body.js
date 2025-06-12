@@ -495,10 +495,10 @@ export const Body = (props) => {
       //     body: JSON.stringify(criteria),
       //   };
         const response = await fetch('https://api.ipify.org?format=json');
-      const data = await response.json();
-      const userIP = data.ip;
-      const routes1 = async () => {
-        try {
+        const data = await response.json();
+        const userIP = data.ip;
+        const routes1 = async () => {
+          try {
           console.log("Fetching nearest airports...");
           const response = await axios.get(apiUrl + `/airlines/nearestAirports/${userIP}`);
           // console.log("--------");
