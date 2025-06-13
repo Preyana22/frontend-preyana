@@ -13,7 +13,7 @@ const Footer = () => {
         >
           <div className="container">
             <div className="row">
-              <div className="col-12 col-md-6 col-lg-3 col-xl-3 footer-widget ftr-links">
+              <div className="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 custom-col footer-widget ftr-links">
                 <h3 className="footer-heading">Company</h3>
                 <ul className="list-unstyled">
                   <li>
@@ -34,7 +34,7 @@ const Footer = () => {
                 </ul>
               </div>
 
-              <div className="col-12 col-md-6 col-lg-3 col-xl-3 footer-widget ftr-contact">
+              <div className="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 custom-col footer-widget ftr-contact">
                 <h3 className="footer-heading">Contact Us</h3>
                 <ul className="list-unstyled">
                   <li>
@@ -57,7 +57,7 @@ const Footer = () => {
                   </li>
                 </ul>
               </div>
-              <div className="col-12 col-md-6 col-lg-3 col-xl-3 footer-widget ftr-links">
+              <div className="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 custom-col footer-widget ftr-links">
                 <h3 className="footer-heading">More</h3>
                 <ul className="list-unstyled">
                   <li>
@@ -75,7 +75,7 @@ const Footer = () => {
                 </ul>
               </div>
 
-              <div className="col-12 col-md-6 col-lg-3 col-xl-3 footer-widget ftr-about">
+              <div className="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 footer-widget ftr-about">
                 <h3 className="footer-heading">Get the Preyana App</h3>
                 <img src={mobileapp} alt="mobile app" width={150} />
               </div>
@@ -85,7 +85,7 @@ const Footer = () => {
 
         <div id="footer-bottom" className="ftr-bot-white">
           <div className="container">
-            <div className="row">
+            {/* <div className="row">
               <div className="col-12 col-md-2 col-lg-2 col-xl-2" id="copyright">
                 <p className="mt-1">
                   © 2024 <Link to="#">Preyana </Link>
@@ -147,7 +147,42 @@ const Footer = () => {
                   </li>
                 </ul>
               </div>
+            </div> */}
+            <div className="row text-center text-lg-left align-items-center">
+
+              {/* Column 1: Copyright */}
+              <div className="col-12 col-lg-2 mb-2 mb-lg-0" id="copyright">
+                <p className="mt-1 mb-1">© 2024 <Link to="#">Preyana</Link></p>
+              </div>
+
+              {/* Column 2: Links + Logo */}
+              <div className="col-12 col-lg-8 mb-2 mb-lg-0" id="terms-links">
+                <ul className="list-unstyled list-inline mb-1 d-flex flex-wrap justify-content-center justify-content-lg-start align-items-center gap-2">
+                  <li className="list-inline-item"><Link to="/privacy">Privacy</Link></li>
+                  <li className="list-inline-item"><Link to="/terms">Terms & Condition</Link></li>
+                  <li className="list-inline-item"><Link to="/adchoices">Ad Choices</Link></li>
+                  <li className="list-inline-item font-weight-bold"><Link to="#">Preyana.com</Link></li>
+                  
+                  {/* Logo goes here, inline on lg, stacked on small */}
+                  <li className="list-inline-item mt-2 mt-lg-0">
+                    <Link to="#">
+                      <img src={logoimage} alt="footer logo" className="img-fluid" style={{ height: '30px' }} />
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Column 3: Social Icons */}
+              <div className="col-12 col-lg-2 mb-2 mb-lg-0 text-center text-lg-left">
+                <ul className="list-inline list-unstyled social-links mb-0">
+                  <li className="list-inline-item"><Link to="#"><i className="fa fa-facebook"></i></Link></li>
+                  <li className="list-inline-item"><Link to="#"><i className="fa fa-twitter"></i></Link></li>
+                  <li className="list-inline-item"><Link to="#"><i className="fa fa-youtube-play"></i></Link></li>
+                  <li className="list-inline-item"><Link to="#"><i className="fa fa-instagram"></i></Link></li>
+                </ul>
+              </div>
             </div>
+
           </div>
         </div>
       </section>

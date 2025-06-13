@@ -225,26 +225,7 @@ const MyBookings = (props) => {
                               <i className="fa fa-eye"></i> View{" "}
                             </a>
                           </td>
-                          // <td
-                          //     rowSpan={booking.slices.length}
-                          //     className="download-cell align-middle text-center"
-                          //    >
-                          //     {booking.status === "cancelled" ? (
-                          //       <span style={{ color: "#dc3545", opacity: 0.5 }}>
-                          //         <i className="fa fa-eye-slash"></i> View 
-                          //       </span>
-                          //     ) : (
-                          //       <a
-                          //         href="#"
-                          //         onClick={(event) => {
-                          //           event.preventDefault();
-                          //           getSingleBooking(booking.booking_id, booking._id);
-                          //         }}
-                          //       >
-                          //         <i className="fa fa-eye"></i> View
-                          //       </a>
-                          //     )}
-                          //   </td>
+                          
 
                         )}
                       </tr>

@@ -1001,7 +1001,7 @@ const handleMultiCitySwap = (index) => {
                             {/* Cabin Class Selection */}
                             <div className="col-12 col-md-4 col-sm-12 d-flex align-items-center  space-info">
                               <Form.Group controlId="cabinclass" className="mb-0" style={{ width: "120px" }}>
-                                <div className="select-containerd-flex align-items-center ">
+                                <div className="select-container d-flex align-items-center ">
                                   <Select
                                     options={cabinOptions}
                                     value={

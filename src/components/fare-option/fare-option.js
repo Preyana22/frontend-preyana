@@ -84,7 +84,8 @@ const FareOption = (props) => {
 
   const calculatePriceWithMarkup = (baseAmount, taxAmount) => {
     const base_amount = Number(baseAmount);
-    const markup = base_amount * 0.15;
+     const markupPercent=Number(process.env.REACT_APP_MARKUP_PERCENT);
+    const markup = base_amount *  markupPercent;
     const baseprice = base_amount + markup;
     const tax_amount = Number(taxAmount);
     const price = baseprice + tax_amount;

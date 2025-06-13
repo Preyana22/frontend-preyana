@@ -497,6 +497,7 @@ export const Body = (props) => {
         const response = await fetch('https://api.ipify.org?format=json');
         const data = await response.json();
         const userIP = data.ip;
+        console.log("IP",userIP);
         const routes1 = async () => {
           try {
           console.log("Fetching nearest airports...");
@@ -579,7 +580,8 @@ export const Body = (props) => {
 
   function calculatePriceWithMarkup(baseAmount, taxAmount) {
     const base_amount = Number(baseAmount);
-    const markup = Number(base_amount) * 0.10;
+    const markupPercent=Number(process.env.REACT_APP_MARKUP_PERCENT);
+    const markup = Number(base_amount) * markupPercent;
     const baseprice = base_amount + markup;
     const tax_amount = Number(taxAmount);
     const price = baseprice + tax_amount;

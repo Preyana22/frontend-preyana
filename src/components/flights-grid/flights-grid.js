@@ -260,7 +260,8 @@ const FlightsGrid = ({ flights, criteria }) => {
 
     return safeFlights.filter((flight) => {
       // Price filter
-      const markup = Number(flight.base_amount) * 0.15; // Calculate 15% markup on base_amount
+       const markupPercent=Number(process.env.REACT_APP_MARKUP_PERCENT);
+      const markup = Number(flight.base_amount) * markupPercent; // Calculate 15% markup on base_amount
       const totalWithMarkup = Number(flight.total_amount) + markup; // Add markup to total_amount
 
       const withinPriceRange =
