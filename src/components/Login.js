@@ -9,7 +9,7 @@ import { Carousel } from "react-bootstrap";
 import FacebookLogin from "react-facebook-login";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 const apiUrl = process.env.REACT_APP_API_BASE_URL;
-const clientId = "1095079319599-1vplrl2314aor4nefuvol83km1mbcqfc.apps.googleusercontent.com";
+const clientId = "1073690059873-28hdq2apdgh7m9n0otk1ga0fp3ehrvlk.apps.googleusercontent.com";
 const Login = (props) => {
   const [formData, setFormData] = useState({
     username: "",
@@ -161,10 +161,13 @@ const Login = (props) => {
 
     await axios(configuration)
       .then((result) => {
-        console.log(result.data.user);
-        localStorage.setItem("email", result.data.user._doc.email);
-        localStorage.setItem("userName", result.data.user._doc.userName);
-        localStorage.setItem("userId", result.data.user.$__._id);
+         const email = result?.data?.user?.email;
+    const userName = result?.data?.user?.userName;
+    const userId = result?.data?.id;
+
+    localStorage.setItem("email", email);
+    localStorage.setItem("userName", userName);
+    localStorage.setItem("userId", userId);
 
 
         navigate("/search");
@@ -240,6 +243,11 @@ const handleVerifyOtp = async (e) => {
                     <h3>Sign In</h3>
                     <form onSubmit={otpMode ? handleVerifyOtp : handleSubmit}>
                       <div className="form-group">
+                        {/* Show error above email field */}
+                          {login === false && (
+                            <p className="text-danger text-center font-weight-bold bg-light  rounded py-2">
+                              Invalid username or password</p>
+                          )}
                         <label className="custom-label">Email</label>
                         <input
                           type="text"
@@ -391,7 +399,7 @@ const handleVerifyOtp = async (e) => {
                           </>
                          )}
 
-                      {login === true ? (
+                      {/* {login === true ? (
                         <p className="text-success">
                           You Are Logged in Successfully
                         </p>
@@ -401,7 +409,12 @@ const handleVerifyOtp = async (e) => {
                         </p>
                       ) : (
                         ""
-                      )}
+                      )} */}
+                      {login === true && (
+                          <div className="alert alert-success py-2">
+                            You are logged in successfully
+                          </div>
+                        )}
                     </form>
                     <div className="other-links">
                       <p className="link-line">
@@ -430,7 +443,7 @@ const handleVerifyOtp = async (e) => {
                           />
                         </Link>
                         <FacebookLogin
-                          appId="394937666944847"
+                          appId="24280368278216336"
                           autoLoad={false}
                           fields="name,email,picture"
                           callback={handleCallbackFacebookResponse}

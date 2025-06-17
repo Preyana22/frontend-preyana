@@ -65,8 +65,10 @@ const SingleBookingDetails = () => {
       const result = await axios(configuration);
       console.log("Single order data:", result.data.data); // Store the data in state
 
-      if (result.data.data !== undefined) {
-        // Assuming slices is an array and you want the first element
+      if (!result.data ||
+        result.data.errors?.length > 0 ||
+        result.data.data === undefined) {
+            // Assuming slices is an array and you want the first element
         const { slices } = result.data.data;
         setSliceLength(slices.length);
         console.log("slices", slices.length);

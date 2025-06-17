@@ -9,8 +9,8 @@ import { Carousel } from "react-bootstrap";
 import FacebookLogin from "react-facebook-login";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 const apiUrl = process.env.REACT_APP_API_BASE_URL;
-const clientId = "661049864550-seshj8qse9fg074167lb5r188srl5jmm.apps.googleusercontent.com";
-const FACEBOOK_APP_ID = '394937666944847'; // Replace!
+const clientId = "1073690059873-28hdq2apdgh7m9n0otk1ga0fp3ehrvlk.apps.googleusercontent.com";
+const FACEBOOK_APP_ID = '24280368278216336'; // Replace!
 const Login = (props) => {
   const [formData, setFormData] = useState({
     username: "",
@@ -162,12 +162,16 @@ console.log(configuration);
 
     await axios(configuration)
       .then((result) => {
-        console.log(result);
-        localStorage.setItem("email", result.data.user._doc.email);
-        localStorage.setItem("userName", result.data.user._doc.userName);
-        localStorage.setItem("userId", result.data.user.$__._id);
+      const email = result?.data?.user?.email;
+    const userName = result?.data?.user?.userName;
+    const userId = result?.data?.id;
+
+    localStorage.setItem("email", email);
+    localStorage.setItem("userName", userName);
+    localStorage.setItem("userId", userId);
 
         navigate("/search");
+        
       })
       .catch((error) => {
         if (error.response) {
@@ -348,7 +352,7 @@ console.log(configuration);
                           />
                         </Link>
                         <FacebookLogin
-                          appId="394937666944847"
+                          appId="24280368278216336"
                           autoLoad={false}
                           fields="name,email,picture"
                           callback={handleCallbackFacebookResponse}
