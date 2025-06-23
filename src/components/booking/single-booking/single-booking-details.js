@@ -99,7 +99,7 @@ const SingleBookingDetails = () => {
           ? firstSegment.aircraft.name
           : null;
         console.log(booking.base_amount);
-        const markup = Number(booking.base_amount) * 0.15;
+        const markup = Number(booking.base_amount) * 0.10;
         const baseMarkup_amount = (
           Number(booking.base_amount) + markup
         ).toFixed(2);

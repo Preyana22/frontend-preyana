@@ -36,12 +36,12 @@ const MyBookings = (props) => {
     };
     try {
       const result = await axios(configuration);
-      // console.log("result.data", result.data);
-      const filtered = result.data.filter(
-  (booking) => booking.status !== "cancelled" && booking.status !== true
-);
-setBookings(filtered);
-      // setBookings(result.data); 
+      console.log("result.data", result.data);
+//       const filtered = result.data.filter(
+//   (booking) => booking.status !== "cancelled" && booking.status !== true
+// );
+// setBookings(filtered);
+      setBookings(result.data); 
     } catch (error) {
       console.error("Error fetching bookings:", error);
     }
@@ -161,20 +161,28 @@ setBookings(filtered);
                       //     {/* </a> */}
                       //   </td>
                        <tr
-                        key={slice._id}>
+                        key={slice._id}
+                            >
                        {/* Airline (first slice only) */}
                           {sliceIndex === 0 && (
-                            <td rowSpan={booking.slices.length} className="align-middle text-center font-weight-bold">
+                            <td rowSpan={booking.slices.length} className="align-middle text-start font-weight-bold" 
+                            style={booking.status === "cancelled" ? { color: "#dc3545",opacity:0.7} : {}}>
                               {booking.airlines}
-                              {booking.slices.length > 2 && <div className="text-muted">Multi-City</div>}
+
+ 
+                              {booking.slices.length > 2 && <div className="text-muted">Multi-City </div>}
                               {booking.slices.length === 2 && <div className="text-muted">Round Trip</div>}
-                              {booking.slices.length === 1 && <div className="text-muted">One Way</div>}
+                              {booking.slices.length === 1 && <div className="text-muted">One Way </div>}
+                                                           {/* Show "Cancelled" status */}
+                                {/* {booking.status === "cancelled" && (
+                                  <div className="text-danger font-weight-bold">Cancelled</div>
+                                )} */}
                             </td>
                           )}
 
 
-                        <td>{moment(slice.travelDate).format("DD-MM-YYYY")}</td>
-                        <td>
+                        <td style={booking.status === "cancelled" ? { color: "#dc3545", opacity: 0.7 } : {}}>{moment(slice.travelDate).format("DD-MM-YYYY")}</td>
+                        <td style={booking.status === "cancelled" ? { color: "#dc3545", opacity: 0.7 } : {}}>
                           {" "}
                           {slice.departCityName +
                             "  " +
@@ -182,7 +190,7 @@ setBookings(filtered);
                             " | " +
                             moment(slice.departTime).format("hh:mm A")}
                         </td>
-                        <td>
+                        <td style={booking.status === "cancelled" ? { color: "#dc3545", opacity: 0.7 } : {}}>
                           {" "}
                           {slice.arrivalCityName +
                             "  " +
@@ -190,8 +198,8 @@ setBookings(filtered);
                             " | " +
                             moment(slice.arrivalTime).format("hh:mm A")}
                         </td>  
-                        <td>{slice.flightDuration}</td>
-                        <td>{slice.stops == null ? 0 : slice.stops}</td>
+                        <td style={booking.status === "cancelled" ? { color: "#dc3545", opacity: 0.7 } : {}}>{slice.flightDuration}</td>
+                        <td style={booking.status === "cancelled" ? { color: "#dc3545", opacity: 0.7 } : {}}>{slice.stops == null ? 0 : slice.stops}</td>
                         {sliceIndex === 0 && (
                           <td
                             rowSpan={booking.slices.length}
@@ -217,6 +225,27 @@ setBookings(filtered);
                               <i className="fa fa-eye"></i> View{" "}
                             </a>
                           </td>
+                          // <td
+                          //     rowSpan={booking.slices.length}
+                          //     className="download-cell align-middle text-center"
+                          //    >
+                          //     {booking.status === "cancelled" ? (
+                          //       <span style={{ color: "#dc3545", opacity: 0.5 }}>
+                          //         <i className="fa fa-eye-slash"></i> View 
+                          //       </span>
+                          //     ) : (
+                          //       <a
+                          //         href="#"
+                          //         onClick={(event) => {
+                          //           event.preventDefault();
+                          //           getSingleBooking(booking.booking_id, booking._id);
+                          //         }}
+                          //       >
+                          //         <i className="fa fa-eye"></i> View
+                          //       </a>
+                          //     )}
+                          //   </td>
+
                         )}
                       </tr>
                     ))}

@@ -98,4 +98,8 @@
   }
 }
 
-
+@media(max-width:768px){
+  .sort-options{
+    margin-top:10px;
+  }
+}

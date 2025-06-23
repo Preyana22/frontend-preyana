@@ -169,3 +169,23 @@
 .rbt-input-hint {
   display: none !important;
 }
+
+@media(max-width:992px){
+  #remove-btn{
+    text-align:center ;
+    padding:0px;
+  }
+}
+
+@media(max-width:768px){
+  #remove-btn{
+    text-align:center ;
+    padding:0px;
+    max-width:20%;
+  }
+  #swap-icon{
+    position:relative !important;
+    margin-top:0px !important;
+    margin-bottom: 10px;
+  }
+}
