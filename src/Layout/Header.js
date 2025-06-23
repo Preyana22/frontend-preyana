@@ -1,16 +1,18 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Navbar, Nav, Button, Container, Dropdown } from "react-bootstrap";
 import headerlogoimage from "../assets/images/Preyana_Logo.svg";
 import userimage from "../assets/images/user.svg";
+import Currency from "../components/currency/currency";
 
 const Header = ({ onBrandClick }) => {
-    const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
   const email = localStorage.getItem("email");
   const userId = localStorage.getItem("userId");
   const userName = localStorage.getItem("userName");
   const navigate = useNavigate();
   const location = useLocation(); // To get the current path
+  const [currency, setCurrency] = useState(null);
 
   const logout = () => {
     // Show a confirmation dialog
@@ -60,6 +62,10 @@ const Header = ({ onBrandClick }) => {
         </Navbar.Toggle>
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ml-auto align-items-center text-left text-md-center">
+             <Nav.Item>
+               <Currency
+               />
+             </Nav.Item>            
             {(email || token) ? (
               <>
                 <Nav.Item className="nav-item-border">

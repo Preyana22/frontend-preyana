@@ -53,6 +53,7 @@ import SingleBookingDetails from "./components/booking/single-booking/single-boo
 import Success from "./components/success";
 import FareOption from "./components/fare-option/fare-option";
 import Profile from "./components/profile";
+import Currency from "./components/currency/currency";  
 
 function App(props) {
   const [marginToggled, setMarginToggled] = useState(false);
@@ -386,6 +387,18 @@ function App(props) {
               <InnerHeader onBrandClick={handleBrandClick} />
               <div className={marginToggled ? "responsive-margin" : ""}>
                 <MyBookings />
+              </div>
+              <Footer />
+            </Fragment>
+          }
+        />
+        <Route
+          path="/currency"
+          element={
+            <Fragment>
+              <InnerHeader onBrandClick={handleBrandClick} />
+              <div className={marginToggled ? "responsive-margin" : ""}>
+                <Currency />
               </div>
               <Footer />
             </Fragment>

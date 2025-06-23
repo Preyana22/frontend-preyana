@@ -213,7 +213,7 @@ export const Body = (props) => {
   const [originCode, setOriginCode] = useState(null);
   const [domesticFlights, setDomesticFlights] = useState([]);
   const [internationalFlights, setInternationalFlights] = useState([]);
-
+  
   const formatFlightDate = (dateString) => {
     const date = new Date(dateString);
 
@@ -488,7 +488,7 @@ export const Body = (props) => {
         Adults.push(infantData);
       }
 
-      const response = await fetch('https://api.ipify.org?format=json');
+      const response = await fetch("https://ipapi.co/json/");
       const data = await response.json();
       const userIP = data.ip;
       
@@ -496,9 +496,6 @@ export const Body = (props) => {
         try {
           console.log("Fetching nearest airports...");
           const response = await axios.get(apiUrl + `/airlines/nearestAirports/${userIP}`);
-          // console.log("--------");
-          // console.log(response.data);
-          // console.log("Nearest airports fetched successfully.");
           return response.data;
         } catch (error) {
           console.error("Error fetching nearest airports:", error);
@@ -699,7 +696,7 @@ export const Body = (props) => {
                                       {`$ ${calculatePriceWithMarkup(
                                         flight?.base_amount,
                                         flight?.tax_amount
-                                      )}`}
+                                          )}`}
                                     </li>
                                   </ul>
                                 </div>
@@ -859,10 +856,10 @@ export const Body = (props) => {
                                   </p> */}
                                   <ul className="list-unstyled list-inline offer-price-1">
                                     <li className="price">
-                                      {`$ ${calculatePriceWithMarkup(
-                                        flight?.base_amount,
-                                        flight?.tax_amount
-                                      )}`}
+                                        {`$ ${calculatePriceWithMarkup(
+                                            flight?.base_amount,
+                                            flight?.tax_amount
+                                        )}`}
                                     </li>
                                   </ul>
                                 </div>
