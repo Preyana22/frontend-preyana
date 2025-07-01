@@ -62,9 +62,8 @@ const Header = ({ onBrandClick }) => {
         </Navbar.Toggle>
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ml-auto align-items-center text-left text-md-center">
-             <Nav.Item>
-               <Currency
-               />
+             <Nav.Item className="nav-item-border">
+              <Currency/>      
              </Nav.Item>            
             {(email || token) ? (
               <>

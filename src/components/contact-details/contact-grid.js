@@ -351,6 +351,7 @@ const order = orderData?.[0]?.data?.orderResponse?.data;
   const baseAmount = Number(location.state.flights.base_amount);
   const markup = baseAmount * 0.10;
   const baseprice = baseAmount + markup;
+  const currency = location.state.flights.base_currency;
   const formattedAmount = baseprice.toFixed(2); // Rounds to "1335.37"
   const tax_amount = Number(location.state.flights.tax_amount);
 
@@ -1541,27 +1542,27 @@ const isOfferExpired = () => {
                           <span>
                             <strong>Fare:</strong>
                           </span>
-                          <span>{"$ " + formattedAmount}</span>
+                          <span>{currency+" " + formattedAmount}</span>
                         </div>
 
                         <div className="d-flex justify-content-between">
                           <span>
                             <strong>Taxes & Fees:</strong>
                           </span>
-                          <span>{"$ " + tax_amount}</span>
+                          <span>{currency+" " + tax_amount}</span>
                         </div>
 
                         <div className="d-flex justify-content-between">
                           <span>
                             <strong>Additional Checked Baggage:</strong>
                           </span>
-                          <span>{extraBag && `$ ${extraBag}`}</span>
+                          <span>{extraBag && `${currency} ${extraBag}`}</span>
                         </div>
                         <div className="d-flex justify-content-between">
                           <span>
                             <strong>Seat Selection:</strong>
                           </span>
-                          <span>{seatSelection && `$ ${seatSelection}`}</span>
+                          <span>{seatSelection &&  `${currency} ${seatSelection}`}</span>
                         </div>
                         <hr />
 
@@ -1570,7 +1571,7 @@ const isOfferExpired = () => {
                           <h5 className="font-weight-bold">Total Due:</h5>
                           <h5 className="font-weight-bold">
                             {formattedTotalAmount &&
-                              `$ ${formattedTotalAmount}`}
+                               `${currency} ${formattedTotalAmount}`}
                           </h5>
                         </div>
 

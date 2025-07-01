@@ -699,7 +699,7 @@ export const Body = (props) => {
                                   </p> */}
                                   <ul className="list-unstyled list-inline offer-price-1">
                                     <li className="price">
-                                      {`$ ${calculatePriceWithMarkup(
+                                      {`${flight.total_currency} ${calculatePriceWithMarkup(
                                         flight?.base_amount,
                                         flight?.tax_amount
                                           )}`}
@@ -864,7 +864,7 @@ export const Body = (props) => {
                                   </p> */}
                                   <ul className="list-unstyled list-inline offer-price-1">
                                     <li className="price">
-                                        {`$ ${calculatePriceWithMarkup(
+                                        {`${flight.total_currency} ${calculatePriceWithMarkup(
                                             flight?.base_amount,
                                             flight?.tax_amount
                                         )}`}

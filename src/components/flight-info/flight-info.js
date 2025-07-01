@@ -32,7 +32,7 @@ export const FlightInfo = (props) => {
   const tax_amount = Number(props.data.tax_amount);
   const price = baseprice + tax_amount;
   const formattedTotalAmount = price.toFixed(2);
-
+  const currency = props.data.base_currency;
   const date = props.data.updated_at;
   const time = props.data.slices[0].segments[0].duration;
 
@@ -62,7 +62,7 @@ export const FlightInfo = (props) => {
 
         <DetailLabel mainText={arrivalTime} subText={destination}></DetailLabel>
         <DetailLabel mainText="Duration" subText={time}></DetailLabel> */}
-          {isMultiMode ? null : <PriceInfo amount={formattedTotalAmount} />}
+          {isMultiMode ? null : <PriceInfo amount={formattedTotalAmount} currency={currency} />}
           {isMultiMode ? null : (
             <Button
               className="btn btn-orange mt-1 ml-3"
