@@ -27,8 +27,7 @@ export const FlightInfo = (props) => {
   const origin = props.data.slices[0].origin.iata_code;
   const destination = props.data.slices[0].destination.iata_code;
   const baseAmount = Number(props.data.base_amount);
-  const markup = baseAmount * 0.15;
-  const baseprice = baseAmount + markup;
+  const baseprice = baseAmount;
   const tax_amount = Number(props.data.tax_amount);
   const price = baseprice + tax_amount;
   const formattedTotalAmount = price.toFixed(2);

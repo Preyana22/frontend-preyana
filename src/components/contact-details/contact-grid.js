@@ -349,8 +349,7 @@ const order = orderData?.[0]?.data?.orderResponse?.data;
   const destinationcity = location.state.flights.slices[0].destination.iata_city_code;
 
   const baseAmount = Number(location.state.flights.base_amount);
-  const markup = baseAmount * 0.10;
-  const baseprice = baseAmount + markup;
+  const baseprice = baseAmount;
   const currency = location.state.flights.base_currency;
   const formattedAmount = baseprice.toFixed(2); // Rounds to "1335.37"
   const tax_amount = Number(location.state.flights.tax_amount);

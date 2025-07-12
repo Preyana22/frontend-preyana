@@ -213,14 +213,14 @@ const FlightsGrid = ({ flights, criteria }) => {
     switch (sortOption) {
       case 'price_asc':
         return sortedFlights.sort((a, b) => {
-          const priceA = Number(a.total_amount) + (Number(a.base_amount) * 0.15);
-          const priceB = Number(b.total_amount) + (Number(b.base_amount) * 0.15);
+          const priceA = Number(a.total_amount);
+          const priceB = Number(b.total_amount);
           return priceA - priceB;
         });
       case 'price_desc':
         return sortedFlights.sort((a, b) => {
-          const priceA = Number(a.total_amount) + (Number(a.base_amount) * 0.15);
-          const priceB = Number(b.total_amount) + (Number(b.base_amount) * 0.15);
+          const priceA = Number(a.total_amount);
+          const priceB = Number(b.total_amount);
           return priceB - priceA;
         });
       case 'duration_asc':
@@ -259,9 +259,8 @@ const FlightsGrid = ({ flights, criteria }) => {
     }
 
     return safeFlights.filter((flight) => {
-      // Price filter
-      const markup = Number(flight.base_amount) * 0.15; // Calculate 15% markup on base_amount
-      const totalWithMarkup = Number(flight.total_amount) + markup; // Add markup to total_amount
+      // Price filter// Calculate 15% markup on base_amount
+      const totalWithMarkup = Number(flight.total_amount); // Add markup to total_amount
 
       const withinPriceRange =
         !filterCriteria.price || // No price filter

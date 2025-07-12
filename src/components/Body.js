@@ -576,8 +576,7 @@ export const Body = (props) => {
 
   function calculatePriceWithMarkup(baseAmount, taxAmount) {
     const base_amount = Number(baseAmount);
-    const markup = Number(base_amount) * 0.10;
-    const baseprice = base_amount + markup;
+    const baseprice = base_amount;
     const tax_amount = Number(taxAmount);
     const price = baseprice + tax_amount;
 
