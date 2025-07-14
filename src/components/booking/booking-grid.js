@@ -18,9 +18,13 @@ const MyComponent = (props) => {
   const location = useLocation();
   console.log("location state", location.state);
   const baseAmount = Number(location.state.selectedFlight.base_amount);
+
    const markupPercent=Number(process.env.REACT_APP_MARKUP_PERCENT);
   const markup = baseAmount * markupPercent;
   const baseprice = baseAmount + markup;
+
+  const baseprice = baseAmount;
+
   const tax_amount = Number(location.state.selectedFlight.tax_amount);
   const price = baseprice + tax_amount;
   formattedTotalAmount = (

@@ -348,6 +348,7 @@ const order = orderData?.[0]?.data?.orderResponse?.data;
   const origincity = location.state.flights.slices[0].origin.iata_city_code;
   const destinationcity = location.state.flights.slices[0].destination.iata_city_code;
 
+
   // const baseAmount = Number(location.state.flights.base_amount);
   // const markupPercent=Number(process.env.REACT_APP_MARKUP_PERCENT);
   // const markup = baseAmount * markupPercent;
@@ -355,6 +356,13 @@ const order = orderData?.[0]?.data?.orderResponse?.data;
   // const currency = location.state.flights.base_currency;
   // const formattedAmount = baseprice.toFixed(2); // Rounds to "1335.37"
   // const tax_amount = Number(location.state.flights.tax_amount);
+
+  const baseAmount = Number(location.state.flights.base_amount);
+  const baseprice = baseAmount;
+  const currency = location.state.flights.base_currency;
+  const formattedAmount = baseprice.toFixed(2); // Rounds to "1335.37"
+  const tax_amount = Number(location.state.flights.tax_amount);
+
 
   // const price = baseprice + tax_amount;
   const date = location.state.flights.slices[0].segments[0].departing_at;

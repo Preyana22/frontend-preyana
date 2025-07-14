@@ -115,6 +115,15 @@ const FareOption = (props) => {
 };
 
 
+  const calculatePriceWithMarkup = (baseAmount, taxAmount) => {
+    const base_amount = Number(baseAmount);
+    const baseprice = base_amount;
+    const tax_amount = Number(taxAmount);
+    const price = baseprice + tax_amount;
+    return price.toFixed(2); // Formats to two decimal places
+  };
+
+
   const navigateToContacts = () => {
     navigate("/contacts", { state: { flights, selectedFares } });
   };

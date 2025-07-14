@@ -597,6 +597,7 @@ export const Body = (props) => {
   }
   };
 
+
   // function calculatePriceWithMarkup(baseAmount, taxAmount) {
   //   const base_amount = Number(baseAmount);
   //   const markupPercent=Number(process.env.REACT_APP_MARKUP_PERCENT);
@@ -604,6 +605,13 @@ export const Body = (props) => {
   //   const baseprice = base_amount + markup;
   //   const tax_amount = Number(taxAmount);
   //   const price = baseprice + tax_amount;
+
+  function calculatePriceWithMarkup(baseAmount, taxAmount) {
+    const base_amount = Number(baseAmount);
+    const baseprice = base_amount;
+    const tax_amount = Number(taxAmount);
+    const price = baseprice + tax_amount;
+
 
   //   return price.toFixed(2); // Formats to two decimal places
   // }
