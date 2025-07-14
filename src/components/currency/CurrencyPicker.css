@@ -1,0 +1,83 @@
+/* CurrencyPicker.css */
+.currency-toggle + .dropdown-menu,
+#currency-dropdown + .dropdown-menu {
+  left: auto !important;
+  right: 0 !important;
+}
+/* General button styling for the toggle */
+.nav-btn.currency-toggle {
+  background: none;
+  border: none;
+  padding: 8px 15px; /* Adjust padding as needed */
+  font-size: 1rem;
+  color: #333; /* Darker text for prominence */
+  cursor: pointer;
+  display: flex;
+  align-items: center; /* Align icon and text vertically */
+  transition: color 0.2s ease;
+}
+
+.nav-btn.currency-toggle:hover,
+.nav-btn.currency-toggle:focus {
+  color: #007bff; /* Highlight on hover */
+  text-decoration: none; /* Remove underline for links */
+  outline: none; /* Remove focus outline */
+}
+
+.currency-icon {
+  margin-right: 8px; /* Space between icon and currency code */
+  font-size: 1.1em; /* Slightly larger icon */
+}
+
+/* Dropdown Menu Styles */
+.dropdown-menu {
+  border-radius: 8px !important; /* Slightly rounded corners */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important; /* Softer, larger shadow */
+  border: none !important; /* Remove default border */
+  min-width: 180px; /* Consistent width */
+  padding: 5px 0; /* Vertical padding inside the menu */
+  background-color: #fff; /* Ensure white background */
+  max-height: 250px; /* Keep scrollbar if many items */
+  overflow-y: auto; /* Ensure scrolling */
+}
+
+/* Dropdown Item Styles */
+.dropdown-item {
+  padding: 10px 18px; /* Generous padding for items */
+  color: #555; /* Default item text color */
+  font-size: 0.95rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  white-space: nowrap; /* Prevent text wrapping */
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background-color: #e9f0ff !important; /* Light blue background on hover */
+  color: #007bff !important; /* Primary color for text on hover */
+}
+
+/* Style for the currently selected item in the dropdown list itself */
+.dropdown-item.active {
+    background-color: #007bff !important; /* Use your primary brand color */
+    color: white !important;
+    font-weight: bold;
+}
+
+/* Optional: Scrollbar styling for a nicer look across browsers */
+.dropdown-menu::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dropdown-menu::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

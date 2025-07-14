@@ -213,7 +213,11 @@ export const Body = (props) => {
   const [originCode, setOriginCode] = useState(null);
   const [domesticFlights, setDomesticFlights] = useState([]);
   const [internationalFlights, setInternationalFlights] = useState([]);
+
   const [loading, setLoading] = useState(false);
+
+
+  
 
   const formatFlightDate = (dateString) => {
     const date = new Date(dateString);
@@ -504,9 +508,11 @@ export const Body = (props) => {
           try {
           console.log("Fetching nearest airports...");
           const response = await axios.get(apiUrl + `/airlines/nearestAirports/${userIP}`);
+
           // console.log("--------");
           console.log(response.data);
           // console.log("Nearest airports fetched successfully.");
+
           return response.data;
         } catch (error) {
           console.error("Error fetching nearest airports:", error);
@@ -517,6 +523,7 @@ export const Body = (props) => {
       setOriginCode(originTopDestinations.iata_code);
       setDomesticFlights(originTopDestinations.domestic);
       setInternationalFlights(originTopDestinations.international);
+      
       // Define route pairs with IATA codes
       const routes = [
         { origin: originTopDestinations.iata_code, destination: originTopDestinations.domestic[0] },
@@ -576,6 +583,7 @@ export const Body = (props) => {
           .filter(r => r.status === 'fulfilled' && r.value !== null)
           .map(r => r.value)
           .flat();
+   
 
         setFlightsData(prev => [...prev, ...validFlights]);
 
@@ -589,16 +597,16 @@ export const Body = (props) => {
   }
   };
 
-  function calculatePriceWithMarkup(baseAmount, taxAmount) {
-    const base_amount = Number(baseAmount);
-    const markupPercent=Number(process.env.REACT_APP_MARKUP_PERCENT);
-    const markup = Number(base_amount) * markupPercent;
-    const baseprice = base_amount + markup;
-    const tax_amount = Number(taxAmount);
-    const price = baseprice + tax_amount;
+  // function calculatePriceWithMarkup(baseAmount, taxAmount) {
+  //   const base_amount = Number(baseAmount);
+  //   const markupPercent=Number(process.env.REACT_APP_MARKUP_PERCENT);
+  //   const markup = Number(base_amount) * markupPercent;
+  //   const baseprice = base_amount + markup;
+  //   const tax_amount = Number(taxAmount);
+  //   const price = baseprice + tax_amount;
 
-    return price.toFixed(2); // Formats to two decimal places
-  }
+  //   return price.toFixed(2); // Formats to two decimal places
+  // }
 
   return (
     <>
@@ -617,7 +625,10 @@ export const Body = (props) => {
                 </div>
                 {loading ? (
                     <div className="loader-container">
-                <div className="loader"></div>
+                {/* <div className="loader"></div> */}
+                <div className="loader-bounce">
+    <span></span><span></span><span></span><span></span>
+  </div>
                 {/* <div className="loading-text">Loading Top destination...</div>  */}
               </div>
                   ) : (
@@ -722,10 +733,13 @@ export const Body = (props) => {
                                   </p> */}
                                   <ul className="list-unstyled list-inline offer-price-1">
                                     <li className="price">
-                                      {`$ ${calculatePriceWithMarkup(
+                                      {/* {`${flight.total_currency} ${calculatePriceWithMarkup(
                                         flight?.base_amount,
                                         flight?.tax_amount
-                                      )}`}
+                                          )}`} */}
+                                          {console.log('flight Data', flight)} 
+                                         {`${flight.total_currency} ${flight?.total_amount|| 'N/A'}`}
+
                                     </li>
                                   </ul>
                                 </div>
@@ -899,10 +913,12 @@ export const Body = (props) => {
                                   </p> */}
                                   <ul className="list-unstyled list-inline offer-price-1">
                                     <li className="price">
-                                      {`$ ${calculatePriceWithMarkup(
-                                        flight?.base_amount,
-                                        flight?.tax_amount
-                                      )}`}
+                                        {/* {`${flight.total_currency} ${calculatePriceWithMarkup(
+                                            flight?.base_amount,
+                                            flight?.tax_amount
+                                        )}`} */}
+                                       {`${flight.total_currency} ${flight?.total_amount || 'N/A'}`}
+
                                     </li>
                                   </ul>
                                 </div>

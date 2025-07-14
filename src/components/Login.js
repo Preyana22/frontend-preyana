@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import destination_3 from "../assets/images/login-signup-signin-img.png";
+import destination_3 from "../assets/images/banner.png";
 
 import { Link, useNavigate } from "react-router-dom";
 import googleimage from "../assets/images/google.png";

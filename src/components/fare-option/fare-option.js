@@ -82,15 +82,38 @@ const FareOption = (props) => {
     }${minutes}m`;
   };
 
-  const calculatePriceWithMarkup = (baseAmount, taxAmount) => {
-    const base_amount = Number(baseAmount);
-     const markupPercent=Number(process.env.REACT_APP_MARKUP_PERCENT);
-    const markup = base_amount *  markupPercent;
-    const baseprice = base_amount + markup;
-    const tax_amount = Number(taxAmount);
-    const price = baseprice + tax_amount;
-    return price.toFixed(2); // Formats to two decimal places
-  };
+  // const calculatePriceWithMarkup = (baseAmount, taxAmount) => {
+  //   const base_amount = Number(baseAmount);
+  //    const markupPercent=Number(process.env.REACT_APP_MARKUP_PERCENT);
+  //   const markup = base_amount *  markupPercent;
+  //   const baseprice = base_amount + markup;
+  //   const tax_amount = Number(taxAmount);
+  //   const price = baseprice + tax_amount;
+  //   return price.toFixed(2); // Formats to two decimal places
+  // };
+  const getFinalPrice = () => {
+    console.log("Flights Data: ", flights);
+  const backendPrice = flights?.total_amount;
+    console.log("Price:",backendPrice);
+    
+  if (!isNaN(parseFloat(backendPrice))) {
+    return parseFloat(backendPrice).toFixed(2);
+  }
+
+  // Fallback to frontend calculation
+  // const base_amount = Number(flights.base_amount);
+  // const tax_amount = Number(flights.tax_amount);
+  // const markupPercent = Number(process.env.REACT_APP_MARKUP_PERCENT || 0.10);
+
+  // const markup = base_amount * markupPercent;
+  // const base_price = base_amount + markup;
+  // const total_price = base_price + tax_amount;
+
+  // return total_price.toFixed(2);
+   console.error("Error: final_price_with_markup is missing or invalid.");
+  return "Price Unavailable";
+};
+
 
   const navigateToContacts = () => {
     navigate("/contacts", { state: { flights, selectedFares } });
@@ -338,11 +361,13 @@ const FareOption = (props) => {
                           <p>Total amount from</p>
                           <h3>
                             <strong>
-                              {flights.total_currency}{" "}
+                              {/* {flights.total_currency}{" "}
                               {calculatePriceWithMarkup(
                                 flights.base_amount,
                                 flights.tax_amount
-                              )}
+                              )} */}
+                               {(flights.total_currency || flights.base_currency || "USD") + " "}
+    {getFinalPrice()}
                             </strong>
                           </h3>
                         </div>
