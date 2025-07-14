@@ -2834,7 +2834,15 @@ nav.navbar .container.padding {
 }
 
 #footer-bottom li {
-	padding: 0 15px;
+	padding: 0 12px;
+}
+
+@media (max-width: 450px) {
+  .custom-col{
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+    margin-bottom: 35px; 
+  }
 }
 /* -----------------------------------------------------
 		Page Cover

@@ -259,13 +259,26 @@ const FlightsGrid = ({ flights, criteria }) => {
     }
 
     return safeFlights.filter((flight) => {
+
+      // Price filter
+      //  const markupPercent=Number(process.env.REACT_APP_MARKUP_PERCENT);
+      // const markup = Number(flight.base_amount) * markupPercent; // Calculate 15% markup on base_amount
+      // const totalWithMarkup = Number(flight.total_amount) + markup; // Add markup to total_amount
+
       // Price filter// Calculate 15% markup on base_amount
       const totalWithMarkup = Number(flight.total_amount); // Add markup to total_amount
 
-      const withinPriceRange =
-        !filterCriteria.price || // No price filter
-        (totalWithMarkup >= parseFloat(filterCriteria.price[0]) &&
-          totalWithMarkup <= parseFloat(filterCriteria.price[1]));
+
+      // const withinPriceRange =
+      //   !filterCriteria.price || // No price filter
+      //   (totalWithMarkup >= parseFloat(filterCriteria.price[0]) &&
+      //     totalWithMarkup <= parseFloat(filterCriteria.price[1]));
+      const finalPrice = Number(flight.total_amount);
+
+    const withinPriceRange =
+      !filterCriteria.price ||
+      (finalPrice >= parseFloat(filterCriteria.price[0]) &&
+        finalPrice <= parseFloat(filterCriteria.price[1]));
         
           // ✅ Time Ranges for Filters
     const timeRanges = {
@@ -468,7 +481,10 @@ const FlightsGrid = ({ flights, criteria }) => {
             )}
             {isLoading ? (
               <div className="loader-container">
-                <div className="loader"></div>
+                {/* <div className="loader"></div> */}
+                <div className="loader-bounce">
+    <span></span><span></span><span></span><span></span>
+  </div>
                 {/* <div className="loading-text">Loading flights...</div> */}
               </div>
             ) : !searchInitiated && flightsCount === 0 ? (

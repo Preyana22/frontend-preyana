@@ -26,12 +26,49 @@ export const FlightInfo = (props) => {
   const arrivalTime = props.data.slices[0].segments[0].arriving_at;
   const origin = props.data.slices[0].origin.iata_code;
   const destination = props.data.slices[0].destination.iata_code;
+
+  // const baseAmount = Number(props.data.base_amount);
+  // const markupPercent=Number(process.env.REACT_APP_MARKUP_PERCENT);
+  // const markup = baseAmount * markupPercent;
+  // const baseprice = baseAmount + markup;
+  // const tax_amount = Number(props.data.tax_amount);
+  // const price = baseprice + tax_amount;
+  // const formattedTotalAmount = price.toFixed(2);
+//  const markupPercent = Number(process.env.REACT_APP_MARKUP_PERCENT || 0.10);
+// const base = Number(props.data.base_amount);
+// const tax = Number(props.data.tax_amount);
+// const backendPrice = parseFloat(props.data.final_price_with_markup);
+
+// let finalPrice;
+
+// if (!isNaN(backendPrice)) {
+//   finalPrice = backendPrice;
+// } else if (!isNaN(base) && !isNaN(tax)) {
+//   const markup = base * markupPercent;
+//   finalPrice = base + markup + tax;
+// } else {
+//   finalPrice = NaN;
+// }
+
+// const formattedTotalAmount = !isNaN(finalPrice) ? finalPrice.toFixed(2) : "N/A";
+
+// const currency = props.data.total_currency || props.data.base_currency || "USD";
+let finalPrice = Number(flight.total_amount);
+
+  // If it's NaN, handle appropriately (e.g., use "N/A")
+  const formattedTotalAmount = !isNaN(finalPrice) ? finalPrice.toFixed(2) : "N/A";
+
+  const currency = flight.total_currency || flight.base_currency || "USD";
+
+  // const currency = props.data.base_currency;
+
   const baseAmount = Number(props.data.base_amount);
   const baseprice = baseAmount;
   const tax_amount = Number(props.data.tax_amount);
   const price = baseprice + tax_amount;
   const formattedTotalAmount = price.toFixed(2);
   const currency = props.data.base_currency;
+
   const date = props.data.updated_at;
   const time = props.data.slices[0].segments[0].duration;
 

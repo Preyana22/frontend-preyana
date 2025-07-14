@@ -348,13 +348,23 @@ const order = orderData?.[0]?.data?.orderResponse?.data;
   const origincity = location.state.flights.slices[0].origin.iata_city_code;
   const destinationcity = location.state.flights.slices[0].destination.iata_city_code;
 
+
+  // const baseAmount = Number(location.state.flights.base_amount);
+  // const markupPercent=Number(process.env.REACT_APP_MARKUP_PERCENT);
+  // const markup = baseAmount * markupPercent;
+  // const baseprice = baseAmount + markup;
+  // const currency = location.state.flights.base_currency;
+  // const formattedAmount = baseprice.toFixed(2); // Rounds to "1335.37"
+  // const tax_amount = Number(location.state.flights.tax_amount);
+
   const baseAmount = Number(location.state.flights.base_amount);
   const baseprice = baseAmount;
   const currency = location.state.flights.base_currency;
   const formattedAmount = baseprice.toFixed(2); // Rounds to "1335.37"
   const tax_amount = Number(location.state.flights.tax_amount);
 
-  const price = baseprice + tax_amount;
+
+  // const price = baseprice + tax_amount;
   const date = location.state.flights.slices[0].segments[0].departing_at;
   const formattedDate = moment(date).format("ddd MMM D, YYYY, hh:mm A");
   const arrivaldate = location.state.flights.slices[0].segments[0].arriving_at;
@@ -516,7 +526,7 @@ const order = orderData?.[0]?.data?.orderResponse?.data;
     const firstname = event.target["given_name0"].value;
     const lastname = event.target["familyname0"].value;
 
-    const username = (firstname+"_"+lastname).toLowerCase();
+    const username = (firstname+""+lastname).toLowerCase();
     let isNewUser = false;
 
     const extraCharges = (
@@ -709,7 +719,7 @@ const order = orderData?.[0]?.data?.orderResponse?.data;
   useEffect(() => {
   extraBag = Number(extraBag).toFixed(2);
   seatSelection = Number(seatSelection).toFixed(2);
-  formattedTotalAmount = price.toFixed(2);
+  // formattedTotalAmount = price.toFixed(2);
 
   if (location.state.flights) {
     const duffelAncillariesElement = document.querySelector("duffel-ancillaries");
@@ -917,6 +927,39 @@ const isOfferExpired = () => {
     console.log(flightsdata);
     navigate("/fareoption", { state: { flightsdata } });
   };
+
+  // Remove the previous markup calculation logic
+
+const getFormattedBasePrice = () => {
+  // Get base_amount from the backend (ensure it's a valid number)
+  const basePrice = Number(location.state.flights.base_amount);  
+
+  // Check if basePrice is a valid number
+  if (isNaN(basePrice) || basePrice == null) {
+    console.error("Error: Invalid basePrice received from backend.");
+    return "Price Unavailable";  // Return a fallback message if it's invalid
+  }
+
+  // Return the formatted base price
+  return basePrice.toFixed(2); // Format to 2 decimal places
+};
+
+const getFormattedAmount = () => {
+  // Get total_amount from the backend (ensure it's a valid number)
+  const totalAmount = Number(location.state.flights.total_amount);  
+
+  // Check if totalAmount is a valid number
+  if (isNaN(totalAmount) || totalAmount == null) {
+    console.error("Error: Invalid totalAmount received from backend.");
+    return "Price Unavailable";  // Return a fallback message if it's invalid
+  }
+
+  // Return the formatted total price
+  return totalAmount.toFixed(2); // Format to 2 decimal places
+};
+
+
+
 
   return (
     <>
@@ -1537,42 +1580,44 @@ const isOfferExpired = () => {
                         <hr />
 
                         {/* <!-- Pricing Section --> */}
-                        <div className="d-flex justify-content-between">
-                          <span>
-                            <strong>Fare:</strong>
-                          </span>
-                          <span>{currency+" " + formattedAmount}</span>
-                        </div>
+                      <div className="d-flex justify-content-between">
+                        <span>
+                          <strong>Fare:</strong>
+                        </span>
+                        <span>{location.state.flights.base_currency + " " + getFormattedBasePrice()}</span>
+                      </div>
 
-                        <div className="d-flex justify-content-between">
-                          <span>
-                            <strong>Taxes & Fees:</strong>
-                          </span>
-                          <span>{currency+" " + tax_amount}</span>
-                        </div>
+                      <div className="d-flex justify-content-between">
+                        <span>
+                          <strong>Taxes & Fees:</strong>
+                        </span>
+                        <span>{location.state.flights.base_currency + " " + Number(location.state.flights.tax_amount).toFixed(2)}</span>
+                      </div>
 
-                        <div className="d-flex justify-content-between">
-                          <span>
-                            <strong>Additional Checked Baggage:</strong>
-                          </span>
-                          <span>{extraBag && `${currency} ${extraBag}`}</span>
-                        </div>
-                        <div className="d-flex justify-content-between">
-                          <span>
-                            <strong>Seat Selection:</strong>
-                          </span>
-                          <span>{seatSelection &&  `${currency} ${seatSelection}`}</span>
-                        </div>
-                        <hr />
+                      <div className="d-flex justify-content-between">
+                        <span>
+                          <strong>Additional Checked Baggage:</strong>
+                        </span>
+                        <span>{extraBag && `${location.state.flights.base_currency} ${extraBag}`}</span>
+                      </div>
 
-                        {/* <!-- Total Due Section --> */}
-                        <div className="d-flex justify-content-between">
-                          <h5 className="font-weight-bold">Total Due:</h5>
-                          <h5 className="font-weight-bold">
-                            {formattedTotalAmount &&
-                               `${currency} ${formattedTotalAmount}`}
-                          </h5>
-                        </div>
+                      <div className="d-flex justify-content-between">
+                        <span>
+                          <strong>Seat Selection:</strong>
+                        </span>
+                        <span>{seatSelection && `${location.state.flights.base_currency} ${seatSelection}`}</span>
+                      </div>
+                      <hr />
+
+                      {/* Total Due Section */}
+                      <div className="d-flex justify-content-between">
+                        <h5 className="font-weight-bold">Total Due:</h5>
+                        <h5 className="font-weight-bold">
+                          {location.state.flights.base_currency} {getFormattedAmount()}
+                        </h5>
+                      </div>
+
+
 
                         {/* <!-- Button Section --> */}
                         <div className="text-center mt-3">

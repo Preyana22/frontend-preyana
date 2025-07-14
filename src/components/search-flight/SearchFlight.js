@@ -9,7 +9,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import "../body.css";
 import axios from "axios";
 import flightimage from "../../assets/images/flightimage.svg";
-import sideimage from "../../assets/images/login-signup-signin-img.png";
+import sideimage from "../../assets/images/banner.png";
 import hotelimage from "../../assets/images/coming-soon.png";
 import planeIcon from "../../assets/images/planeIcon.svg";
 import hotelIcon from "../../assets/images/hotel.svg";
@@ -542,8 +542,8 @@ const SearchFlight = ({onSearch=()=>{}, ...props} ) => {
       const originStr = segment.origin?.label || "";
       const destinationStr = segment.destination?.label || "";
 
-      const originCode = originStr.split(" - ")[0] || "";
-      const destinationCode = destinationStr.split(" - ")[0] || "";
+      const originCode = segment.origin?.label.split(" - ")[0] || "";
+      const destinationCode = segment.destination?.label.split(" - ")[0] || "";
       const departureDate = segment.date;
 
       const originSecondPart = getSecondPart(originStr.split(" - ")[1] || "");
@@ -1001,7 +1001,7 @@ const handleMultiCitySwap = (index) => {
                             {/* Cabin Class Selection */}
                             <div className="col-12 col-md-4 col-sm-12 d-flex align-items-center  space-info">
                               <Form.Group controlId="cabinclass" className="mb-0" style={{ width: "120px" }}>
-                                <div className="select-containerd-flex align-items-center ">
+                                <div className="select-container d-flex align-items-center ">
                                   <Select
                                     options={cabinOptions}
                                     value={

@@ -29,37 +29,36 @@ const Currency = ({ onCurrencySelect }) => {
   }, []);
 
   const handleSelect = async (currencyCode) => {
-    console.log("Handle select is triggered");
-    setSelectedCurrency(currencyCode);
+  console.log("Handle select is triggered");
+  setSelectedCurrency(currencyCode);
 
-    // 2) bubble up to parent if they need to know
-    if (onCurrencySelect) {
-      onCurrencySelect(currencyCode);
-    }
+  // Bubble up
+  if (onCurrencySelect) {
+    onCurrencySelect(currencyCode);
+  }
 
-    // 3) fire your backend call
-    try {
-      const requestOptions = {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: currencyCode }),
-      };
-      const response = await fetch(
-        `${API_BASE_URL}/currency/setcurrency`, requestOptions
-      );
+  try {
+    const requestOptions = {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: currencyCode }),
+    };
+    const response = await fetch(`${API_BASE_URL}/currency/setcurrency`, requestOptions);
+    const data = await response.json(); // ✅ Fix fetch + parse JSON
 
-      // do something with the server’s response:
-      console.log("Selected currency response:", response.data);
-      // e.g. setConversionRate(response.data.rate);
-      sessionStorage.setItem("selectedCurrency", currencyCode);
-      window.location.href = "/";
-      
-    } catch (err) {
-      console.log("selected a currency"+currencyCode);
-      console.error("Failed to notify backend of new currency:", err);
-      // you could set an error message in state here
-    }
-  };
+    console.log("Selected currency response:", data);
+
+    sessionStorage.setItem("selectedCurrency", currencyCode);
+
+    // ✅ Refresh to reflect new currency
+    window.location.reload();
+
+  } catch (err) {
+    console.log("Selected currency:", currencyCode);
+    console.error("Failed to notify backend of new currency:", err);
+  }
+};
+
 
 return (
   <Dropdown onSelect={handleSelect} align="end">

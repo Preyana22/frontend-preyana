@@ -213,7 +213,12 @@ export const Body = (props) => {
   const [originCode, setOriginCode] = useState(null);
   const [domesticFlights, setDomesticFlights] = useState([]);
   const [internationalFlights, setInternationalFlights] = useState([]);
+
+  const [loading, setLoading] = useState(false);
+
+
   
+
   const formatFlightDate = (dateString) => {
     const date = new Date(dateString);
 
@@ -458,6 +463,7 @@ export const Body = (props) => {
   const cabin_details = ["Economy", "Premium Economy", "Business", "First"];
 
   const getFlights = async () => {
+    setLoading(true);
     try {
       const { flights } = props;
 
@@ -489,18 +495,24 @@ export const Body = (props) => {
       }
 
       // Request options for the fetch API
-      // const requestOptions = {
-      //     method: "POST",
-      //     headers: { "Content-Type": "application/json" },
-      //     body: JSON.stringify(criteria),
-      //   };
+      const requestOptions = {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(criteria),
+        };
         const response = await fetch('https://api.ipify.org?format=json');
-      const data = await response.json();
-      const userIP = data.ip;
-      const routes1 = async () => {
-        try {
+        const data = await response.json();
+        const userIP = data.ip;
+        console.log("IP",userIP);
+        const routes1 = async () => {
+          try {
           console.log("Fetching nearest airports...");
           const response = await axios.get(apiUrl + `/airlines/nearestAirports/${userIP}`);
+
+          // console.log("--------");
+          console.log(response.data);
+          // console.log("Nearest airports fetched successfully.");
+
           return response.data;
         } catch (error) {
           console.error("Error fetching nearest airports:", error);
@@ -511,6 +523,7 @@ export const Body = (props) => {
       setOriginCode(originTopDestinations.iata_code);
       setDomesticFlights(originTopDestinations.domestic);
       setInternationalFlights(originTopDestinations.international);
+      
       // Define route pairs with IATA codes
       const routes = [
         { origin: originTopDestinations.iata_code, destination: originTopDestinations.domestic[0] },
@@ -518,7 +531,7 @@ export const Body = (props) => {
         { origin: originTopDestinations.iata_code, destination: originTopDestinations.domestic[2] },
         { origin: originTopDestinations.iata_code, destination: originTopDestinations.domestic[3] },
 
-        { origin: originTopDestinations.iata_code, destination: originTopDestinations.international[0] },
+        { origin: originTopDestinations.iata_code, destination: originTopDestinations.international[4] },
         { origin: originTopDestinations.iata_code, destination: originTopDestinations.international[1] },
         { origin: originTopDestinations.iata_code, destination: originTopDestinations.international[2] },
         { origin: originTopDestinations.iata_code, destination: originTopDestinations.international[3] },
@@ -532,47 +545,66 @@ export const Body = (props) => {
       const formattedDate = tomorrow.toISOString().split("T")[0];
 
       // Create an array of promises for all fetch requests
-      const fetchRequests = routes.map(async (route) => {
-        const { origin, destination } = route;
+          const fetchRequests = routes.map(async (route) => {
+          const { origin, destination } = route;
+          const criteria = {
+            origin,
+            destination,
+            departureDate: formattedDate,
+            numOfPassengers: Adults,
+            cabin_class: "Economy",
+          };
 
-        // Construct the search criteria
-        const criteria = {
-          origin: origin,
-          destination: destination,
-          departureDate: formattedDate,
-          numOfPassengers: Adults, // List of passengers
-          cabin_class: "Economy",
-        };
+          const requestOptions = {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(criteria),
+          };
 
-        // Request options for the fetch API
-        const requestOptions = {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(criteria),
-        };
+          try {
+            const response = await fetch(apiUrl + "/airlines/test", requestOptions);
+            if (!response.ok) {
+              console.warn(`Request failed for ${origin}-${destination}:`, response.status);
+              return null;  // Return null so we can filter it out
+            }
+            const flightsdata = await response.json();
+            return flightsdata[1] || [];  // Return the offers array or empty array
+          } catch (err) {
+            console.error(`Fetch error for ${origin}-${destination}:`, err);
+            return null;  // Return null on error
+          }
+        });
 
-        // Perform the fetch request
-        const response = await fetch(apiUrl + "/airlines/test", requestOptions);
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status} - ${response.statusText}`);
-        }
+        // Run all in parallel
+        const results = await Promise.allSettled(fetchRequests);
 
-        const flightsdata = await response.json();
-        console.log("flightsdata", flightsdata);
-        // Return the flight data for the current route 
-        return flightsdata[1]; // Assuming flightsdata[1] contains the required data
-      });
+        // Collect successful results
+        const validFlights = results
+          .filter(r => r.status === 'fulfilled' && r.value !== null)
+          .map(r => r.value)
+          .flat();
+   
 
-      // Use Promise.all to wait for all requests to complete concurrently
-      const allFlightsData = await Promise.all(fetchRequests);
+        setFlightsData(prev => [...prev, ...validFlights]);
 
-      // Flatten the results from all routes and update the state
-      setFlightsData((prevData) => [...prevData, ...allFlightsData.flat()]);
+
     } catch (error) {
       // Log the error if the fetch request fails
       console.error("Error during fetch:", error);
     }
+     finally {
+    setLoading(false); // Hide loader when done
+  }
   };
+
+
+  // function calculatePriceWithMarkup(baseAmount, taxAmount) {
+  //   const base_amount = Number(baseAmount);
+  //   const markupPercent=Number(process.env.REACT_APP_MARKUP_PERCENT);
+  //   const markup = Number(base_amount) * markupPercent;
+  //   const baseprice = base_amount + markup;
+  //   const tax_amount = Number(taxAmount);
+  //   const price = baseprice + tax_amount;
 
   function calculatePriceWithMarkup(baseAmount, taxAmount) {
     const base_amount = Number(baseAmount);
@@ -580,8 +612,9 @@ export const Body = (props) => {
     const tax_amount = Number(taxAmount);
     const price = baseprice + tax_amount;
 
-    return price.toFixed(2); // Formats to two decimal places
-  }
+
+  //   return price.toFixed(2); // Formats to two decimal places
+  // }
 
   return (
     <>
@@ -598,7 +631,17 @@ export const Body = (props) => {
                     </h3>
                   </div>
                 </div>
-                <div className="row">
+                {loading ? (
+                    <div className="loader-container">
+                {/* <div className="loader"></div> */}
+                <div className="loader-bounce">
+    <span></span><span></span><span></span><span></span>
+  </div>
+                {/* <div className="loading-text">Loading Top destination...</div>  */}
+              </div>
+                  ) : (
+                    <>
+                        <div className="row">
                  
                   {flightsData && originCode &&
                   
@@ -698,10 +741,13 @@ export const Body = (props) => {
                                   </p> */}
                                   <ul className="list-unstyled list-inline offer-price-1">
                                     <li className="price">
-                                      {`${flight.total_currency} ${calculatePriceWithMarkup(
+                                      {/* {`${flight.total_currency} ${calculatePriceWithMarkup(
                                         flight?.base_amount,
                                         flight?.tax_amount
-                                          )}`}
+                                          )}`} */}
+                                          {console.log('flight Data', flight)} 
+                                         {`${flight.total_currency} ${flight?.total_amount|| 'N/A'}`}
+
                                     </li>
                                   </ul>
                                 </div>
@@ -767,18 +813,30 @@ export const Body = (props) => {
                   {flightsData &&
                   
                     // Group flights by route and map one record per route
-                    [`${originCode}-${internationalFlights[0]}`, `${originCode}-${internationalFlights[1]}`, `${originCode}-${internationalFlights[2]}`, `${originCode}-${internationalFlights[3]}`].map(
+                    // [`${originCode}-${internationalFlights[4]}`, `${originCode}-${internationalFlights[1]}`, `${originCode}-${internationalFlights[2]}`, `${originCode}-${internationalFlights[3]}`].map(
                       
-                      (route) => {
-                        // Find the first flight for the current route
-                        const flight = flightsData.find(
-                          (flight) =>
-                            ((flight.slices &&
-                              flight.slices.length > 0 &&
-                              `${flight.slices[0].origin.iata_code.toUpperCase()}-${flight.slices[0].destination.iata_code.toUpperCase()}`) ||
-                              `${flight.slices[0].origin.iata_city_code.toUpperCase()}-${flight.slices[0].destination.iata_code.toUpperCase()}`) ===
-                            route
-                        );
+                    //   (route) => {
+                    //     // Find the first flight for the current route
+                    //     const flight = flightsData.find(
+                    //       (flight) =>
+                    //         ((flight.slices &&
+                    //           flight.slices.length > 0 &&
+                    //           `${flight.slices[0].origin.iata_code.toUpperCase()}-${flight.slices[0].destination.iata_code.toUpperCase()}`) ||
+                    //           `${flight.slices[0].origin.iata_city_code.toUpperCase()}-${flight.slices[0].destination.iata_code.toUpperCase()}`) ===
+                    //         route
+                    //     );
+
+                          // dynamically mapping the array list of airports 
+                        internationalFlights
+                          .map(dest => `${originCode}-${dest}`)
+                          .map(route => {
+                            const flight = flightsData.find(flight => {
+                              const slice = flight?.slices?.[0];
+                              if (!slice) return false;
+                              
+                              const flightRoute = `${slice.origin.iata_code.toUpperCase()}-${slice.destination.iata_code.toUpperCase()}`;
+                              return flightRoute === route;
+                            });
                         console.log("Origin code",originCode);
                         console.log("International Flights",internationalFlights);
                         // {console.log(flight)}
@@ -863,10 +921,12 @@ export const Body = (props) => {
                                   </p> */}
                                   <ul className="list-unstyled list-inline offer-price-1">
                                     <li className="price">
-                                        {`${flight.total_currency} ${calculatePriceWithMarkup(
+                                        {/* {`${flight.total_currency} ${calculatePriceWithMarkup(
                                             flight?.base_amount,
                                             flight?.tax_amount
-                                        )}`}
+                                        )}`} */}
+                                       {`${flight.total_currency} ${flight?.total_amount || 'N/A'}`}
+
                                     </li>
                                   </ul>
                                 </div>
@@ -926,6 +986,10 @@ export const Body = (props) => {
                       }
                     )}
                 </div>
+
+
+                    </>
+                  )}
               </div>
             </div>
           </div>
