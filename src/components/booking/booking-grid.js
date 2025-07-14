@@ -23,7 +23,7 @@ const MyComponent = (props) => {
   const markup = baseAmount * markupPercent;
   const baseprice = baseAmount + markup;
 
-  const baseprice = baseAmount;
+  
 
   const tax_amount = Number(location.state.selectedFlight.tax_amount);
   const price = baseprice + tax_amount;

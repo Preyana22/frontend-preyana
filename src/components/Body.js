@@ -613,8 +613,8 @@ export const Body = (props) => {
     const price = baseprice + tax_amount;
 
 
-  //   return price.toFixed(2); // Formats to two decimal places
-  // }
+    return price.toFixed(2); // Formats to two decimal places
+  }
 
   return (
     <>

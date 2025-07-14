@@ -53,12 +53,12 @@ export const FlightInfo = (props) => {
 // const formattedTotalAmount = !isNaN(finalPrice) ? finalPrice.toFixed(2) : "N/A";
 
 // const currency = props.data.total_currency || props.data.base_currency || "USD";
-let finalPrice = Number(flight.total_amount);
+// let finalPrice = Number(flight.total_amount);
 
-  // If it's NaN, handle appropriately (e.g., use "N/A")
-  const formattedTotalAmount = !isNaN(finalPrice) ? finalPrice.toFixed(2) : "N/A";
+//   // If it's NaN, handle appropriately (e.g., use "N/A")
+//   const formattedTotalAmount = !isNaN(finalPrice) ? finalPrice.toFixed(2) : "N/A";
 
-  const currency = flight.total_currency || flight.base_currency || "USD";
+//   const currency = flight.total_currency || flight.base_currency || "USD";
 
   // const currency = props.data.base_currency;
 
