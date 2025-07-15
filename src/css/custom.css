@@ -40,7 +40,7 @@ a {
     margin-top: 0px;
 }
 .container, .container-lg, .container-md, .container-sm, .container-xl {
-  max-width: 95%;
+  /* max-width: 95%; */
 }
 }
 

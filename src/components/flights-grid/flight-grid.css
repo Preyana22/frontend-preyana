@@ -4,7 +4,8 @@
 }
 
 .flights-info-container .card{
-  margin: 10px;
+  margin-bottom: 10px !important;
+  margin:0px;
 }
 .pagination {
   display: block;

@@ -1386,6 +1386,22 @@ const handleMultiCitySwap = (index) => {
                                     {multiCitySegments.map((segment, index) => (
                                       
                                       <div className="row gx-2  align-items-end mb-3" key={index}>
+                                         {/* Flight Label */}
+                                          <div className="col-md-12">
+                                            <label className="flight-label">
+                                              {`Flight ${index + 1}`}
+                                              {index >=2 && (
+                                                <button
+                                                  type="button"
+                                                  className="btn btn-sm btn-outline-danger remove-btn"
+                                                  id="remove-button"
+                                                  onClick={() => removeMultiCitySegment(index)}
+                                                >
+                                                  Remove
+                                                </button>
+                                              )}
+                                            </label>
+                                          </div>
                                         <div className="col-md-3">
                                           <Form.Group>
                                             <Typeahead
@@ -1466,7 +1482,7 @@ const handleMultiCitySwap = (index) => {
                                         </div>
 
                                       
-                                      {index >= 2 && (
+                                      {/* {index >= 2 && (
                                         <div className="col-md-2 d-flex align-items-end">
                                           <button
                                             type="button"
@@ -1478,7 +1494,7 @@ const handleMultiCitySwap = (index) => {
                                           </button>
                                         </div>
                                    
-                                      )}
+                                      )} */}
                                     
                                       </div>
                                       
@@ -1486,14 +1502,14 @@ const handleMultiCitySwap = (index) => {
 
                                     
 
-                                    <div className="row">
+                                    {/* <div className="row">
                                       <div className="col-12 text-start">
                                         <button
                                           type="button"
                                           className="btn p-0 m-0"
                                           id="add-another-btn"
                                           onClick={addMultiCitySegment}
-                                          disabled={multiCitySegments.length >= 4}
+                                          disabled={multiCitySegments.length >= 5}
                                           style={{
                                             backgroundColor: "transparent",
                                             border: "none",
@@ -1505,10 +1521,43 @@ const handleMultiCitySwap = (index) => {
                                           + Add Another City
                                         </button>
                                       </div>
-                                    </div>
+                                    </div> */}
+                                      <div className="row mt-3">
+          <div className="col-6 text-start">
+            <button
+              type="button"
+              className="btn p-0 m-0"
+              id="add-another-btn"
+              onClick={addMultiCitySegment}
+              disabled={multiCitySegments.length >= 5}
+              style={{
+                backgroundColor: "transparent",
+                border: "none",
+                color: "#007bff",
+                fontWeight: "500",
+                fontSize: "15px",
+              }}
+            >
+              + Add Another City
+            </button>
+          </div>
 
+          <div className="col-6 text-end">
+            <button
+              className="btn btn-orange searchbtn"
+              onClick={handleSearch}
+              style={{
+                whiteSpace: "nowrap",
+                fontWeight: "bold",
+                float:"right",
+              }}
+            >
+              Search
+            </button>
+          </div>
+        </div>
                                   </div>
-                                    <div className="col-12  d-flex  justify-content-center mt-0  mb-3" >
+                                        {/* <div className="col-12  d-flex  justify-content-center mt-3 mb-3" >
                                           <button className="btn btn-orange searchbtn "  
                                                         onClick={handleSearch}  
                                                         style={{
@@ -1518,7 +1567,7 @@ const handleMultiCitySwap = (index) => {
                                                         }}>
                                             Search
                                           </button>
-                                        </div>
+                                        </div> */}
                                   </div>
                                 </div>
                               

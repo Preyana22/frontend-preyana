@@ -18,8 +18,11 @@ const FlightLogo = (props) => {
 export const FlightInfo = (props) => {
   const navigate = useNavigate();
   const flight = props.data;
+  console.log("Flight",flight);
   const flightsdata = props.data;
-  //console.log(JSON.stringify(props.data)+"props.data");
+  console.log("flightsData:",flightsdata);
+    const isOneWay = props.isOneWay; 
+  // console.log(JSON.stringify(props.data)+"props.data");
   const name = props.data.slices[0].segments[0].operating_carrier["name"];
   const flightNo =
     props.data.slices[0].segments[0].marketing_carrier_flight_number;

@@ -248,7 +248,7 @@ const FlightsGrid = ({ flights, criteria }) => {
     }
   };
 
-  const applyFilters = (flights, filterCriteria) => {
+ const applyFilters = (flights, filterCriteria) => {
     // Ensure flights is an array or convert it
     const safeFlights = Array.isArray(flights)
       ? flights
@@ -407,6 +407,9 @@ const FlightsGrid = ({ flights, criteria }) => {
     });
   };
 
+
+
+
   const handleFilters = async (filtersCriteria) => {
     setCurrentPage(1);
     const storedFlights = localStorage.getItem("flightsData");
@@ -457,6 +460,7 @@ const FlightsGrid = ({ flights, criteria }) => {
                   <select
   className="form-select"
   style={{
+    marginRight:"2px",
     width: "250px",
     padding: "10px",
     fontSize: "14px",

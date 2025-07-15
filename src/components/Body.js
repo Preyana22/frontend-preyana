@@ -567,7 +567,9 @@ export const Body = (props) => {
               console.warn(`Request failed for ${origin}-${destination}:`, response.status);
               return null;  // Return null so we can filter it out
             }
+          
             const flightsdata = await response.json();
+              console.log(`Flight Data for ${origin}-${destination}:`, flightsdata);
             return flightsdata[1] || [];  // Return the offers array or empty array
           } catch (err) {
             console.error(`Fetch error for ${origin}-${destination}:`, err);
@@ -613,7 +615,7 @@ export const Body = (props) => {
     const price = baseprice + tax_amount;
 
 
-    return price.toFixed(2); // Formats to two decimal places
+    // return price.toFixed(2); // Formats to two decimal places
   }
 
   return (

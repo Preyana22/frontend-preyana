@@ -6,7 +6,7 @@
 
 
 .banner-image {
-  max-width: 100%;
+  max-width: 85%;
   height: auto;
   max-height: 300px; /* Control max height */
   object-fit: contain; /* Maintains aspect ratio */
@@ -188,4 +188,46 @@
     margin-top:0px !important;
     margin-bottom: 10px;
   }
+}
+
+/* Flight Form Label Styling */
+.flight-label {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+/* Button Styling */
+
+
+#remove-button{
+   font-size: 14px;
+   font-weight:normal;
+   margin-left: 0px;
+   color: #007bff;
+   background-color: transparent;
+   border: none;
+}
+
+#remove-button:hover{
+  text-decoration:underline;
+
+}
+#add-another-btn {
+  font-size: 15px;
+  color: #007bff;
+  font-weight: 500;
+  background-color: transparent;
+  border: none;
+}
+
+
+
+/* Swap Button Style */
+#swap-icon {
+  transition: transform 0.3s;
+}
+
+.rotated {
+  transform: rotate(180deg);
 }
